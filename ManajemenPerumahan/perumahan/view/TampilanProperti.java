@@ -233,3 +233,14 @@ public class TampilanProperti extends JFrame {
         p.setTanggalPembelian(tanggal.getText());
         p.setMetodePembayaran(metodeBox.getSelectedItem().toString());
 
+        JOptionPane.showMessageDialog(this,
+            "Pembelian berhasil!\n\n" +
+            "Nama: " + p.getNamaPembeli() + "\n" +
+            "Properti: " + p.getNama() + "\n" +
+            "Harga: " + p.getHargaFormat()
+        );
+
+        tampilkanData();
+    }
+}
+}
