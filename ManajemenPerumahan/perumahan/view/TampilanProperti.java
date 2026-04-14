@@ -46,15 +46,6 @@ public class TampilanProperti extends JFrame {
         JButton desc = createButton("Termahal");
         JButton beli = createButton("Beli");
 
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.WHITE);
-        panel.add(tambah);
-        panel.add(edit);
-        panel.add(hapus);
-        panel.add(cari);
-        panel.add(asc);
-        panel.add(desc);
-        panel.add(beli);
 
         add(scroll, BorderLayout.CENTER);
         add(panel, BorderLayout.SOUTH);
