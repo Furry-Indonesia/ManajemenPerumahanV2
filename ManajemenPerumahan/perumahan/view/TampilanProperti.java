@@ -39,7 +39,16 @@ public class TampilanProperti extends JFrame {
 
         // ===== BUTTON STYLE =====
         JButton tambah = createButton("Tambah");
-        JButton edit = createButton("Edit");
+   
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.WHITE);
+        panel.add(tambah);
+        panel.add(edit);
+        panel.add(hapus);
+        panel.add(cari);
+        panel.add(asc);
+        panel.add(desc);
+        panel.add(beli);     JButton edit = createButton("Edit");
         JButton hapus = createButton("Hapus");
         JButton cari = createButton("Cari");
         JButton asc = createButton("Termurah");
