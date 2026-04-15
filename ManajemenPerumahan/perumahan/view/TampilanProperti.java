@@ -241,6 +241,7 @@ public class TampilanProperti extends JFrame {
         );
 
 tampilkanData();
+
     }
 }
 }
