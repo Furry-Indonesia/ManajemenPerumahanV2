@@ -39,13 +39,7 @@ public class TampilanProperti extends JFrame {
 
         // ===== BUTTON STYLE =====
         JButton tambah = createButton("Tambah");
-        JButton edit = createButton("Edit");
-        JButton hapus = createButton("Hapus");
-        JButton cari = createButton("Cari");
-        JButton asc = createButton("Termurah");
-        JButton desc = createButton("Termahal");
-        JButton beli = createButton("Beli");
-
+   
         JPanel panel = new JPanel();
         panel.setBackground(Color.WHITE);
         panel.add(tambah);
@@ -54,7 +48,13 @@ public class TampilanProperti extends JFrame {
         panel.add(cari);
         panel.add(asc);
         panel.add(desc);
-        panel.add(beli);
+        panel.add(beli);     JButton edit = createButton("Edit");
+        JButton hapus = createButton("Hapus");
+        JButton cari = createButton("Cari");
+        JButton asc = createButton("Termurah");
+        JButton desc = createButton("Termahal");
+        JButton beli = createButton("Beli");
+
 
         add(scroll, BorderLayout.CENTER);
         add(panel, BorderLayout.SOUTH);
