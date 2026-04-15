@@ -240,3 +240,7 @@ public class TampilanProperti extends JFrame {
             "Harga: " + p.getHargaFormat()
         );
 
+tampilkanData();
+    }
+}
+}
