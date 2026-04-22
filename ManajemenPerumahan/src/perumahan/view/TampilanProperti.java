@@ -1,25 +1,57 @@
 package perumahan.view;
-import perumahan.model.Properti;
 
-public class TampilanProperti {
+import java.awt.*;
+import java.util.ArrayList;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import perumahan.model.*;
 
-    public void tampilkanDaftar(Properti[] data){
+public class TampilanProperti extends JFrame {
 
-        String garisTebal = "========================================================================================================================";
-        String garisTipis = "------------------------------------------------------------------------------------------------------------------------";
+    private JTable tabel;
+    private DefaultTableModel model;
+    private ArrayList<Properti> data;
 
-        System.out.println("\n" + garisTebal);
-        System.out.println("                                                DAFTAR PROPERTI");
-        System.out.println(garisTebal);
-        
-        System.out.printf("%-5s | %-10s | %-20s | %-10s | %-10s | %-16s | %-10s | %-15s\n",
-                "ID", "Kategori", "Nama", "Detail", "Ukuran", "Harga", "Status", "Pembeli");
-        System.out.println(garisTipis);
+    public TampilanProperti(Properti[] dataArray) {
 
-        for(Properti p : data){
-            p.tampilkanInfo(); 
-        }
+        // ===== STYLE MODERN =====
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception e) {}
 
-        System.out.println(garisTebal + "\n");
-    }
-}
+        data = new ArrayList<>();
+        for (Properti p : dataArray) data.add(p);
+
+        setTitle("Manajemen Properti Modern");
+        setSize(1000, 500);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // ===== TABLE =====
+        String[] kolom = {"Kode", "Nama", "Harga", "Lokasi", "Status", "Pembeli"};
+        model = new DefaultTableModel(kolom, 0);
+        tabel = new JTable(model);
+
+        tabel.setRowHeight(25);
+        tabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+
+        JScrollPane scroll = new JScrollPane(tabel);
+
+        // ===== BUTTON STYLE =====
+        JButton tambah = createButton("Tambah");
+        JButton edit = createButton("Edit");
+        JButton hapus = createButton("Hapus");
+        JButton cari = createButton("Cari");
+        JButton asc = createButton("Termurah");
+        JButton desc = createButton("Termahal");
+        JButton beli = createButton("Beli");
+
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.WHITE);
+        panel.add(tambah);
+        panel.add(edit);
+        panel.add(hapus);
+        panel.add(cari);
+        panel.add(asc);
+        panel.add(desc);
+        panel.add(beli);
