@@ -1,23 +1,17 @@
 package perumahan.model;
 
 public class Rumah extends Properti {
-
     private String tipe;
-    private int luas;
+    private int luasTanah;
 
-    public Rumah(String id, String nama, double harga, String lokasi, String tipe, int luas) {
-        super(id, nama, harga, lokasi);
+    public Rumah(String kode, String nama, double harga, String lokasi, String tipe, int luasTanah) {
+        super(kode, nama, harga, lokasi);
         this.tipe = tipe;
-        this.luas = luas;
+        this.luasTanah = luasTanah;
     }
 
     @Override
     public void tampilkanInfo() {
-        String status = isTerjual() ? "TERJUAL" : "TERSEDIA";
-        String strDetail = String.format("Tipe %s", tipe);
-        String strUkuran = String.format("%d m2", luas);
-        
-        System.out.printf("%-5s | %-10s | %-20s | %-10s | %-10s | %-16s | %-10s | %-15s\n",
-                getId(), "Rumah", getNama(), strDetail, strUkuran, formatRupiah(getHarga()), status, getNamaPembeli());
+        System.out.println(kode + " | Rumah | " + nama + " | " + tipe + " | " + luasTanah + "m2 | " + formatRupiah(harga));
     }
 }
