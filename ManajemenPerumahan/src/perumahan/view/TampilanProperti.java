@@ -138,3 +138,108 @@ public class TampilanProperti extends JFrame {
             JOptionPane.showMessageDialog(this, "Pilih data dulu!");
             return;
         }
+        Properti p = data.get(row);
+
+        JTextField nama = new JTextField(p.getNama());
+        JTextField harga = new JTextField(String.valueOf(p.getHarga()));
+        JTextField lokasi = new JTextField(p.getLokasi());
+
+        Object[] form = {
+            "Nama:", nama,
+            "Harga:", harga,
+            "Lokasi:", lokasi
+        };
+
+        int result = JOptionPane.showConfirmDialog(this, form, "Edit Data", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            data.set(row, new Properti(
+                p.getKode(),
+                nama.getText(),
+                Double.parseDouble(harga.getText()),
+                lokasi.getText()
+            ));
+            tampilkanData();
+        }
+    }
+
+    private void hapusData() {
+        int row = tabel.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih data dulu!");
+            return;
+        }
+
+        data.remove(row);
+        tampilkanData();
+    }
+
+    private void cariData() {
+        String keyword = JOptionPane.showInputDialog("Cari nama:");
+
+        model.setRowCount(0);
+        for (Properti p : data) {
+            if (p.getNama().toLowerCase().contains(keyword.toLowerCase())) {
+                model.addRow(new Object[]{
+                    p.getKode(),
+                    p.getNama(),
+                    p.getHargaFormat(),
+                    p.getLokasi(),
+                    p.isTerjual() ? "Terjual" : "Tersedia",
+                    p.getNamaPembeli()
+                });
+            }
+        }
+    }
+    private void beliProperti() {
+    int row = tabel.getSelectedRow();
+
+    if (row == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih properti dulu!");
+        return;
+    }
+
+    Properti p = data.get(row);
+
+    if (p.isTerjual()) {
+        JOptionPane.showMessageDialog(this, "Properti sudah terjual!");
+        return;
+    }
+
+    JTextField nama = new JTextField();
+    JTextField alamat = new JTextField();
+    JTextField noHp = new JTextField();
+    JTextField tanggal = new JTextField();
+
+    String[] metode = {"Cash", "Transfer", "Kredit"};
+    JComboBox<String> metodeBox = new JComboBox<>(metode);
+
+    Object[] form = {
+        "Nama Pembeli:", nama,
+        "Alamat:", alamat,
+        "No HP:", noHp,
+        "Tanggal:", tanggal,
+        "Metode:", metodeBox
+    };
+
+    int result = JOptionPane.showConfirmDialog(this, form, "Pembelian", JOptionPane.OK_CANCEL_OPTION);
+
+    if (result == JOptionPane.OK_OPTION) {
+        p.setTerjual(true);
+        p.setNamaPembeli(nama.getText());
+        p.setAlamatPembeli(alamat.getText());
+        p.setNoHpPembeli(noHp.getText());
+        p.setTanggalPembelian(tanggal.getText());
+        p.setMetodePembayaran(metodeBox.getSelectedItem().toString());
+
+        JOptionPane.showMessageDialog(this,
+            "Pembelian berhasil!\n\n" +
+            "Nama: " + p.getNamaPembeli() + "\n" +
+            "Properti: " + p.getNama() + "\n" +
+            "Harga: " + p.getHargaFormat()
+        );
+
+        tampilkanData();
+    }
+}
+}
