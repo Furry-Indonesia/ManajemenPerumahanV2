@@ -1,11 +1,356 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+    <title>Manajemen Agen - Admaja Majesti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: { 
+                        primary: 'var(--color-primary, #6d28d9)', 
+                        secondary: 'var(--color-secondary, #4c1d95)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script>
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+        const savedColor = localStorage.getItem('themeColor');
+        const savedLight = localStorage.getItem('themeColorLight');
+        if(savedColor) {
+            document.documentElement.style.setProperty('--color-primary', savedColor);
+            document.documentElement.style.setProperty('--color-secondary', savedLight);
+        }
+    </script>
+
+    <style>
+        body { transition: background-color 0.3s, color 0.3s; }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+        .dark .glass-nav { background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .laporan-table th { padding: 16px 12px; font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1.5px solid #f1f5f9; }
+        .laporan-table td { padding: 16px 12px; font-size: 13px; color: #1e293b; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .laporan-table tr:last-child td { border-bottom: none; }
+        .laporan-table tr:hover { background-color: #fafbfd; }
+        
+        .dark .laporan-table th { border-bottom-color: #1e293b; }
+        .dark .laporan-table td { border-bottom-color: #1e293b; color: #e2e8f0; }
+        .dark .laporan-table tr:hover { background-color: #0f172a; }
+    </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans antialiased min-h-screen flex flex-col pt-28 transition-colors duration-300">
+
+    <nav class="glass-nav fixed w-full top-0 z-40 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20 relative">
+                <div class="flex items-center gap-4 z-10">
+                    <div class="w-10 h-10 rounded-full bg-primary flex justify-center items-center text-white shadow-lg">
+                        <i class="fas fa-users-cog text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">Admaja<span class="text-primary">Majesti</span></h1>
+                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">PT. Admaja Properti Graha Majesti</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-500 dark:text-slate-400 absolute left-1/2 transform -translate-x-1/2 w-max z-10">
+                    <a href="index.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Dashboard</a>
+                    <a href="riwayat-transaksi.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Riwayat Transaksi</a>
+                    <a href="laporan.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Laporan</a>
+                    <a href="manajemen-agen.html" class="text-primary border-b-2 border-primary py-2 transition-colors">Manajemen Agen</a>
+                    <a href="setting.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Pengaturan</a>
+                </div>
+
+                <div class="flex items-center gap-4 z-10">
+                    <div id="userAvatar" onclick="window.location.href='setting.html'" title="Pengaturan Akun" class="w-10 h-10 rounded-full bg-primary hover:opacity-90 cursor-pointer transition flex justify-center items-center font-black text-white text-lg shadow-md overflow-hidden">
+                        A
+                    </div>
+                    <button onclick="prosesLogout()" class="bg-red-50 dark:bg-rose-500/10 hover:bg-red-100 dark:hover:bg-rose-500/20 text-red-600 font-bold py-2.5 px-4 rounded-xl transition text-sm flex items-center gap-2 border border-red-100 dark:border-rose-500/20" title="Keluar">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
+            <div class="flex-1">
+                <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">Manajemen <span class="text-primary">Agen</span> 👥</h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Kelola hak akses tim internal dan daftar akun pembeli Anda.</p>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <div class="relative w-full max-w-md">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-primary"></i>
+                <input type="text" id="inputCariAgen" onkeyup="saringTabelAgen()" placeholder="Cari nama, username, atau nomor telepon..." 
+                    class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl pl-10 pr-4 py-3 text-[13px] font-medium focus:outline-none focus:border-primary focus:shadow-md transition-all shadow-sm">
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8 transition-colors">
+            <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 dark:border-slate-700 pb-5">
+                <div>
+                    <h3 class="font-extrabold text-xl text-slate-800 dark:text-white"><i class="fas fa-user-tie text-primary mr-2"></i>Tim Internal (ADMIN)</h3>
+                    <p class="text-xs text-slate-400 font-medium mt-1">Daftar staf dan agen dengan hak akses penuh ke dalam sistem.</p>
+                </div>
+                <button onclick="openModal('tambahAgenModal')" class="bg-slate-900 dark:bg-primary hover:bg-black dark:hover:opacity-90 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md flex items-center gap-2 w-full md:w-auto justify-center">
+                    <i class="fas fa-user-plus"></i> Tambah Akun Baru
+                </button>
+            </div>
+            
+            <div class="overflow-x-auto hide-scrollbar">
+                <table class="w-full text-left laporan-table">
+                    <thead>
+                        <tr>
+                            <th>Profil Agen</th>
+                            <th>Username</th>
+                            <th>No WhatsApp</th>
+                            <th class="text-center">Hak Akses</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        <tr><td colspan="5" class="text-center py-10 text-slate-400">Memuat data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8 transition-colors">
+            <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 dark:border-slate-700 pb-5">
+                <div>
+                    <h3 class="font-extrabold text-xl text-slate-800 dark:text-white"><i class="fas fa-users text-slate-400 mr-2"></i>Daftar Pelanggan (USER)</h3>
+                    <p class="text-xs text-slate-400 font-medium mt-1">Daftar klien yang hanya memiliki akses ke katalog perumahan.</p>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto hide-scrollbar">
+                <table class="w-full text-left laporan-table">
+                    <thead>
+                        <tr>
+                            <th>Profil Pelanggan</th>
+                            <th>Username</th>
+                            <th>No WhatsApp</th>
+                            <th class="text-center">Hak Akses</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        <tr><td colspan="5" class="text-center py-10 text-slate-400">Memuat data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div id="tambahAgenModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 opacity-100 transition-opacity">
+        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden transform scale-100 transition-all border border-slate-200 dark:border-slate-700">
+            <div class="px-8 pt-8 pb-6 text-center border-b border-slate-100 dark:border-slate-700">
+                <div class="w-16 h-16 bg-primary/10 text-primary rounded-full flex justify-center items-center mx-auto mb-4 text-2xl"><i class="fas fa-user-plus"></i></div>
+                <h3 class="font-extrabold text-2xl text-slate-900 dark:text-white">Buat Akun Baru</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Berikan akses sistem kepada agen atau pelanggan baru.</p>
+            </div>
+            <form id="formTambahAgen" onsubmit="submitTambahAgen(event)" class="p-8">
+                <div class="space-y-4 mb-8">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Username</label>
+                            <input type="text" id="aUsername" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Password</label>
+                            <input type="password" id="aPassword" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Nama Lengkap</label>
+                        <input type="text" id="aNamaLengkap" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">WhatsApp</label>
+                            <input type="number" id="aNoWa" placeholder="Cth: 62812..." required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Role</label>
+                            <select id="aRole" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary cursor-pointer">
+                                <option value="ADMIN">ADMIN</option> <option value="USER">USER</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Foto Profil</label>
+                            <input type="file" id="aFoto" accept="image/*" class="w-full border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl px-4 py-3 text-sm bg-slate-50 dark:bg-slate-900 text-slate-500 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition focus:outline-none focus:border-primary">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('tambahAgenModal')" class="w-1/3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 font-bold py-3.5 rounded-xl transition text-sm">Batal</button>
+                    <button type="submit" class="w-2/3 bg-slate-900 hover:bg-black dark:bg-primary dark:hover:opacity-90 text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg">Daftarkan Akun</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editAgenModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 opacity-100 transition-opacity">
+        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden transform scale-100 transition-all border border-slate-200 dark:border-slate-700">
+            <div class="px-8 pt-8 pb-6 text-center border-b border-slate-100 dark:border-slate-700"><div class="w-16 h-16 bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-full flex justify-center items-center mx-auto mb-4 text-2xl"><i class="fas fa-user-edit"></i></div><h3 class="font-extrabold text-2xl text-slate-900 dark:text-white">Edit Profil Akun</h3><p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Perbarui informasi dan hak akses.</p></div>
+            <form id="formEditAgen" onsubmit="submitEditAgen(event)" class="p-8">
+                <div class="space-y-4 mb-8">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Username (Terkunci)</label><input type="text" id="eUsername" readonly class="w-full bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 rounded-xl px-4 py-2.5 text-sm font-bold cursor-not-allowed"></div>
+                        <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Password Baru</label><input type="password" id="ePassword" placeholder="Kosongkan jika tetap" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal-500"></div>
+                    </div>
+                    <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Lengkap</label><input type="text" id="eNamaLengkap" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal-500"></div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Nomor WhatsApp</label><input type="number" id="eNoWa" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal-500"></div>
+                        <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Hak Akses</label><select id="eRole" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal-500 cursor-pointer"><option value="ADMIN">ADMIN</option><option value="USER">USER</option></select></div>
+                        <div class="col-span-2"><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Ganti Foto Profil</label><input type="file" id="eFoto" accept="image/*" class="w-full border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl px-4 py-3 text-sm bg-slate-50 dark:bg-slate-900 text-slate-500 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition focus:outline-none focus:border-teal-500"></div>
+                    </div>
+                </div>
+                <div class="flex gap-3"><button type="button" onclick="closeModal('editAgenModal')" class="w-1/3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 font-bold py-3.5 rounded-xl transition text-sm">Batal</button><button type="submit" class="w-2/3 bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg">Simpan Perubahan</button></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        if (sessionStorage.getItem('isLoggedIn') !== 'true' || sessionStorage.getItem('role') !== 'ADMIN') window.location.href = 'login.html';
+        const currentUsername = sessionStorage.getItem('username') || 'A';
+
+        // 🚀 INI DIA TERSANGKANYA! SAYA TAMBAHKAN KEMBALI AGAR FUNGSI CRUD BEKERJA!
+        const API_USER_URL = 'http://localhost:8080/api/users';
+
+        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+
+        function prosesLogout() {
+            Swal.fire({
+                title: 'Yakin ingin keluar?', text: "Sesi kerja Anda akan diakhiri.", icon: 'question', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#94a3b8', confirmButtonText: 'Ya, Keluar!'
+            }).then((result) => { if (result.isConfirmed) { sessionStorage.clear(); window.location.href = 'login.html'; } });
+        }
+
+        async function muatAvatarNavbar() {
+            try {
+                const res = await fetch(API_USER_URL);
+                const users = await res.json();
+                const myProfile = users.find(u => u.username === currentUsername);
+                if (myProfile) {
+                    const namaTampil = myProfile.namaLengkap || currentUsername;
+                    const inisial = namaTampil.charAt(0).toUpperCase();
+                    let htmlAvatar = inisial;
+                    if (myProfile.fotoProfil && myProfile.fotoProfil !== "default_profil.png" && myProfile.fotoProfil !== "null") {
+                        const urlFoto = `http://localhost:8080/uploads/profil/${encodeURIComponent(myProfile.fotoProfil)}`;
+                        htmlAvatar = `<img src="${urlFoto}" alt="Profil" class="w-full h-full object-cover">`;
+                    }
+                    document.getElementById('userAvatar').innerHTML = htmlAvatar;
+                }
+            } catch (err) { console.error(err); }
+        }
+        muatAvatarNavbar();
+
+        async function fetchAgen() {
+            const adminBody = document.getElementById('adminTableBody'); const userBody = document.getElementById('userTableBody');
+            try {
+                const response = await fetch(API_USER_URL); const data = await response.json();
+                let htmlAdmin = ''; let htmlUser = '';
+
+                data.forEach(agen => {
+                    const urlFotoProfil = (agen.fotoProfil && agen.fotoProfil !== "default_profil.png" && agen.fotoProfil !== "null")
+                        ? `http://localhost:8080/uploads/profil/${encodeURIComponent(agen.fotoProfil)}`
+                        : `https://ui-avatars.com/api/?name=${agen.username}&background=random&color=fff`;
+
+                    const roleBadge = agen.role === 'ADMIN' 
+                        ? `<span class="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary">ADMIN</span>`
+                        : `<span class="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300">USER</span>`;
+
+                    const row = `
+                        <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors baris-akun">
+                            <td><div class="flex items-center gap-3"><img src="${urlFotoProfil}" alt="Profil" class="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-200 dark:border-slate-600"><p class="font-bold text-slate-800 dark:text-white">${agen.namaLengkap || agen.username}</p></div></td>
+                            <td class="font-mono text-[13px] font-semibold text-slate-500 dark:text-slate-400">${agen.username}</td>
+                            <td class="text-[13px] font-semibold text-slate-600 dark:text-slate-300"><i class="fab fa-whatsapp text-emerald-500 mr-1"></i> ${agen.noWa || '-'}</td>
+                            <td class="text-center">${roleBadge}</td>
+                            <td class="text-center">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <button onclick="siapkanEditAgen('${agen.username}', '${agen.namaLengkap || ''}', '${agen.noWa || ''}', '${agen.role}')" class="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 hover:bg-teal-500 hover:text-white transition flex justify-center items-center"><i class="fas fa-pen text-[11px]"></i></button>
+                                    <button onclick="hapusAgen('${agen.username}')" class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/30 text-rose-500 dark:text-rose-400 hover:bg-rose-500 hover:text-white transition flex justify-center items-center"><i class="fas fa-trash text-[11px]"></i></button>
+                                </div>
+                            </td>
+                        </tr>`;
+                    if (agen.role === 'ADMIN') htmlAdmin += row; else htmlUser += row;
+                });
+                adminBody.innerHTML = htmlAdmin || `<tr><td colspan="5" class="text-center py-8 text-slate-400 font-medium">Belum ada data Tim Internal.</td></tr>`;
+                userBody.innerHTML = htmlUser || `<tr><td colspan="5" class="text-center py-8 text-slate-400 font-medium">Belum ada data Pelanggan.</td></tr>`;
+            } catch (error) { console.error(error); }
+        }
+
+        async function submitTambahAgen(event) {
+            event.preventDefault(); const formData = new FormData();
+            formData.append("username", document.getElementById('aUsername').value); formData.append("password", document.getElementById('aPassword').value);
+            formData.append("namaLengkap", document.getElementById('aNamaLengkap').value); formData.append("noWa", document.getElementById('aNoWa').value); formData.append("role", document.getElementById('aRole').value);
+            const fileFoto = document.getElementById('aFoto').files[0]; if (fileFoto) formData.append("foto", fileFoto);
+
+            try {
+                const response = await fetch(`${API_USER_URL}/tambah`, { method: 'POST', body: formData }); const resultText = await response.text();
+                if (response.ok) { Swal.fire('Berhasil!', resultText, 'success'); closeModal('tambahAgenModal'); document.getElementById('formTambahAgen').reset(); fetchAgen(); } 
+                else { Swal.fire('Gagal', resultText, 'error'); }
+            } catch (error) { Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error'); }
+        }
+
+        function siapkanEditAgen(username, nama, noWa, role) {
+            document.getElementById('eUsername').value = username; document.getElementById('eNamaLengkap').value = nama;
+            document.getElementById('eNoWa').value = noWa; document.getElementById('eRole').value = role;
+            document.getElementById('ePassword').value = ''; document.getElementById('eFoto').value = ''; openModal('editAgenModal');
+        }
+
+        async function submitEditAgen(event) {
+            event.preventDefault(); const username = document.getElementById('eUsername').value; const formData = new FormData();
+            formData.append("namaLengkap", document.getElementById('eNamaLengkap').value); formData.append("noWa", document.getElementById('eNoWa').value); formData.append("role", document.getElementById('eRole').value);
+            const passwordBaru = document.getElementById('ePassword').value; if (passwordBaru) formData.append("password", passwordBaru);
+            const fileFoto = document.getElementById('eFoto').files[0]; if (fileFoto) formData.append("foto", fileFoto);
+
+            try {
+                const response = await fetch(`${API_USER_URL}/edit/${username}`, { method: 'PUT', body: formData }); const resultText = await response.text();
+                if (response.ok) { Swal.fire('Berhasil!', resultText, 'success'); closeModal('editAgenModal'); fetchAgen(); } else { Swal.fire('Gagal', resultText, 'error'); }
+            } catch (error) { Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error'); }
+        }
+
+        function hapusAgen(username) {
+            Swal.fire({ title: 'Apakah Anda yakin?', text: `Data akun "${username}" akan dihapus permanen!`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#e11d48', cancelButtonColor: '#94a3b8', confirmButtonText: 'Ya, Hapus!' }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch(`${API_USER_URL}/hapus/${username}`, { method: 'DELETE' }); const resultText = await response.text();
+                        if (response.ok) { Swal.fire('Terhapus!', resultText, 'success'); fetchAgen(); } else { Swal.fire('Gagal', resultText, 'error'); }
+                    } catch (error) { Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error'); }
+                }
+            });
+        }
+
+        function saringTabelAgen() {
+            const kataKunci = document.getElementById('inputCariAgen').value.toLowerCase(); 
+            const semuaBaris = document.querySelectorAll('.baris-akun');
+            // PERBAIKAN TYPO: semuasBaris -> semuaBaris
+            semuaBaris.forEach(baris => { 
+                const teksBaris = baris.innerText.toLowerCase(); 
+                baris.style.display = teksBaris.includes(kataKunci) ? '' : 'none'; 
+            });
+        }
+
+        fetchAgen();
+    </script>
 </body>
 </html>
