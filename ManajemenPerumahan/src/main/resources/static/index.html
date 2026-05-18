@@ -1,11 +1,818 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+    <title>Sistem Perumahan Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: { 
+                        primary: 'var(--color-primary, #6d28d9)', 
+                        secondary: 'var(--color-secondary, #4c1d95)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script>
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+        const savedColor = localStorage.getItem('themeColor');
+        const savedLight = localStorage.getItem('themeColorLight');
+        if(savedColor) {
+            document.documentElement.style.setProperty('--color-primary', savedColor);
+            document.documentElement.style.setProperty('--color-secondary', savedLight);
+        }
+    </script>
+
+    <style>
+        body { transition: background-color 0.3s, color 0.3s; }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+        .dark .glass-nav { background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Custom Styling Tabel & Dark Mode */
+        .laporan-table th { padding: 16px 12px; font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1.5px solid #f1f5f9; }
+        .laporan-table td { padding: 16px 12px; font-size: 13px; color: #1e293b; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .laporan-table tr:last-child td { border-bottom: none; }
+        .laporan-table tr:hover { background-color: #fafbfd; }
+        
+        .dark .laporan-table th { border-bottom-color: #1e293b; }
+        .dark .laporan-table td { border-bottom-color: #1e293b; color: #e2e8f0; }
+        .dark .laporan-table tr:hover { background-color: #0f172a; }
+    </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans antialiased min-h-screen flex flex-col transition-colors duration-300">
+
+    <nav class="glass-nav fixed w-full top-0 z-40 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20 relative">
+                <div class="flex items-center gap-4 z-10">
+                    <div class="w-10 h-10 rounded-full bg-primary flex justify-center items-center text-white shadow-lg">
+                        <i class="fas fa-building text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">Admaja<span class="text-primary">Majesti</span></h1>
+                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">PT. Admaja Properti Graha Majesti</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-500 dark:text-slate-400 absolute left-1/2 transform -translate-x-1/2 w-max z-10">
+                    <a href="index.html" class="text-primary border-b-2 border-primary py-2 transition-colors">Dashboard</a>
+                    <a href="riwayat-transaksi.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Riwayat Transaksi</a>
+                    <a href="laporan.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Laporan</a>
+                    <a href="manajemen-agen.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Manajemen Agen</a>
+                    <a href="setting.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Pengaturan</a>
+                </div>
+
+                <div class="flex items-center gap-4 z-10">
+                    <button onclick="openModal('tambahModal')" class="bg-primary hover:opacity-90 text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-md flex items-center gap-2 transform hover:-translate-y-0.5">
+                        <i class="fas fa-plus"></i> Tambah Properti
+                    </button>
+                    <div id="userAvatar" onclick="window.location.href='setting.html'" title="Pengaturan Akun" class="w-10 h-10 rounded-full bg-primary hover:opacity-90 cursor-pointer transition flex justify-center items-center font-black text-white text-lg shadow-md overflow-hidden">
+                        A
+                    </div>
+                    <button onclick="prosesLogout()" class="bg-red-50 dark:bg-rose-500/10 hover:bg-red-100 dark:hover:bg-rose-500/20 text-red-600 font-bold py-2.5 px-4 rounded-xl transition text-sm flex items-center gap-2 border border-red-100 dark:border-rose-500/20" title="Keluar">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+            <div>
+                <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">
+                    Halo, <span id="namaUserAktif" class="text-primary capitalize">Pengguna</span>! 👋
+                </h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Kelola seluruh data perumahan dan apartemen Anda dari satu tempat.</p>
+            </div>
+            <button onclick="openModal('beliModal')" class="bg-slate-900 hover:bg-black dark:bg-slate-800 dark:hover:bg-slate-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-lg shadow-slate-900/20">
+                <i class="fas fa-shopping-cart text-xs"></i> Transaksi Baru
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-5 transition-colors">
+                <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex justify-center items-center text-2xl"><i class="fas fa-list-ol"></i></div>
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Properti</p>
+                    <h4 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-1" id="statTotal">0</h4>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-5 transition-colors">
+                <div class="w-14 h-14 rounded-2xl bg-orange-50 dark:bg-orange-500/10 text-orange-500 dark:text-orange-400 flex justify-center items-center text-2xl"><i class="fas fa-door-open"></i></div>
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tersedia</p>
+                    <h4 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-1" id="statTersedia">0</h4>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-5 transition-colors">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 flex justify-center items-center text-2xl"><i class="fas fa-handshake"></i></div>
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Terjual (Lunas)</p>
+                    <h4 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-1" id="statTerjual">0</h4>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-5 transition-colors">
+                <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-blue-500 dark:text-blue-400 flex justify-center items-center text-2xl"><i class="fas fa-wallet"></i></div>
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Omset</p>
+                    <h4 class="text-xl font-extrabold text-slate-800 dark:text-white mt-1" id="statOmset">Rp0</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8 transition-colors">
+            <div class="mb-6">
+                <h3 class="font-extrabold text-xl text-slate-800 dark:text-white">Daftar Aset Aktif</h3>
+                <p class="text-xs text-slate-400 font-medium mt-1" id="tabelSubInfo">Mensinkronkan data...</p>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-3 mb-6">
+                <div class="relative flex-1">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-primary"></i>
+                    <input type="text" id="searchProp" oninput="applyFilters()" placeholder="Cari nama properti, pembeli, kode..." 
+                        class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-[13px] font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary transition-colors">
+                </div>
+                <div class="flex gap-3">
+                    <select id="filterStatus" onchange="applyFilters()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-[13px] font-medium text-slate-600 dark:text-slate-300 focus:outline-none focus:border-primary transition-colors cursor-pointer w-32 md:w-40">
+                        <option value="">Status</option>
+                        <option value="Lunas">Lunas</option>
+                        <option value="Tersedia">Tersedia</option>
+                    </select>
+                    <select id="filterKategori" onchange="applyFilters()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-[13px] font-medium text-slate-600 dark:text-slate-300 focus:outline-none focus:border-primary transition-colors cursor-pointer w-36 md:w-44">
+                        <option value="">Kategori</option>
+                        <option value="Apartemen">Apartemen</option>
+                        <option value="Rumah">Rumah</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto hide-scrollbar">
+                <table class="w-full text-left laporan-table">
+                    <thead>
+                        <tr>
+                            <th>Identitas</th>
+                            <th>Nama Properti</th>
+                            <th>Harga Prop.</th>
+                            <th>Info Lokasi</th>
+                            <th>Kategori</th>
+                            <th>Status</th>
+                            <th>Data Pembeli</th>
+                            <th>Nilai Transaksi</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="propertyTableBody">
+                        <tr><td colspan="9" class="text-center py-10 text-slate-400">Mensinkronkan data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
+                <div class="text-[13px] text-slate-400 font-medium" id="pageInfoText">Menampilkan 0-0 dari 0 properti</div>
+                <div class="flex items-center gap-1.5" id="paginationNumbers"></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="tambahModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 opacity-100 transition-opacity">
+        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-xl overflow-hidden transform scale-100 transition-all max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
+            <div class="px-8 pt-8 pb-6 text-center">
+                <div class="w-16 h-16 bg-primary/10 text-primary rounded-full flex justify-center items-center mx-auto mb-4 text-2xl">
+                    <i class="fas fa-home"></i>
+                </div>
+                <h3 class="font-extrabold text-2xl text-slate-900 dark:text-white">Properti Baru</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Masukkan detail aset properti ke sistem.</p>
+            </div>
+            
+            <form id="formTambah" onsubmit="submitTambah(event)" class="px-8 pb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Kode Properti</label>
+                        <input type="text" id="tKode" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Nama Properti</label>
+                        <input type="text" id="tNama" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Harga</label>
+                        <input type="number" id="tHarga" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Lokasi</label>
+                        <input type="text" id="tLokasi" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Kategori</label>
+                        <select id="tKategori" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all cursor-pointer">
+                            <option value="Rumah">Rumah</option>
+                            <option value="Apartemen">Apartemen</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Pilih Agen</label>
+                        <select id="tAgen" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all cursor-pointer">
+                            <option value="">-- Memuat data agen... --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Kamar Tidur (KT)</label>
+                        <input type="text" id="tKt" placeholder="Cth: 3+1" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Kamar Mandi (KM)</label>
+                        <input type="text" id="tKm" placeholder="Cth: 2+1" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
+                    </div>
+                    
+                    <div id="tambahKhususRumah" class="col-span-1 md:col-span-2 grid grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Tipe Rumah</label>
+                            <input type="text" id="tTipeRumah" placeholder="Cth: 36/72" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Luas Tanah (m²)</label>
+                            <input type="number" id="tLuasTanah" placeholder="M2" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
+                        </div>
+                    </div>
+                    <div id="tambahKhususApartemen" class="col-span-1 md:col-span-2 hidden">
+                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Posisi Lantai</label>
+                        <input type="number" id="tLantai" placeholder="Cth: 12" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Unggah Foto Rumah</label>
+                        <input type="file" id="tFoto" accept="image/*" required class="w-full border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl px-4 py-4 text-sm bg-slate-50 dark:bg-slate-900 text-slate-500 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition focus:outline-none focus:border-primary">
+                    </div>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('tambahModal')" class="w-1/3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 font-bold py-3.5 rounded-xl transition text-sm">Batal</button>
+                    <button type="submit" class="w-2/3 bg-primary hover:opacity-90 text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg">Simpan Properti</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 opacity-100 transition-opacity">
+        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden transform scale-100 transition-all max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
+            <div class="px-8 pt-8 pb-6 text-center">
+                <div class="w-16 h-16 bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-full flex justify-center items-center mx-auto mb-4 text-2xl"><i class="fas fa-edit"></i></div>
+                <h3 class="font-extrabold text-2xl text-slate-900 dark:text-white">Edit Properti</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Ubah informasi aset yang sudah ada.</p>
+            </div>
+            <form id="formEdit" onsubmit="submitEdit(event)" class="px-8 pb-8 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Kode (Terkunci)</label>
+                        <input type="text" id="eKode" readonly class="w-full bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 text-slate-400 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Kategori</label>
+                        <select id="eTipe" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all cursor-pointer">
+                            <option value="Rumah">Rumah</option>
+                            <option value="Apartemen">Apartemen</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Properti</label>
+                    <input type="text" id="eNama" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Harga (Rp)</label>
+                        <input type="number" id="eHarga" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Lokasi</label>
+                        <input type="text" id="eLokasi" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">KT</label>
+                        <input type="text" id="eKt" placeholder="Cth: 3+1" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">KM</label>
+                        <input type="text" id="eKm" placeholder="Cth: 2+1" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
+                    </div>
+                </div>
+                <div id="editKhususRumah" class="grid grid-cols-2 gap-4 hidden">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tipe Rumah</label>
+                        <input type="text" id="eTipeRumah" placeholder="Cth: 36/72" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Luas (m²)</label>
+                        <input type="number" id="eLuasTanah" placeholder="M2" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
+                    </div>
+                </div>
+                <div id="editKhususApartemen" class="hidden">
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Posisi Lantai</label>
+                    <input type="number" id="eLantai" placeholder="Cth: 12" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Ganti Foto (Opsional)</label>
+                    <input type="file" id="eFoto" accept="image/*" class="w-full border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl px-4 py-3 text-sm bg-slate-50 dark:bg-slate-900 text-slate-500 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition focus:outline-none focus:border-teal-500">
+                </div>
+                <div class="flex gap-3 pt-3">
+                    <button type="button" onclick="closeModal('editModal')" class="w-1/3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 font-bold py-3.5 rounded-xl transition text-sm">Batal</button>
+                    <button type="submit" class="w-2/3 bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg">Update Aset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="detailModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 opacity-100 transition-opacity">
+        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden transform scale-100 transition-all flex flex-col max-h-[90vh] border border-slate-200 dark:border-slate-700">
+            <div class="px-8 pt-8 pb-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-start">
+                <div>
+                    <div class="flex items-center gap-3 mb-1">
+                        <span id="dKode" class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs font-bold"></span>
+                        <span id="dStatus" class="text-xs font-bold px-2 py-1 rounded"></span>
+                    </div>
+                    <h3 id="dNama" class="font-extrabold text-2xl text-slate-900 dark:text-white">Nama Properti</h3>
+                    <p id="dLokasi" class="text-sm text-slate-500 dark:text-slate-400 mt-1"><i class="fas fa-map-marker-alt text-slate-300"></i> Lokasi</p>
+                </div>
+                <button onclick="closeModal('detailModal')" class="w-8 h-8 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 rounded-full flex justify-center items-center transition"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="px-8 py-6 overflow-y-auto">
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Informasi Dasar</h4>
+                <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-700 mb-6 grid grid-cols-2 gap-4">
+                    <div><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Harga Properti</p><p id="dHarga" class="font-mono text-sm font-bold text-indigo-600 dark:text-indigo-400"></p></div>
+                    <div><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Kategori</p><p id="dKategori" class="text-sm font-bold text-slate-700 dark:text-slate-200"></p></div>
+                    <div id="boxKt"><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Kamar Tidur</p><p id="dKt" class="text-sm font-bold text-slate-700 dark:text-slate-200"></p></div>
+                    <div id="boxKm"><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Kamar Mandi</p><p id="dKm" class="text-sm font-bold text-slate-700 dark:text-slate-200"></p></div>
+                    <div id="boxTipeRumah" class="hidden"><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Tipe Rumah</p><p id="dTipeRumah" class="text-sm font-bold text-slate-700 dark:text-slate-200"></p></div>
+                    <div id="boxLuasTanah" class="hidden"><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Luas Tanah</p><p id="dLuasTanah" class="text-sm font-bold text-slate-700 dark:text-slate-200"></p></div>
+                    <div id="boxLantai" class="hidden"><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Posisi Lantai</p><p id="dLantai" class="text-sm font-bold text-slate-700 dark:text-slate-200"></p></div>
+                </div>
+                <div id="boxTransaksi" class="hidden">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Detail Pembelian</h4>
+                    <div class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800 grid grid-cols-2 gap-4">
+                        <div class="col-span-2"><p class="text-[10px] text-emerald-600/70 dark:text-emerald-400/70 font-bold uppercase mb-1">Nama Pembeli</p><p id="dNamaPembeli" class="text-sm font-bold text-emerald-900 dark:text-emerald-300"></p></div>
+                        <div class="col-span-2"><p class="text-[10px] text-emerald-600/70 dark:text-emerald-400/70 font-bold uppercase mb-1">Alamat Kontak</p><p id="dAlamatPembeli" class="text-sm font-bold text-emerald-900 dark:text-emerald-300"></p></div>
+                        <div><p class="text-[10px] text-emerald-600/70 dark:text-emerald-400/70 font-bold uppercase mb-1">No HP</p><p id="dNoHp" class="text-sm font-bold text-emerald-900 dark:text-emerald-300"></p></div>
+                        <div><p class="text-[10px] text-emerald-600/70 dark:text-emerald-400/70 font-bold uppercase mb-1">Metode Bayar</p><p id="dMetode" class="text-sm font-bold text-emerald-900 dark:text-emerald-300"></p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="beliModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 opacity-100 transition-opacity">
+        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden transform scale-100 transition-all border border-slate-200 dark:border-slate-700">
+            <div class="px-8 pt-8 pb-6 text-center">
+                <div class="w-16 h-16 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full flex justify-center items-center mx-auto mb-4 text-2xl"><i class="fas fa-file-invoice-dollar"></i></div>
+                <h3 class="font-extrabold text-2xl text-slate-900 dark:text-white">Transaksi Pembelian</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Proses penjualan properti ke klien.</p>
+            </div>
+            <form id="formBeli" onsubmit="submitBeli(event)" class="px-8 pb-8 space-y-4">
+                <div class="bg-indigo-50/50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
+                    <label class="block text-[11px] font-bold text-indigo-400 dark:text-indigo-300 uppercase tracking-wider mb-2">Kode Target (Wajib Valid)</label>
+                    <input type="text" id="bKode" placeholder="Ketik kode (cth: R01)" required class="w-full bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-700 rounded-lg px-4 py-2.5 text-sm font-bold text-indigo-900 dark:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Data Klien</label>
+                    <input type="text" id="bNama" placeholder="Nama lengkap pembeli" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-t-xl border-b-0 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary focus:z-10 relative">
+                    <input type="text" id="bAlamat" placeholder="Alamat lengkap" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 border-b-0 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary focus:z-10 relative">
+                    <input type="number" id="bNoHp" placeholder="Nomor Handphone" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-b-xl px-4 py-3 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary focus:z-10 relative">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tgl. Transaksi</label>
+                        <input type="date" id="bTanggal" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Metode</label>
+                        <select id="bMetode" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary cursor-pointer">
+                            <option value="Cash">Cash Keras</option>
+                            <option value="Transfer">Transfer Bank</option>
+                            <option value="KPA/KPR">KPA / KPR</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeModal('beliModal')" class="w-1/3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 font-bold py-3.5 rounded-xl transition text-sm">Batal</button>
+                    <button type="submit" class="w-2/3 bg-slate-900 hover:bg-black dark:bg-white dark:text-slate-900 dark:hover:opacity-90 text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg">Proses Transaksi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') window.location.href = 'login.html';
+        const currentUsername = sessionStorage.getItem('username') || 'A';
+        if (document.getElementById('namaUserAktif')) document.getElementById('namaUserAktif').innerText = currentUsername;
+
+        // INI DIA TERSANGKANYA! SAYA TAMBAHKAN KEMBALI AGAR FUNGSI CRUD BEKERJA!
+        const API_URL = 'http://localhost:8080/api/properti'; 
+
+        const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+        
+        let globalDataProperti = [];
+        let filteredData = [];
+        let currentPage = 1;
+        const itemsPerPage = 5; 
+
+        // AMBIL FOTO PROFIL DINAMIS UNTUK NAVBAR
+        async function muatAvatarNavbar() {
+            try {
+                const res = await fetch('http://localhost:8080/api/users');
+                const users = await res.json();
+                const myProfile = users.find(u => u.username === currentUsername);
+                if (myProfile) {
+                    const namaTampil = myProfile.namaLengkap || currentUsername;
+                    const inisial = namaTampil.charAt(0).toUpperCase();
+                    let htmlAvatar = inisial;
+                    if (myProfile.fotoProfil && myProfile.fotoProfil !== "default_profil.png" && myProfile.fotoProfil !== "null") {
+                        const urlFoto = `http://localhost:8080/uploads/profil/${encodeURIComponent(myProfile.fotoProfil)}`;
+                        htmlAvatar = `<img src="${urlFoto}" alt="Profil" class="w-full h-full object-cover">`;
+                    }
+                    document.getElementById('userAvatar').innerHTML = htmlAvatar;
+                }
+            } catch (err) { console.error(err); }
+        }
+        muatAvatarNavbar();
+
+        async function fetchProperti() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                globalDataProperti = data;
+                filteredData = data;
+
+                let total = 0, tersedia = 0, terjual = 0, omset = 0;
+                data.forEach(item => {
+                    total++;
+                    if(item.terjual) { terjual++; omset += item.harga; }
+                    else { tersedia++; }
+                });
+
+                document.getElementById('statTotal').innerText = total;
+                document.getElementById('statTersedia').innerText = tersedia;
+                document.getElementById('statTerjual').innerText = terjual; 
+                document.getElementById('statOmset').innerText = formatRupiah(omset);
+                document.getElementById('tabelSubInfo').innerText = `${total} properti terdaftar · ${terjual} lunas · ${tersedia} tersedia`;
+
+                renderTabel();
+            } catch (error) { console.error('Error fetching:', error); }
+        }
+
+        function renderTabel() {
+            const tbody = document.getElementById('propertyTableBody');
+            tbody.innerHTML = '';
+            const totalItems = filteredData.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+            if (totalItems === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-10 text-slate-400">Tidak ada data ditemukan.</td></tr>`;
+                document.getElementById('pageInfoText').innerText = `Menampilkan 0-0 dari 0 properti`;
+                document.getElementById('paginationNumbers').innerHTML = '';
+                return;
+            }
+
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+            const paginatedItems = filteredData.slice(startIndex, endIndex);
+
+            paginatedItems.forEach(item => {
+                let idBadge = 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400';
+                if(item.kode.includes('G') || item.kode.includes('R')) idBadge = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
+                else if(item.kode.includes('P')) idBadge = 'bg-primary/10 text-primary';
+
+                let catBadge = item.jenisProperti === 'Apartemen' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400';
+                let statBadge = item.terjual ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400';
+                let statIcon = item.terjual ? 'fa-circle text-[8px]' : 'fa-clock text-[10px]';
+                
+                let pembeli = item.terjual ? `<span class="font-medium text-slate-700 dark:text-slate-300">${item.namaPembeli}</span>` : `<span class="italic text-slate-400">Belum ada</span>`;
+                let nilaiTrans = item.terjual ? `<span class="font-bold text-slate-900 dark:text-white">${formatRupiah(item.harga)}</span>` : `<span class="italic text-slate-400">-</span>`;
+
+                let actionBtns = '';
+                if(item.terjual) {
+                    actionBtns = `
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="lihatDetail('${item.kode}')" class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-500 dark:text-blue-400 hover:bg-blue-500 hover:text-white transition flex justify-center items-center" title="Detail"><i class="fas fa-eye text-xs"></i></button>
+                            <button class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 text-orange-400/50 flex justify-center items-center cursor-not-allowed" title="Terkunci (Sudah Lunas)"><i class="fas fa-lock text-xs"></i></button>
+                        </div>`;
+                } else {
+                    actionBtns = `
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="lihatDetail('${item.kode}')" class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-500 dark:text-blue-400 hover:bg-blue-500 hover:text-white transition flex justify-center items-center" title="Detail"><i class="fas fa-eye text-xs"></i></button>
+                            <button onclick="siapkanEdit('${item.kode}', '${item.nama}', ${item.harga}, '${item.lokasi}', '${item.jenisProperti}', '${item.tipeRumah}', '${item.luasTanah}', '${item.lantai}', '${item.kt || ''}', '${item.km || ''}')" class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white transition flex justify-center items-center" title="Edit"><i class="fas fa-pen text-xs"></i></button>
+                            <button onclick="hapusProperti('${item.kode}', '${item.nama}')" class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/20 text-rose-500 dark:text-rose-400 hover:bg-rose-500 hover:text-white transition flex justify-center items-center" title="Hapus"><i class="fas fa-trash text-xs"></i></button>
+                        </div>`;
+                }
+
+                const row = `
+                    <tr>
+                        <td><span class="inline-flex justify-center items-center px-3 py-1.5 rounded-lg text-xs font-bold ${idBadge}">${item.kode}</span></td>
+                        <td class="font-bold text-slate-800 dark:text-white">${item.nama}</td>
+                        <td class="font-bold text-slate-800 dark:text-slate-200">${item.hargaFormat || formatRupiah(item.harga)}</td>
+                        <td class="text-slate-500 dark:text-slate-400 text-[13px]"><i class="fas fa-map-pin text-rose-500 mr-1.5"></i>${item.lokasi}</td>
+                        <td><span class="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${catBadge}">${item.jenisProperti}</span></td>
+                        <td><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${statBadge}"><i class="fas ${statIcon}"></i> ${item.terjual ? 'Lunas' : 'Tersedia'}</span></td>
+                        <td>${pembeli}</td>
+                        <td>${nilaiTrans}</td>
+                        <td>${actionBtns}</td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+
+            document.getElementById('pageInfoText').innerText = `Menampilkan ${startIndex + 1}–${endIndex} dari ${totalItems} properti`;
+            renderPaginationButtons(totalPages);
+        }
+
+        function renderPaginationButtons(totalPages) {
+            const container = document.getElementById('paginationNumbers');
+            container.innerHTML = '';
+
+            const btnPrev = document.createElement('button');
+            btnPrev.className = `w-8 h-8 rounded-lg border flex items-center justify-center text-sm transition ${currentPage === 1 ? 'border-slate-100 dark:border-slate-700 text-slate-300 dark:text-slate-600 cursor-not-allowed' : 'border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`;
+            btnPrev.innerHTML = '<i class="fas fa-chevron-left text-[10px]"></i>';
+            if(currentPage > 1) btnPrev.onclick = () => { currentPage--; renderTabel(); };
+            container.appendChild(btnPrev);
+
+            for(let i=1; i<=totalPages; i++) {
+                const btnNum = document.createElement('button');
+                if(i === currentPage) { btnNum.className = 'w-8 h-8 rounded-lg bg-primary text-white font-bold text-sm shadow-md'; } 
+                else {
+                    btnNum.className = 'w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 font-medium text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition';
+                    btnNum.onclick = () => { currentPage = i; renderTabel(); };
+                }
+                btnNum.innerText = i;
+                container.appendChild(btnNum);
+            }
+
+            const btnNext = document.createElement('button');
+            btnNext.className = `w-8 h-8 rounded-lg border flex items-center justify-center text-sm transition ${currentPage === totalPages ? 'border-slate-100 dark:border-slate-700 text-slate-300 dark:text-slate-600 cursor-not-allowed' : 'border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`;
+            btnNext.innerHTML = '<i class="fas fa-chevron-right text-[10px]"></i>';
+            if(currentPage < totalPages) btnNext.onclick = () => { currentPage++; renderTabel(); };
+            container.appendChild(btnNext);
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('searchProp').value.toLowerCase();
+            const stat = document.getElementById('filterStatus').value; 
+            const cat = document.getElementById('filterKategori').value; 
+
+            filteredData = globalDataProperti.filter(p => {
+                const namaPembeliStr = p.namaPembeli ? p.namaPembeli.toLowerCase() : "";
+                const isMatchQuery = p.nama.toLowerCase().includes(query) || p.kode.toLowerCase().includes(query) || namaPembeliStr.includes(query);
+                let isMatchStat = true;
+                if (stat === 'Lunas') isMatchStat = p.terjual === true;
+                if (stat === 'Tersedia') isMatchStat = p.terjual === false;
+                let isMatchCat = true;
+                if (cat !== '') isMatchCat = p.jenisProperti === cat;
+                return isMatchQuery && isMatchStat && isMatchCat;
+            });
+            currentPage = 1; 
+            renderTabel();
+        }
+
+        // ==========================================
+        // FUNGSI MODAL & CRUD
+        // ==========================================
+        async function muatDaftarAgen() {
+            try {
+                const response = await fetch('http://localhost:8080/api/users');
+                const users = await response.json();
+                const dropdownAgen = document.getElementById('tAgen');
+                dropdownAgen.innerHTML = '<option value="" disabled selected>-- Pilih Agen Penanggung Jawab --</option>';
+                users.forEach(user => {
+                    if(user.role === 'ADMIN') {
+                        const namaTampil = user.namaLengkap ? user.namaLengkap : user.username;
+                        dropdownAgen.insertAdjacentHTML('beforeend', `<option value="${user.username}">${namaTampil} (${user.username})</option>`);
+                    }
+                });
+            } catch (error) { document.getElementById('tAgen').innerHTML = '<option value="">Gagal memuat data agen</option>'; }
+        }
+        muatDaftarAgen();
+
+        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+
+        document.getElementById('tKategori').addEventListener('change', function () {
+            if (this.value === 'Rumah') {
+                document.getElementById('tambahKhususRumah').classList.remove('hidden');
+                document.getElementById('tambahKhususApartemen').classList.add('hidden');
+            } else {
+                document.getElementById('tambahKhususRumah').classList.add('hidden');
+                document.getElementById('tambahKhususApartemen').classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('eTipe').addEventListener('change', function () {
+            if (this.value === 'Rumah') {
+                document.getElementById('editKhususRumah').classList.remove('hidden');
+                document.getElementById('editKhususApartemen').classList.add('hidden');
+            } else {
+                document.getElementById('editKhususRumah').classList.add('hidden');
+                document.getElementById('editKhususApartemen').classList.remove('hidden');
+            }
+        });
+
+        async function submitTambah(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append("kode", document.getElementById('tKode').value);
+            formData.append("nama", document.getElementById('tNama').value);
+            formData.append("harga", document.getElementById('tHarga').value);
+            formData.append("lokasi", document.getElementById('tLokasi').value);
+            formData.append("kategori", document.getElementById('tKategori').value);
+            formData.append("usernameAgen", document.getElementById('tAgen').value);
+            formData.append("kt", document.getElementById('tKt').value);
+            formData.append("km", document.getElementById('tKm').value);
+            
+            if(document.getElementById('tKategori').value === 'Rumah') {
+                formData.append("tipeRumah", document.getElementById('tTipeRumah').value);
+                formData.append("luasTanah", document.getElementById('tLuasTanah').value);
+            } else {
+                formData.append("lantai", document.getElementById('tLantai').value);
+            }
+            
+            const fileFoto = document.getElementById('tFoto').files[0];
+            if (fileFoto) formData.append("foto", fileFoto);
+
+            try {
+                const response = await fetch(`${API_URL}/tambah`, { method: 'POST', body: formData });
+                const resultText = await response.text();
+                if (response.ok) {
+                    Swal.fire('Berhasil!', 'Properti berhasil disimpan.', 'success');
+                    closeModal('tambahModal');
+                    document.getElementById('formTambah').reset();
+                    fetchProperti(); 
+                } else { Swal.fire('Gagal', resultText, 'error'); }
+            } catch (error) { Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error'); }
+        }
+
+        function siapkanEdit(kode, nama, harga, lokasi, tipe, tipeRumah, luasTanah, lantai, kt, km) {
+            document.getElementById('eKode').value = kode;
+            document.getElementById('eNama').value = nama;
+            document.getElementById('eHarga').value = harga;
+            document.getElementById('eLokasi').value = lokasi;
+            document.getElementById('eTipe').value = tipe;
+            document.getElementById('eKt').value = kt !== 'null' ? kt : '';
+            document.getElementById('eKm').value = km !== 'null' ? km : '';
+            document.getElementById('eTipeRumah').value = tipeRumah !== 'null' ? tipeRumah : '';
+            document.getElementById('eLuasTanah').value = luasTanah !== 'null' ? luasTanah : '';
+            document.getElementById('eLantai').value = lantai !== 'null' ? lantai : '';
+            document.getElementById('eFoto').value = ''; 
+            document.getElementById('eTipe').dispatchEvent(new Event('change'));
+            openModal('editModal');
+        }
+
+        async function submitEdit(event) {
+            event.preventDefault();
+            const kode = document.getElementById('eKode').value;
+            const formData = new FormData();
+            formData.append("nama", document.getElementById('eNama').value);
+            formData.append("harga", document.getElementById('eHarga').value);
+            formData.append("lokasi", document.getElementById('eLokasi').value);
+            formData.append("tipe", document.getElementById('eTipe').value);
+            formData.append("kt", document.getElementById('eKt').value);
+            formData.append("km", document.getElementById('eKm').value);
+            
+            if(document.getElementById('eTipe').value === 'Rumah') {
+                formData.append("tipeRumah", document.getElementById('eTipeRumah').value);
+                formData.append("luasTanah", document.getElementById('eLuasTanah').value);
+            } else { formData.append("lantai", document.getElementById('eLantai').value); }
+
+            const fileFoto = document.getElementById('eFoto').files[0];
+            if (fileFoto) formData.append("foto", fileFoto);
+
+            try {
+                // 🚀 PERBAIKAN DI SINI: method 'POST' diubah menjadi 'PUT'
+                const response = await fetch(`${API_URL}/${kode}/edit`, { method: 'PUT', body: formData });
+                
+                const resultText = await response.text();
+                if (resultText.includes("Sukses")) {
+                    Swal.fire({ title: 'Berhasil Update!', text: resultText, icon: 'success', timer: 2000, showConfirmButton: false });
+                    closeModal('editModal');
+                    fetchProperti();
+                } else { Swal.fire('Gagal!', resultText, 'error'); }
+            } catch (error) { Swal.fire('Error!', 'Gagal menghubungi server.', 'error'); }
+        }
+
+        function hapusProperti(kode, nama) {
+            Swal.fire({
+                title: 'Hapus Properti?', text: `Anda yakin ingin menghapus ${nama} (${kode})?`, icon: 'warning',
+                showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#94a3b8', confirmButtonText: 'Ya, Hapus!'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch(`${API_URL}/${kode}/hapus`, { method: 'DELETE' });
+                        const resultText = await response.text();
+                        if (resultText.includes("Sukses")) {
+                            Swal.fire({ title: 'Terhapus!', text: resultText, icon: 'success', timer: 2000, showConfirmButton: false });
+                            fetchProperti();
+                        } else { Swal.fire('Gagal!', resultText, 'error'); }
+                    } catch (error) { Swal.fire('Error!', 'Gagal memproses.', 'error'); }
+                }
+            });
+        }
+
+        function lihatDetail(kode) {
+            const item = globalDataProperti.find(p => p.kode === kode);
+            if (!item) return;
+
+            document.getElementById('dKode').innerText = item.kode;
+            document.getElementById('dNama').innerText = item.nama;
+            document.getElementById('dLokasi').innerText = item.lokasi;
+            document.getElementById('dHarga').innerText = item.hargaFormat || formatRupiah(item.harga);
+            document.getElementById('dKategori').innerText = item.jenisProperti;
+            document.getElementById('dKt').innerText = item.kt || '-';
+            document.getElementById('dKm').innerText = item.km || '-';
+
+            const statusBadge = document.getElementById('dStatus');
+            if (item.terjual) {
+                statusBadge.className = 'text-xs font-bold px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400';
+                statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> Lunas';
+            } else {
+                statusBadge.className = 'text-xs font-bold px-2 py-1 rounded bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400';
+                statusBadge.innerHTML = '<i class="fas fa-clock"></i> Tersedia';
+            }
+
+            document.getElementById('boxTipeRumah').classList.add('hidden');
+            document.getElementById('boxLuasTanah').classList.add('hidden');
+            document.getElementById('boxLantai').classList.add('hidden');
+
+            if (item.jenisProperti === 'Rumah') {
+                document.getElementById('boxTipeRumah').classList.remove('hidden');
+                document.getElementById('boxLuasTanah').classList.remove('hidden');
+                document.getElementById('dTipeRumah').innerText = item.tipeRumah || '-';
+                document.getElementById('dLuasTanah').innerText = item.luasTanah ? item.luasTanah + ' m²' : '-';
+            } else if (item.jenisProperti === 'Apartemen') {
+                document.getElementById('boxLantai').classList.remove('hidden');
+                document.getElementById('dLantai').innerText = item.lantai || '-';
+            }
+
+            const boxTransaksi = document.getElementById('boxTransaksi');
+            if (item.terjual && item.transaksi) {
+                boxTransaksi.classList.remove('hidden');
+                document.getElementById('dNamaPembeli').innerText = item.transaksi.namaPembeli || '-';
+                document.getElementById('dAlamatPembeli').innerText = item.transaksi.alamatPembeli || '-';
+                document.getElementById('dNoHp').innerText = item.transaksi.noHp || '-';
+                document.getElementById('dMetode').innerText = item.transaksi.metodePembayaran || '-';
+            } else { boxTransaksi.classList.add('hidden'); }
+            openModal('detailModal');
+        }
+
+        async function submitBeli(event) {
+            event.preventDefault();
+            const kodeProperti = document.getElementById('bKode').value;
+            const dataPembeli = {
+                nama: document.getElementById('bNama').value, alamat: document.getElementById('bAlamat').value,
+                noHp: document.getElementById('bNoHp').value, tanggal: document.getElementById('bTanggal').value,
+                metode: document.getElementById('bMetode').value
+            };
+            try {
+                const response = await fetch(`${API_URL}/${kodeProperti}/beli`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataPembeli)
+                });
+                const resultText = await response.text();
+                if (resultText.includes("Sukses")) {
+                    Swal.fire({ title: 'Berhasil!', text: resultText, icon: 'success', timer: 2000, showConfirmButton: false });
+                    closeModal('beliModal');
+                    document.getElementById('formBeli').reset();
+                    fetchProperti();
+                } else { Swal.fire('Gagal!', resultText, 'error'); }
+            } catch (error) { Swal.fire('Error!', 'Gagal memproses transaksi.', 'error'); }
+        }
+
+        function prosesLogout() {
+            Swal.fire({
+                title: 'Yakin ingin keluar?', text: "Sesi kerja Anda akan diakhiri.", icon: 'question',
+                showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#94a3b8', confirmButtonText: 'Ya, Keluar!', cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    sessionStorage.clear();
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+
+        fetchProperti();
+    </script>
 </body>
 </html>
