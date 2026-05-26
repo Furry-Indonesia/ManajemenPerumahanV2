@@ -2,6 +2,7 @@ package perumahan.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,8 +18,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/properti")
+// 1. UBAH JADI @Controller AGAR BISA MEMBUKA HALAMAN HTML
+@Controller 
 @CrossOrigin(origins = "*")
 public class PropertiController {
 
@@ -28,15 +29,39 @@ public class PropertiController {
     @Autowired
     private TransaksiRepository transaksiRepository;
 
-    @GetMapping
+    // ==========================================
+    // RUTE BARU: UNTUK MENAMPILKAN HALAMAN WEB
+    // ==========================================
+
+    @GetMapping("/")
+    public String landingPage() {
+        // Langsung tembak ke file landing-page.html di folder static
+        return "forward:/index.html"; 
+    }
+
+    @GetMapping("/login")
+    public String halamanLogin() {
+        return "forward:/login.html";
+    }
+
+    @GetMapping("/admin")
+    public String halamanAdminDashboard() {
+        return "forward:/dashboard.html"; 
+    }
+
+    // ==========================================
+    // RUTE LAMA: DATA API (DITAMBAH @ResponseBody & /api/properti)
+    // ==========================================
+
+    @GetMapping("/api/properti")
+    @ResponseBody
     public List<Properti> getAllProperti() {
         return propertiRepository.findAll();
     }
 
-    // ==========================================
-    // FITUR TAMBAH PROPERTI (SUDAH DIUPGRADE)
-    // ==========================================
-    @PostMapping("/tambah")
+    // FITUR TAMBAH PROPERTI
+    @PostMapping("/api/properti/tambah")
+    @ResponseBody
     public ResponseEntity<String> tambahProperti(
             @RequestParam("foto") MultipartFile file,
             @RequestParam("kode") String kode,
@@ -45,7 +70,6 @@ public class PropertiController {
             @RequestParam("lokasi") String lokasi,
             @RequestParam("kategori") String kategori,
             @RequestParam("usernameAgen") String usernameAgen,
-            // Tambahan Parameter Spesifikasi:
             @RequestParam(value = "tipeRumah", required = false) String tipeRumah,
             @RequestParam(value = "luasTanah", required = false) Integer luasTanah,
             @RequestParam(value = "lantai", required = false) Integer lantai,
@@ -53,7 +77,6 @@ public class PropertiController {
             @RequestParam(value = "km", required = false) String km) {
         
         try {
-            // 1. Logika simpan file ke folder static/uploads/properti/
             String namaFile = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             Path uploadPath = Paths.get("src/main/resources/static/uploads/properti/");
 
@@ -64,7 +87,6 @@ public class PropertiController {
             Path filePath = uploadPath.resolve(namaFile);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // 2. Simpan data ke Database
             Properti p = new Properti();
             p.setKode(kode);
             p.setNama(nama);
@@ -74,7 +96,6 @@ public class PropertiController {
             p.setFotoProperti(namaFile);
             p.setUsernameAgen(usernameAgen);
             
-            // Simpan Spesifikasi Tambahan
             p.setTipeRumah(tipeRumah);
             p.setLuasTanah(luasTanah);
             p.setLantai(lantai);
@@ -88,10 +109,9 @@ public class PropertiController {
         }
     }
 
-    // ==========================================
     // FITUR BELI PROPERTI
-    // ==========================================
-    @PostMapping("/{kode}/beli")
+    @PostMapping("/api/properti/{kode}/beli")
+    @ResponseBody
     public String beliProperti(@PathVariable String kode, @RequestBody PembeliDTO pembeli) {
 
         Optional<Properti> propertiOpt = propertiRepository.findById(kode);
@@ -121,10 +141,10 @@ public class PropertiController {
 
         return "Sukses: Transaksi berhasil diproses untuk " + pembeli.getNama() + "!";
     }
-    // ==========================================
-    // FITUR EDIT PROPERTI (SUDAH DIUPGRADE + FOTO)
-    // ==========================================
-    @PutMapping("/{kode}/edit")
+
+    // FITUR EDIT PROPERTI
+    @PutMapping("/api/properti/{kode}/edit")
+    @ResponseBody
     public String editProperti(
             @PathVariable String kode,
             @RequestParam("nama") String nama,
@@ -136,7 +156,7 @@ public class PropertiController {
             @RequestParam(value = "lantai", required = false) Integer lantai,
             @RequestParam(value = "kt", required = false) String kt,
             @RequestParam(value = "km", required = false) String km,
-            @RequestParam(value = "foto", required = false) MultipartFile file) { // Menangkap file foto baru
+            @RequestParam(value = "foto", required = false) MultipartFile file) { 
 
         Optional<Properti> propertiOpt = propertiRepository.findById(kode);
 
@@ -146,7 +166,6 @@ public class PropertiController {
 
         Properti p = propertiOpt.get();
 
-        // 1. Update data dasar
         p.setNama(nama);
         p.setHarga(harga);
         p.setLokasi(lokasi);
@@ -164,7 +183,6 @@ public class PropertiController {
             p.setLuasTanah(null);
         }
 
-        // 2. Jika ada foto baru yang diunggah, proses fotonya!
         try {
             if (file != null && !file.isEmpty()) {
                 String namaFile = System.currentTimeMillis() + "_" + file.getOriginalFilename();
@@ -177,7 +195,7 @@ public class PropertiController {
                 Path filePath = uploadPath.resolve(namaFile);
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
                 
-                p.setFotoProperti(namaFile); // Update nama file di database
+                p.setFotoProperti(namaFile); 
             }
             
             propertiRepository.save(p);
@@ -188,10 +206,9 @@ public class PropertiController {
         }
     }
 
-    // ==========================================
     // FITUR DELETE (HAPUS) PROPERTI
-    // ==========================================
-    @DeleteMapping("/{kode}/hapus")
+    @DeleteMapping("/api/properti/{kode}/hapus")
+    @ResponseBody
     public String hapusProperti(@PathVariable String kode) {
         Optional<Properti> propertiOpt = propertiRepository.findById(kode);
 
@@ -207,10 +224,9 @@ public class PropertiController {
         return "Sukses: Properti " + kode + " berhasil dihapus secara permanen!";
     }
 
-    // ==========================================
     // FITUR MENAMPILKAN SEMUA RIWAYAT TRANSAKSI
-    // ==========================================
-    @GetMapping("/transaksi/semua")
+    @GetMapping("/api/properti/transaksi/semua")
+    @ResponseBody
     public List<Transaksi> ambilSemuaTransaksi() {
         return transaksiRepository.findAll();
     }

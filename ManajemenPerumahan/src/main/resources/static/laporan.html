@@ -69,7 +69,7 @@
                     </div>
                 </div>
                 <div class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-500 dark:text-slate-400 absolute left-1/2 transform -translate-x-1/2 w-max z-10">
-                    <a href="index.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Dashboard</a>
+                    <a href="dashboard.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Dashboard</a>
                     <a href="riwayat-transaksi.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Riwayat Transaksi</a>
                     <a href="laporan.html" class="text-primary border-b-2 border-primary py-2 transition-colors">Laporan</a>
                     <a href="manajemen-agen.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Manajemen Agen</a>
@@ -414,7 +414,7 @@
             paginatedItems.forEach(item => {
                 const badgeColor = item.terjual ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800' : 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-800';
                 const statusIcon = item.terjual ? 'fa-check-circle' : 'fa-clock'; const statusText = item.terjual ? 'Lunas' : 'Tersedia';
-                const btnMata = `<button onclick="window.location.href='index.html'" class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500 hover:text-white transition flex justify-center items-center shadow-sm" title="Buka di Dashboard"><i class="fas fa-eye text-xs"></i></button>`;
+                const btnMata = `<button onclick="window.location.href='dashboard.html'" class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500 hover:text-white transition flex justify-center items-center shadow-sm" title="Buka di Dashboard"><i class="fas fa-eye text-xs"></i></button>`;
                 const fotoPath = item.fotoProperti ? `http://localhost:8080/uploads/properti/${item.fotoProperti}` : `https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=600&auto=format&fit=crop`;
 
                 const cardHtml = `
