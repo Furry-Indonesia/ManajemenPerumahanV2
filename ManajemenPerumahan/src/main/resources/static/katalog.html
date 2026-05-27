@@ -44,45 +44,180 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans antialiased min-h-screen flex flex-col pt-28 transition-colors duration-300">
 
+    <!-- ======== NAVBAR (sama persis seperti laporan.html) ======== -->
     <nav class="glass-nav fixed w-full top-0 z-40 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex items-center gap-4">
+            <div class="flex justify-between items-center h-20 relative">
+
+                <!-- KIRI: Logo + Nama Web -->
+                <div class="flex items-center gap-4 z-10">
                     <div class="w-10 h-10 rounded-full bg-primary flex justify-center items-center text-white shadow-lg">
-                        <i class="fas fa-building text-lg"></i>
+                        <i class="fas fa-chart-line text-lg"></i>
                     </div>
                     <div>
                         <h1 class="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">Admaja<span class="text-primary">Majesti</span></h1>
-                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">Katalog Properti Resmi</p>
+                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">PT. Admaja Properti Graha Majesti</p>
                     </div>
                 </div>
-                
-                <div class="flex items-center gap-4">
-                    <div class="hidden md:block text-sm font-bold text-slate-600 dark:text-slate-300 mr-2">
-                        Halo, <span id="namaUserNavbar" class="text-primary capitalize">Pengguna</span>!
-                    </div>
-                    <div id="userAvatar" class="w-10 h-10 rounded-full bg-primary transition flex justify-center items-center font-black text-white text-lg shadow-md overflow-hidden">
+
+                <!-- TENGAH: Menu Navigasi -->
+                <div class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-500 dark:text-slate-400 absolute left-1/2 transform -translate-x-1/2 w-max z-10">
+                    <a href="katalog.html" class="text-primary border-b-2 border-primary py-2 transition-colors">Katalog</a>
+                    <a href="setting-user.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Pengaturan</a>
+                </div>
+
+                <!-- KANAN: Avatar + Tombol Keluar -->
+                <div class="flex items-center gap-4 z-10">
+                    <div id="userAvatar" onclick="window.location.href='setting-user.html'" title="Pengaturan Akun"
+                        class="w-10 h-10 rounded-full bg-primary cursor-pointer transition flex justify-center items-center font-black text-white text-lg shadow-md hover:opacity-90 overflow-hidden">
                         A
                     </div>
-                    <button onclick="prosesLogout()" class="bg-red-50 dark:bg-rose-500/10 hover:bg-red-100 dark:hover:bg-rose-500/20 text-red-600 font-bold py-2.5 px-4 rounded-xl transition text-sm flex items-center gap-2 border border-red-100 dark:border-rose-500/20" title="Keluar">
-                        <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline">Keluar</span>
+                    <button onclick="prosesLogout()"
+                        class="bg-red-50 dark:bg-rose-500/10 hover:bg-red-100 dark:hover:bg-rose-500/20 text-red-600 font-bold py-2.5 px-4 rounded-xl transition text-sm flex items-center gap-2 border border-red-100 dark:border-rose-500/20"
+                        title="Keluar">
+                        <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </div>
+
             </div>
         </div>
     </nav>
 
+    <!-- ======== MAIN ======== -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <div class="mb-8">
-            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">Hunian Impian Anda Menanti</h2>
-            <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Jelajahi berbagai pilihan rumah dan apartemen premium dari AdmajaMajesti.</p>
+
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
+            <div>
+                <div class="flex items-center gap-3">
+                    <div class="flex gap-1.5 bg-slate-900 dark:bg-white p-1.5 rounded-xl text-white dark:text-slate-900 shadow-lg">
+                        <i class="fas fa-building text-sm"></i>
+                        <i class="fas fa-search text-sm"></i>
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">Katalog <span class="text-primary">Properti</span> 🏠</h2>
+                </div>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Hunian Impian Anda Menanti — jelajahi berbagai pilihan unit premium dari AdmajaMajesti.</p>
+            </div>
+            <!-- Info jumlah hasil -->
+            <div class="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-3 shadow-sm self-end">
+                <i class="fas fa-home text-primary text-sm"></i>
+                <span id="jumlahHasil" class="text-sm font-bold text-slate-700 dark:text-slate-200">0 properti ditemukan</span>
+            </div>
         </div>
 
+        <!-- ======== FILTER & SEARCH BAR ======== -->
+        <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 mb-8 transition-colors">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                <!-- Cari Nama -->
+                <div class="relative">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="searchNama" oninput="applyFilters()"
+                        placeholder="Cari nama properti..."
+                        class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-[13px] focus:outline-none focus:border-primary shadow-sm font-medium transition-colors">
+                </div>
+
+                <!-- Filter Kota/Kabupaten Jawa Timur -->
+                <div class="relative">
+                    <i class="fas fa-map-marker-alt absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <select id="filterKota" onchange="applyFilters()"
+                        class="w-full appearance-none bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl pl-10 pr-8 py-2.5 text-[13px] focus:outline-none focus:border-primary shadow-sm font-semibold cursor-pointer transition-colors">
+                        <option value="">Semua Kota / Kabupaten</option>
+                        <optgroup label="Kota">
+                            <option value="Surabaya">Kota Surabaya</option>
+                            <option value="Malang">Kota Malang</option>
+                            <option value="Mojokerto">Kota Mojokerto</option>
+                            <option value="Pasuruan">Kota Pasuruan</option>
+                            <option value="Probolinggo">Kota Probolinggo</option>
+                            <option value="Blitar">Kota Blitar</option>
+                            <option value="Kediri">Kota Kediri</option>
+                            <option value="Madiun">Kota Madiun</option>
+                            <option value="Batu">Kota Batu</option>
+                        </optgroup>
+                        <optgroup label="Kabupaten">
+                            <option value="Sidoarjo">Kab. Sidoarjo</option>
+                            <option value="Gresik">Kab. Gresik</option>
+                            <option value="Lamongan">Kab. Lamongan</option>
+                            <option value="Tuban">Kab. Tuban</option>
+                            <option value="Bojonegoro">Kab. Bojonegoro</option>
+                            <option value="Jombang">Kab. Jombang</option>
+                            <option value="Nganjuk">Kab. Nganjuk</option>
+                            <option value="Mojokerto">Kab. Mojokerto</option>
+                            <option value="Pasuruan">Kab. Pasuruan</option>
+                            <option value="Probolinggo">Kab. Probolinggo</option>
+                            <option value="Lumajang">Kab. Lumajang</option>
+                            <option value="Jember">Kab. Jember</option>
+                            <option value="Banyuwangi">Kab. Banyuwangi</option>
+                            <option value="Bondowoso">Kab. Bondowoso</option>
+                            <option value="Situbondo">Kab. Situbondo</option>
+                            <option value="Malang">Kab. Malang</option>
+                            <option value="Blitar">Kab. Blitar</option>
+                            <option value="Tulungagung">Kab. Tulungagung</option>
+                            <option value="Kediri">Kab. Kediri</option>
+                            <option value="Trenggalek">Kab. Trenggalek</option>
+                            <option value="Ponorogo">Kab. Ponorogo</option>
+                            <option value="Pacitan">Kab. Pacitan</option>
+                            <option value="Magetan">Kab. Magetan</option>
+                            <option value="Ngawi">Kab. Ngawi</option>
+                            <option value="Madiun">Kab. Madiun</option>
+                            <option value="Sampang">Kab. Sampang</option>
+                            <option value="Pamekasan">Kab. Pamekasan</option>
+                            <option value="Sumenep">Kab. Sumenep</option>
+                            <option value="Bangkalan">Kab. Bangkalan</option>
+                        </optgroup>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                </div>
+
+                <!-- Filter Rentang Harga -->
+                <div class="relative">
+                    <i class="fas fa-tag absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <select id="filterHarga" onchange="applyFilters()"
+                        class="w-full appearance-none bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl pl-10 pr-8 py-2.5 text-[13px] focus:outline-none focus:border-primary shadow-sm font-semibold cursor-pointer transition-colors">
+                        <option value="">Semua Rentang Harga</option>
+                        <option value="0-500000000">Di bawah Rp 500 Jt</option>
+                        <option value="500000000-1000000000">Rp 500 Jt – Rp 1 M</option>
+                        <option value="1000000000-2000000000">Rp 1 M – Rp 2 M</option>
+                        <option value="2000000000-5000000000">Rp 2 M – Rp 5 M</option>
+                        <option value="5000000000-999999999999">Di atas Rp 5 M</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                </div>
+
+                <!-- Filter Kategori + Tombol Reset -->
+                <div class="flex gap-3">
+                    <div class="relative flex-1">
+                        <i class="fas fa-layer-group absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <select id="filterKategori" onchange="applyFilters()"
+                            class="w-full appearance-none bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl pl-10 pr-8 py-2.5 text-[13px] focus:outline-none focus:border-primary shadow-sm font-semibold cursor-pointer transition-colors">
+                            <option value="">Semua Kategori</option>
+                            <option value="Rumah">Rumah</option>
+                            <option value="Apartemen">Apartemen</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                    </div>
+                    <button onclick="resetFilters()" title="Reset semua filter"
+                        class="shrink-0 w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-primary hover:text-white hover:border-primary transition flex justify-center items-center shadow-sm">
+                        <i class="fas fa-rotate-right text-sm"></i>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Tag filter aktif -->
+            <div id="activeFilterTags" class="flex flex-wrap gap-2 mt-3 hidden"></div>
+        </div>
+
+        <!-- Grid Properti -->
         <div id="propertyGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-16"><i class="fas fa-spinner fa-spin text-3xl text-primary mb-3"></i> Menyinkronkan Katalog...</div>
+            <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-16">
+                <i class="fas fa-spinner fa-spin text-3xl text-primary mb-3"></i>
+                <p class="text-slate-400 font-semibold mt-3">Menyinkronkan Katalog...</p>
+            </div>
         </div>
     </main>
 
+    <!-- ======== MODAL DETAIL ======== -->
     <div id="detailModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 opacity-100 transition-opacity">
         <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden transform scale-100 transition-transform flex flex-col max-h-[90vh] border border-slate-200 dark:border-slate-700">
             <div class="px-8 pt-8 pb-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-start">
@@ -131,7 +266,8 @@
                 </div>
 
                 <div class="mt-4">
-                    <a id="linkWA" href="#" target="_blank" class="w-full flex justify-center items-center gap-2 bg-[#25D366] hover:bg-[#1da851] text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg shadow-green-500/30">
+                    <a id="linkWA" href="#" target="_blank"
+                        class="w-full flex justify-center items-center gap-2 bg-[#25D366] hover:bg-[#1da851] text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg shadow-green-500/30">
                         <i class="fab fa-whatsapp text-xl"></i> Hubungi Agen untuk Membeli
                     </a>
                 </div>
@@ -140,131 +276,67 @@
     </div>
 
     <script>
-        // 0. SATPAM LOGIN KHUSUS USER
+        // ======== GUARD LOGIN (USER) ========
         if (sessionStorage.getItem('isLoggedIn') !== 'true') {
             window.location.href = 'login.html';
         } else if (sessionStorage.getItem('role') !== 'USER') {
-            window.location.href = 'dashboard.html'; // Jika ADMIN, tendang ke dashboard
+            window.location.href = 'dashboard.html';
         } else {
-            const usernameAktif = sessionStorage.getItem('username');
-            if(document.getElementById('namaUserNavbar')) {
-                document.getElementById('namaUserNavbar').innerText = usernameAktif;
-            }
+            const usernameAktif = sessionStorage.getItem('username') || 'A';
             document.getElementById('userAvatar').innerText = usernameAktif.charAt(0).toUpperCase();
         }
 
-        const API_URL = 'http://localhost:8080/api/properti';
+        const currentUsername = sessionStorage.getItem('username') || 'A';
+        const API_URL      = 'http://localhost:8080/api/properti';
         const API_USER_URL = 'http://localhost:8080/api/users';
-        
-        const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-        
-        let globalDataProperti = [];
 
-        // 1. FETCH DATA (USER AGEN & PROPERTI)
+        const formatRupiah = (angka) =>
+            new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+
+        let globalDataProperti = []; // semua properti tersedia dari API
+        let filteredData       = []; // hasil filter aktif
+
+        // ======== LOAD AVATAR NAVBAR ========
+        async function muatAvatarNavbar() {
+            try {
+                const res   = await fetch(API_USER_URL);
+                const users = await res.json();
+                const me    = users.find(u => u.username === currentUsername);
+                if (me) {
+                    const namaTampil = me.namaLengkap || currentUsername;
+                    const inisial    = namaTampil.charAt(0).toUpperCase();
+                    let htmlAvatar   = inisial;
+                    if (me.fotoProfil && me.fotoProfil !== 'default_profil.png' && me.fotoProfil !== 'null') {
+                        const urlFoto = `http://localhost:8080/uploads/profil/${encodeURIComponent(me.fotoProfil)}`;
+                        htmlAvatar = `<img src="${urlFoto}" alt="Profil" class="w-full h-full object-cover">`;
+                    }
+                    document.getElementById('userAvatar').innerHTML = htmlAvatar;
+                }
+            } catch (err) { console.error(err); }
+        }
+        muatAvatarNavbar();
+
+        // ======== FETCH DATA PROPERTI ========
         async function fetchProperti() {
             const gridBody = document.getElementById('propertyGrid');
             try {
-                // Tarik data Agen terlebih dahulu untuk mencocokkan foto dan WA
-                const resUsers = await fetch(API_USER_URL);
-                const usersData = await resUsers.json();
-                
-                // Tarik data Properti
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                
-                // Filter hanya data yang TERSEDIA (belum terjual)
-                globalDataProperti = data.filter(item => !item.terjual); 
-                gridBody.innerHTML = ''; 
+                const [resUsers, resProperti] = await Promise.all([
+                    fetch(API_USER_URL),
+                    fetch(API_URL)
+                ]);
+                const usersData   = await resUsers.json();
+                const propertiRaw = await resProperti.json();
 
-                if (globalDataProperti.length === 0) {
-                    gridBody.innerHTML = `<div class="col-span-1 md:col-span-3 text-center py-16 text-slate-500 font-semibold bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700">Maaf, saat ini belum ada unit properti yang tersedia.</div>`;
-                    return;
-                }
+                // Simpan data agen di dalam setiap properti untuk filter & render
+                globalDataProperti = propertiRaw
+                    .filter(item => !item.terjual)
+                    .map(item => ({
+                        ...item,
+                        _agen: usersData.find(u => u.username === item.usernameAgen) || {}
+                    }));
 
-                globalDataProperti.forEach(item => {
-                    // Cari data agen berdasarkan username_agen
-                    const agenData = usersData.find(u => u.username === item.usernameAgen) || {};
-                    
-                    // DATA ASLI DARI DATABASE (TIDAK DUMMY LAGI)
-                    const kt = item.kt || '-';
-                    const km = item.km || '-';
-                    const lt = item.luasTanah || '-';
-                    const lantai = item.lantai || '-';
-                    const tipeRumah = item.tipeRumah || '-';
-                    
-                    const hargaFormatRp = formatRupiah(item.harga);
-                    
-                    // SETTING URL FOTO RUMAH
-                    const urlFotoRumah = (item.fotoProperti && item.fotoProperti !== "default_house.jpg")
-                        ? `http://localhost:8080/uploads/properti/${item.fotoProperti}` 
-                        : `https://via.placeholder.com/640x360?text=Properti+Admaja+Majesti`;
-
-                    // SETTING DATA AGEN ASLI
-                    const namaAgen = agenData.namaLengkap || item.usernameAgen || 'Admin Pusat';
-                    const noWaAgen = agenData.noWa || '6281234567890';
-                    const fotoAgen = (agenData.fotoProfil && agenData.fotoProfil !== "default_profil.png" && agenData.fotoProfil !== "null")
-                        ? `<img src="http://localhost:8080/uploads/profil/${encodeURIComponent(agenData.fotoProfil)}" class="w-full h-full object-cover">`
-                        : `<i class="fas fa-user-tie"></i>`;
-                    
-                    const pesanWa = encodeURIComponent(`Halo Agen ${namaAgen}, saya tertarik dengan properti Kode: *${item.kode}* (${item.nama}) seharga ${hargaFormatRp}. Apakah masih tersedia?`);
-                    const linkWhatsApp = `https://wa.me/${noWaAgen}?text=${pesanWa}`;
-
-                    // Tampilan Spesifikasi Bawah Tergantung Kategori
-                    let spekBawah = '';
-                    if(item.jenisProperti === 'Apartemen') {
-                        spekBawah = `
-                            <div class="flex items-center gap-1.5"><i class="fas fa-building text-slate-300"></i> Lantai: ${lantai}</div>
-                            <div class="flex items-center gap-1.5"><i class="fas fa-bed text-slate-300"></i> KT: ${kt}</div>
-                            <div class="flex items-center gap-1.5"><i class="fas fa-bath text-slate-300"></i> KM: ${km}</div>
-                        `;
-                    } else {
-                        spekBawah = `
-                            <div class="flex items-center gap-1.5"><i class="fas fa-expand text-slate-300"></i> LT: ${lt}m²</div>
-                            <div class="flex items-center gap-1.5"><i class="fas fa-bed text-slate-300"></i> KT: ${kt}</div>
-                            <div class="flex items-center gap-1.5"><i class="fas fa-bath text-slate-300"></i> KM: ${km}</div>
-                            <div class="flex items-center gap-1.5"><i class="fas fa-home text-slate-300"></i> Tipe: ${tipeRumah}</div>
-                        `;
-                    }
-
-                    // RACIK KARTU PROPERTI
-                    const card = `
-                        <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden transform hover:-translate-y-1 transition duration-300">
-                            <div class="relative">
-                                <img src="${urlFotoRumah}" alt="${item.nama}" class="w-full h-48 object-cover">
-                                <span class="absolute top-3 left-3 bg-yellow-400 text-slate-900 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide shadow-md">Tersedia</span>
-                            </div>
-                            
-                            <div class="p-6">
-                                <h4 class="font-mono text-[17px] font-bold text-slate-900 dark:text-white mb-1">${hargaFormatRp}</h4>
-                                <p class="text-[15px] font-bold text-slate-800 dark:text-slate-200 mb-1.5 cursor-pointer hover:text-primary transition-colors" onclick="lihatDetail('${item.kode}', '${noWaAgen}', '${namaAgen}')">${item.nama}</p>
-                                <span class="text-xs font-bold px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-md text-slate-500 dark:text-slate-300 uppercase tracking-wide mb-3 inline-block">${item.jenisProperti}</span>
-                                
-                                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-1.5 line-clamp-1"><i class="fas fa-map-marker-alt text-slate-300 dark:text-slate-600"></i> ${item.lokasi}</p>
-                                
-                                <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
-                                    ${spekBawah}
-                                </div>
-                            </div>
-                            
-                            <div class="p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex justify-between items-center gap-3">
-                                <div class="flex items-center gap-2.5">
-                                    <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex justify-center items-center text-slate-500 dark:text-slate-400 font-bold overflow-hidden shadow-sm border border-slate-200 dark:border-slate-600">
-                                        ${fotoAgen}
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-bold text-slate-800 dark:text-slate-200">${namaAgen}</p>
-                                        <p class="text-[10px] text-slate-500 font-medium uppercase">Official Agent</p>
-                                    </div>
-                                </div>
-                                
-                                <a href="${linkWhatsApp}" target="_blank" class="w-8 h-8 shrink-0 rounded-full bg-[#25D366] text-white hover:bg-[#1da851] transition flex justify-center items-center shadow-md shadow-green-500/30">
-                                    <i class="fab fa-whatsapp text-lg"></i>
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                    gridBody.insertAdjacentHTML('beforeend', card);
-                });
+                filteredData = [...globalDataProperti];
+                renderGrid(filteredData);
 
             } catch (error) {
                 console.error('Error:', error);
@@ -272,70 +344,207 @@
             }
         }
 
-        // 2. MODAL CONTROLS
+        // ======== RENDER KARTU ========
+        function renderGrid(data) {
+            const gridBody = document.getElementById('propertyGrid');
+            document.getElementById('jumlahHasil').innerText =
+                data.length === 0 ? 'Tidak ada properti ditemukan' : `${data.length} properti ditemukan`;
+
+            gridBody.innerHTML = '';
+            if (data.length === 0) {
+                gridBody.innerHTML = `
+                    <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-16 text-slate-400 border border-dashed border-slate-200 dark:border-slate-700 rounded-3xl bg-white dark:bg-slate-800">
+                        <i class="fas fa-search text-4xl mb-3 opacity-30"></i>
+                        <p class="font-bold text-slate-500 dark:text-slate-400 mt-2">Properti tidak ditemukan</p>
+                        <p class="text-xs mt-1">Coba ubah atau reset filter pencarian Anda.</p>
+                    </div>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const agenData    = item._agen;
+                const kt          = item.kt         || '-';
+                const km          = item.km         || '-';
+                const lt          = item.luasTanah  || '-';
+                const lantai      = item.lantai     || '-';
+                const tipeRumah   = item.tipeRumah  || '-';
+                const hargaFormatRp = formatRupiah(item.harga);
+
+                const urlFotoRumah = (item.fotoProperti && item.fotoProperti !== 'default_house.jpg')
+                    ? `http://localhost:8080/uploads/properti/${item.fotoProperti}`
+                    : `https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=600&auto=format&fit=crop`;
+
+                const namaAgen  = agenData.namaLengkap || item.usernameAgen || 'Admin Pusat';
+                const noWaAgen  = agenData.noWa        || '6281234567890';
+                const fotoAgen  = (agenData.fotoProfil && agenData.fotoProfil !== 'default_profil.png' && agenData.fotoProfil !== 'null')
+                    ? `<img src="http://localhost:8080/uploads/profil/${encodeURIComponent(agenData.fotoProfil)}" class="w-full h-full object-cover">`
+                    : `<i class="fas fa-user-tie"></i>`;
+
+                const pesanWa       = encodeURIComponent(`Halo Agen ${namaAgen}, saya tertarik dengan properti Kode: *${item.kode}* (${item.nama}) seharga ${hargaFormatRp}. Apakah masih tersedia?`);
+                const linkWhatsApp  = `https://wa.me/${noWaAgen}?text=${pesanWa}`;
+
+                let spekBawah = '';
+                if (item.jenisProperti === 'Apartemen') {
+                    spekBawah = `
+                        <div class="flex items-center gap-1.5"><i class="fas fa-building text-slate-300"></i> Lantai: ${lantai}</div>
+                        <div class="flex items-center gap-1.5"><i class="fas fa-bed text-slate-300"></i> KT: ${kt}</div>
+                        <div class="flex items-center gap-1.5"><i class="fas fa-bath text-slate-300"></i> KM: ${km}</div>`;
+                } else {
+                    spekBawah = `
+                        <div class="flex items-center gap-1.5"><i class="fas fa-expand text-slate-300"></i> LT: ${lt}m²</div>
+                        <div class="flex items-center gap-1.5"><i class="fas fa-bed text-slate-300"></i> KT: ${kt}</div>
+                        <div class="flex items-center gap-1.5"><i class="fas fa-bath text-slate-300"></i> KM: ${km}</div>
+                        <div class="flex items-center gap-1.5"><i class="fas fa-home text-slate-300"></i> Tipe: ${tipeRumah}</div>`;
+                }
+
+                const card = `
+                    <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden transform hover:-translate-y-1 transition duration-300">
+                        <div class="relative">
+                            <img src="${urlFotoRumah}" alt="${item.nama}" class="w-full h-48 object-cover">
+                            <span class="absolute top-3 left-3 bg-yellow-400 text-slate-900 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide shadow-md">Tersedia</span>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="font-mono text-[17px] font-bold text-slate-900 dark:text-white mb-1">${hargaFormatRp}</h4>
+                            <p class="text-[15px] font-bold text-slate-800 dark:text-slate-200 mb-1.5 cursor-pointer hover:text-primary transition-colors line-clamp-1"
+                                onclick="lihatDetail('${item.kode}', '${noWaAgen}', '${namaAgen}')">${item.nama}</p>
+                            <span class="text-xs font-bold px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-md text-slate-500 dark:text-slate-300 uppercase tracking-wide mb-3 inline-block">${item.jenisProperti}</span>
+                            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-1.5 line-clamp-1">
+                                <i class="fas fa-map-marker-alt text-slate-300 dark:text-slate-600"></i> ${item.lokasi}
+                            </p>
+                            <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                ${spekBawah}
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex justify-between items-center gap-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex justify-center items-center text-slate-500 dark:text-slate-400 font-bold overflow-hidden shadow-sm border border-slate-200 dark:border-slate-600">
+                                    ${fotoAgen}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-slate-800 dark:text-slate-200 line-clamp-1">${namaAgen}</p>
+                                    <p class="text-[10px] text-slate-500 font-medium uppercase">Official Agent</p>
+                                </div>
+                            </div>
+                            <a href="${linkWhatsApp}" target="_blank"
+                                class="w-8 h-8 shrink-0 rounded-full bg-[#25D366] text-white hover:bg-[#1da851] transition flex justify-center items-center shadow-md shadow-green-500/30">
+                                <i class="fab fa-whatsapp text-lg"></i>
+                            </a>
+                        </div>
+                    </div>`;
+                gridBody.insertAdjacentHTML('beforeend', card);
+            });
+        }
+
+        // ======== APPLY FILTER ========
+        function applyFilters() {
+            const query    = document.getElementById('searchNama').value.trim().toLowerCase();
+            const kota     = document.getElementById('filterKota').value;
+            const hargaVal = document.getElementById('filterHarga').value;
+            const kategori = document.getElementById('filterKategori').value;
+
+            let minH = 0, maxH = Infinity;
+            if (hargaVal) {
+                const parts = hargaVal.split('-');
+                minH = parseInt(parts[0]);
+                maxH = parseInt(parts[1]);
+            }
+
+            filteredData = globalDataProperti.filter(p => {
+                const matchNama  = query === '' || p.nama.toLowerCase().includes(query) || p.kode.toLowerCase().includes(query);
+                const matchKota  = kota === ''  || (p.lokasi && p.lokasi.toLowerCase().includes(kota.toLowerCase()));
+                const matchHarga = p.harga >= minH && p.harga <= maxH;
+                const matchKat   = kategori === '' || p.jenisProperti === kategori;
+                return matchNama && matchKota && matchHarga && matchKat;
+            });
+
+            renderGrid(filteredData);
+            renderFilterTags(query, kota, hargaVal, kategori);
+        }
+
+        // ======== TAG FILTER AKTIF ========
+        function renderFilterTags(query, kota, hargaVal, kategori) {
+            const container = document.getElementById('activeFilterTags');
+            container.innerHTML = '';
+            let tags = [];
+            if (query)    tags.push({ label: `Nama: "${query}"`,   clear: () => { document.getElementById('searchNama').value = ''; applyFilters(); } });
+            if (kota)     tags.push({ label: `Kota: ${kota}`,       clear: () => { document.getElementById('filterKota').value = ''; applyFilters(); } });
+            if (hargaVal) {
+                const hargaLabel = document.getElementById('filterHarga').options[document.getElementById('filterHarga').selectedIndex].text;
+                tags.push({ label: `Harga: ${hargaLabel}`, clear: () => { document.getElementById('filterHarga').value = ''; applyFilters(); } });
+            }
+            if (kategori) tags.push({ label: `Kategori: ${kategori}`, clear: () => { document.getElementById('filterKategori').value = ''; applyFilters(); } });
+
+            if (tags.length > 0) {
+                container.classList.remove('hidden');
+                tags.forEach(tag => {
+                    const el = document.createElement('button');
+                    el.className = 'flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full hover:bg-primary/20 transition';
+                    el.innerHTML = `${tag.label} <i class="fas fa-times text-[10px]"></i>`;
+                    el.onclick = tag.clear;
+                    container.appendChild(el);
+                });
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        // ======== RESET FILTER ========
+        function resetFilters() {
+            document.getElementById('searchNama').value     = '';
+            document.getElementById('filterKota').value     = '';
+            document.getElementById('filterHarga').value    = '';
+            document.getElementById('filterKategori').value = '';
+            applyFilters();
+        }
+
+        // ======== MODAL ========
         function closeModal(modalId) {
             document.getElementById(modalId).classList.add('hidden');
         }
 
-        // 3. DETAIL VIEW (DENGAN DATA ASLI)
         function lihatDetail(kode, noWaAgen, namaAgen) {
             const item = globalDataProperti.find(p => p.kode === kode);
             if (!item) return;
 
-            document.getElementById('dKode').innerText = item.kode;
-            document.getElementById('dNama').innerText = item.nama;
-            document.getElementById('dLokasi').innerText = item.lokasi;
+            document.getElementById('dKode').innerText    = item.kode;
+            document.getElementById('dNama').innerText    = item.nama;
+            document.getElementById('dLokasi').innerText  = item.lokasi;
             const hargaFormatRp = formatRupiah(item.harga);
-            document.getElementById('dHarga').innerText = hargaFormatRp;
+            document.getElementById('dHarga').innerText    = hargaFormatRp;
             document.getElementById('dKategori').innerText = item.jenisProperti;
+            document.getElementById('dKt').innerText       = item.kt || '-';
+            document.getElementById('dKm').innerText       = item.km || '-';
 
-            // Masukkan data asli ke Modal
-            document.getElementById('dKt').innerText = item.kt || '-';
-            document.getElementById('dKm').innerText = item.km || '-';
+            ['boxTipeRumah','boxLuasTanah','boxLantai','boxKt','boxKm'].forEach(id =>
+                document.getElementById(id).classList.add('hidden'));
 
-            document.getElementById('boxTipeRumah').classList.add('hidden');
-            document.getElementById('boxLuasTanah').classList.add('hidden');
-            document.getElementById('boxLantai').classList.add('hidden');
-            document.getElementById('boxKt').classList.add('hidden');
-            document.getElementById('boxKm').classList.add('hidden');
-
-            // Logika Tampilan Spesifikasi Modal
-            if(item.kt || item.km) {
+            if (item.kt || item.km) {
                 document.getElementById('boxKt').classList.remove('hidden');
                 document.getElementById('boxKm').classList.remove('hidden');
             }
-
             if (item.jenisProperti === 'Rumah') {
                 document.getElementById('boxTipeRumah').classList.remove('hidden');
                 document.getElementById('boxLuasTanah').classList.remove('hidden');
-                document.getElementById('dTipeRumah').innerText = item.tipeRumah || '-';
-                document.getElementById('dLuasTanah').innerText = item.luasTanah ? item.luasTanah + ' m²' : '-';
+                document.getElementById('dTipeRumah').innerText = item.tipeRumah  || '-';
+                document.getElementById('dLuasTanah').innerText = item.luasTanah  ? item.luasTanah + ' m²' : '-';
             } else if (item.jenisProperti === 'Apartemen') {
                 document.getElementById('boxLantai').classList.remove('hidden');
                 document.getElementById('dLantai').innerText = item.lantai || '-';
             }
 
-            // Atur Link WhatsApp Otomatis ke Agen yang Sesuai
             const pesanWA = `Halo Agen ${namaAgen}, saya tertarik dengan Kode: *${item.kode}* (${item.nama}) seharga ${hargaFormatRp}. Apakah masih tersedia?`;
             document.getElementById('linkWA').href = `https://wa.me/${noWaAgen}?text=${encodeURIComponent(pesanWA)}`;
-
             document.getElementById('detailModal').classList.remove('hidden');
         }
 
-        // 4. LOGOUT
+        // ======== LOGOUT ========
         function prosesLogout() {
             Swal.fire({
-                title: 'Yakin ingin keluar?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#94a3b8',
+                title: 'Yakin ingin keluar?', text: 'Sesi kerja Anda akan diakhiri.', icon: 'question',
+                showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#94a3b8',
                 confirmButtonText: 'Ya, Keluar!'
             }).then((result) => {
-                if (result.isConfirmed) {
-                    sessionStorage.clear();
-                    window.location.href = 'login.html';
-                }
+                if (result.isConfirmed) { sessionStorage.clear(); window.location.href = 'login.html'; }
             });
         }
 
