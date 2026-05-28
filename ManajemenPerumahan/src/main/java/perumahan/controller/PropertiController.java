@@ -2,7 +2,6 @@ package perumahan.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,8 +17,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-// 1. UBAH JADI @Controller AGAR BISA MEMBUKA HALAMAN HTML
-@Controller 
+// 1. Murni menjadi penyedia data API (JSON)
+@RestController 
 @CrossOrigin(origins = "*")
 public class PropertiController {
 
@@ -29,39 +28,14 @@ public class PropertiController {
     @Autowired
     private TransaksiRepository transaksiRepository;
 
-    // ==========================================
-    // RUTE BARU: UNTUK MENAMPILKAN HALAMAN WEB
-    // ==========================================
-
-    @GetMapping("/")
-    public String landingPage() {
-        // Langsung tembak ke file landing-page.html di folder static
-        return "forward:/index.html"; 
-    }
-
-    @GetMapping("/login")
-    public String halamanLogin() {
-        return "forward:/login.html";
-    }
-
-    @GetMapping("/admin")
-    public String halamanAdminDashboard() {
-        return "forward:/dashboard.html"; 
-    }
-
-    // ==========================================
-    // RUTE LAMA: DATA API (DITAMBAH @ResponseBody & /api/properti)
-    // ==========================================
-
+    // FITUR AMBIL SEMUA DATA PROPERTI
     @GetMapping("/api/properti")
-    @ResponseBody
     public List<Properti> getAllProperti() {
         return propertiRepository.findAll();
     }
 
     // FITUR TAMBAH PROPERTI
     @PostMapping("/api/properti/tambah")
-    @ResponseBody
     public ResponseEntity<String> tambahProperti(
             @RequestParam("foto") MultipartFile file,
             @RequestParam("kode") String kode,
@@ -111,7 +85,6 @@ public class PropertiController {
 
     // FITUR BELI PROPERTI
     @PostMapping("/api/properti/{kode}/beli")
-    @ResponseBody
     public String beliProperti(@PathVariable String kode, @RequestBody PembeliDTO pembeli) {
 
         Optional<Properti> propertiOpt = propertiRepository.findById(kode);
@@ -144,13 +117,13 @@ public class PropertiController {
 
     // FITUR EDIT PROPERTI
     @PutMapping("/api/properti/{kode}/edit")
-    @ResponseBody
     public String editProperti(
             @PathVariable String kode,
             @RequestParam("nama") String nama,
             @RequestParam("harga") Double harga,
             @RequestParam("lokasi") String lokasi,
             @RequestParam("tipe") String tipe,
+            @RequestParam("usernameAgen") String usernameAgen,
             @RequestParam(value = "tipeRumah", required = false) String tipeRumah,
             @RequestParam(value = "luasTanah", required = false) Integer luasTanah,
             @RequestParam(value = "lantai", required = false) Integer lantai,
@@ -170,6 +143,7 @@ public class PropertiController {
         p.setHarga(harga);
         p.setLokasi(lokasi);
         p.setKategori(tipe);
+        p.setUsernameAgen(usernameAgen);
         p.setKt(kt);
         p.setKm(km);
 
@@ -208,7 +182,6 @@ public class PropertiController {
 
     // FITUR DELETE (HAPUS) PROPERTI
     @DeleteMapping("/api/properti/{kode}/hapus")
-    @ResponseBody
     public String hapusProperti(@PathVariable String kode) {
         Optional<Properti> propertiOpt = propertiRepository.findById(kode);
 
@@ -222,12 +195,5 @@ public class PropertiController {
 
         propertiRepository.deleteById(kode);
         return "Sukses: Properti " + kode + " berhasil dihapus secara permanen!";
-    }
-
-    // FITUR MENAMPILKAN SEMUA RIWAYAT TRANSAKSI
-    @GetMapping("/api/properti/transaksi/semua")
-    @ResponseBody
-    public List<Transaksi> ambilSemuaTransaksi() {
-        return transaksiRepository.findAll();
     }
 }
