@@ -2,817 +2,1930 @@
 <html lang="id">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Perumahan Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
-                    colors: { 
-                        primary: 'var(--color-primary, #6d28d9)', 
-                        secondary: 'var(--color-secondary, #4c1d95)'
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — AdmajaMajesti</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
-        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
-        const savedColor = localStorage.getItem('themeColor');
-        const savedLight = localStorage.getItem('themeColorLight');
-        if(savedColor) {
-            document.documentElement.style.setProperty('--color-primary', savedColor);
-            document.documentElement.style.setProperty('--color-secondary', savedLight);
-        }
-    </script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    <style>
-        body { transition: background-color 0.3s, color 0.3s; }
-        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
-        .dark .glass-nav { background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        
-        /* Custom Styling Tabel & Dark Mode */
-        .laporan-table th { padding: 16px 12px; font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1.5px solid #f1f5f9; }
-        .laporan-table td { padding: 16px 12px; font-size: 13px; color: #1e293b; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-        .laporan-table tr:last-child td { border-bottom: none; }
-        .laporan-table tr:hover { background-color: #fafbfd; }
-        
-        .dark .laporan-table th { border-bottom-color: #1e293b; }
-        .dark .laporan-table td { border-bottom-color: #1e293b; color: #e2e8f0; }
-        .dark .laporan-table tr:hover { background-color: #0f172a; }
-    </style>
+    :root {
+      --bg-deep: #0a0a12;
+      --bg-mid: #10101e;
+      --bg-section: #0d0d1a;
+      --bg-alt: #0c0c18;
+      --accent: #8b5cf6;
+      --accent-glow: #a78bfa;
+      --accent-dim: rgba(139, 92, 246, 0.18);
+      --gold: #d4a853;
+      --gold-light: #f0c775;
+      --card-bg: rgba(16, 16, 30, 0.85);
+      --card-solid: #12121f;
+      --border: rgba(139, 92, 246, 0.22);
+      --border-gold: rgba(212, 168, 83, 0.25);
+      --text-main: #f1f0ff;
+      --text-sub: #8b8aaa;
+      --text-label: #6b6a8a;
+      --success: #34d399;
+      --danger: #f87171;
+      --warning: #fbbf24;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-main);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ── Ambient Background ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+      animation: orbFloat linear infinite;
+    }
+
+    .orb-1 {
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, rgba(109, 40, 217, 0.2) 0%, transparent 70%);
+      top: -180px;
+      left: -140px;
+      animation-duration: 24s;
+    }
+
+    .orb-2 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, transparent 70%);
+      bottom: 10%;
+      right: -120px;
+      animation-duration: 30s;
+      animation-direction: reverse;
+    }
+
+    .orb-3 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(212, 168, 83, 0.08) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      animation-duration: 20s;
+    }
+
+    @keyframes orbFloat {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -25px) scale(1.04);
+      }
+
+      66% {
+        transform: translate(-20px, 20px) scale(0.97);
+      }
+    }
+
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(139, 92, 246, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(139, 92, 246, 0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 40%, black 20%, transparent 100%);
+    }
+
+    .particles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      animation: particleDrift linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes particleDrift {
+      0% {
+        transform: translateY(100vh) translateX(0) scale(0);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: translateY(-20px) translateX(var(--drift)) scale(1);
+        opacity: 0;
+      }
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(10, 10, 18, 0.85);
+      backdrop-filter: blur(28px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+      animation: navReveal 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes navReveal {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #d946ef 100%);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .nav-logo-icon::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+      animation: logoShine 4s ease infinite;
+    }
+
+    @keyframes logoShine {
+
+      0%,
+      60%,
+      100% {
+        left: -100%;
+      }
+
+      30% {
+        left: 120%;
+      }
+    }
+
+    .nav-brand-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1;
+    }
+
+    .nav-brand-name span {
+      color: var(--accent-glow);
+    }
+
+    .nav-brand-sub {
+      font-size: 7.5px;
+      font-weight: 600;
+      color: var(--text-label);
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sub);
+      text-decoration: none;
+      transition: color 0.2s;
+      position: relative;
+      padding: 4px 0;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--accent-glow);
+      transform: scaleX(0);
+      transition: transform 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-main);
+    }
+
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+
+    .nav-links a.active {
+      color: var(--accent-glow);
+      font-weight: 600;
+    }
+
+    .nav-links a.active::after {
+      transform: scaleX(1);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-nav-add {
+      padding: 9px 20px;
+      background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(109, 40, 217, 0.4);
+      transition: transform 0.18s, box-shadow 0.18s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-nav-add::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: left 0.4s ease;
+    }
+
+    .btn-nav-add:hover::before {
+      left: 130%;
+    }
+
+    .btn-nav-add:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(109, 40, 217, 0.5);
+    }
+
+    .btn-logout {
+      padding: 8px 14px;
+      background: rgba(248, 113, 113, 0.1);
+      color: var(--danger);
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid rgba(248, 113, 113, 0.2);
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-logout:hover {
+      background: rgba(248, 113, 113, 0.2);
+      border-color: rgba(248, 113, 113, 0.4);
+    }
+
+    .nav-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s;
+      overflow: hidden;
+    }
+
+    .nav-avatar:hover {
+      border-color: var(--accent-glow);
+      transform: scale(1.05);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      position: relative;
+      z-index: 10;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 100px 2rem 4rem;
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 2.5rem;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      animation: slideUp 700ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .page-greeting {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 3vw, 40px);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .page-greeting .name {
+      color: var(--accent-glow);
+      font-style: italic;
+    }
+
+    .page-sub {
+      font-size: 14px;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+
+    .btn-transaksi {
+      padding: 12px 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.22s;
+      white-space: nowrap;
+      backdrop-filter: blur(16px);
+    }
+
+    .btn-transaksi:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      transform: translateY(-2px);
+    }
+
+    /* ── STAT CARDS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s, box-shadow 0.3s;
+      animation: cardReveal 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(167, 139, 250, 0.4), transparent);
+    }
+
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(139, 92, 246, 0.45);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(109, 40, 217, 0.12);
+    }
+
+    .stat-card.d-1 {
+      animation-delay: 0.1s;
+    }
+
+    .stat-card.d-2 {
+      animation-delay: 0.2s;
+    }
+
+    .stat-card.d-3 {
+      animation-delay: 0.3s;
+    }
+
+    .stat-card.d-4 {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes cardReveal {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 1.25rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .icon-purple {
+      background: rgba(109, 40, 217, 0.25);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      color: var(--accent-glow);
+    }
+
+    .icon-gold {
+      background: rgba(212, 168, 83, 0.15);
+      border: 1px solid rgba(212, 168, 83, 0.3);
+      color: var(--gold-light);
+    }
+
+    .icon-green {
+      background: rgba(52, 211, 153, 0.15);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: #34d399;
+    }
+
+    .icon-blue {
+      background: rgba(96, 165, 250, 0.15);
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      color: #93c5fd;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-label);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-value.small {
+      font-size: 22px;
+    }
+
+    /* ── CONTENT CARD ── */
+    .content-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 2rem;
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+      animation: slideUp 700ms cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+    }
+
+    .content-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 15%;
+      right: 15%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(167, 139, 250, 0.3), transparent);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .card-sub {
+      font-size: 12px;
+      color: var(--text-label);
+      margin-top: 3px;
+    }
+
+    /* ── FILTERS ── */
+    .filters-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .search-wrap i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent-glow);
+      font-size: 13px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px 10px 38px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-main);
+      font-family: inherit;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .search-input::placeholder {
+      color: var(--text-label);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(139, 92, 246, 0.05);
+    }
+
+    .filter-select {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sub);
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b8aaa' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 16px;
+      padding-right: 32px;
+    }
+
+    .filter-select option {
+      background: var(--bg-mid);
+      color: var(--text-main);
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    thead th {
+      padding: 12px 14px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 15px 14px;
+      font-size: 13px;
+      color: var(--text-main);
+      border-bottom: 1px solid rgba(139, 92, 246, 0.08);
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr {
+      transition: background 0.18s;
+    }
+
+    tbody tr:hover {
+      background: rgba(139, 92, 246, 0.05);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .badge-kode {
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--accent-glow);
+      border: 1px solid var(--border);
+      font-family: monospace;
+      letter-spacing: 0.08em;
+    }
+
+    .badge-lunas {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+    }
+
+    .badge-tersedia {
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+
+    .badge-rumah {
+      background: rgba(251, 146, 60, 0.15);
+      color: #fb923c;
+      border: 1px solid rgba(251, 146, 60, 0.2);
+    }
+
+    .badge-apartemen {
+      background: rgba(96, 165, 250, 0.15);
+      color: #93c5fd;
+      border: 1px solid rgba(96, 165, 250, 0.2);
+    }
+
+    .prop-name {
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+
+    .prop-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent-glow);
+    }
+
+    .prop-location {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    .prop-location i {
+      color: #f87171;
+      margin-right: 4px;
+    }
+
+    .action-btns {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.18s;
+      background: none;
+    }
+
+    .btn-view {
+      background: rgba(96, 165, 250, 0.12);
+      color: #93c5fd;
+      border-color: rgba(96, 165, 250, 0.2);
+    }
+
+    .btn-edit {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--success);
+      border-color: rgba(52, 211, 153, 0.2);
+    }
+
+    .btn-delete {
+      background: rgba(248, 113, 113, 0.12);
+      color: var(--danger);
+      border-color: rgba(248, 113, 113, 0.2);
+    }
+
+    .btn-locked {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-label);
+      border-color: var(--border);
+      cursor: not-allowed;
+    }
+
+    .btn-view:hover {
+      background: rgba(96, 165, 250, 0.3);
+      transform: scale(1.08);
+    }
+
+    .btn-edit:hover {
+      background: rgba(52, 211, 153, 0.3);
+      transform: scale(1.08);
+    }
+
+    .btn-delete:hover {
+      background: rgba(248, 113, 113, 0.3);
+      transform: scale(1.08);
+    }
+
+    /* ── PAGINATION ── */
+    .pagination-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(139, 92, 246, 0.1);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .page-info {
+      font-size: 12px;
+      color: var(--text-label);
+    }
+
+    .page-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .page-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--accent-glow);
+    }
+
+    .page-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* ── MODALS ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 5, 14, 0.75);
+      backdrop-filter: blur(12px);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+      animation: modalFadeIn 300ms ease;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-box {
+      background: var(--bg-mid);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(109, 40, 217, 0.12);
+      animation: modalSlideUp 350ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes modalSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 20%;
+      right: 20%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(167, 139, 250, 0.5), transparent);
+    }
+
+    .modal-head {
+      padding: 2rem 2rem 1.25rem;
+      text-align: center;
+    }
+
+    .modal-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin: 0 auto 1.25rem;
+    }
+
+    .modal-icon-purple {
+      background: rgba(109, 40, 217, 0.25);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      color: var(--accent-glow);
+    }
+
+    .modal-icon-teal {
+      background: rgba(20, 184, 166, 0.2);
+      border: 1px solid rgba(45, 212, 191, 0.3);
+      color: #5eead4;
+    }
+
+    .modal-icon-dark {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+    }
+
+    .modal-icon-blue {
+      background: rgba(96, 165, 250, 0.15);
+      border: 1px solid rgba(96, 165, 250, 0.25);
+      color: #93c5fd;
+    }
+
+    .modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .modal-sub {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+
+    .modal-body {
+      padding: 0 2rem 2rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 1.25rem;
+    }
+
+    .form-full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-label);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-main);
+      font-family: inherit;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(139, 92, 246, 0.06);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-label);
+    }
+
+    .form-input:read-only {
+      color: var(--text-label);
+      cursor: not-allowed;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    select.form-input {
+      cursor: pointer;
+    }
+
+    select.form-input option {
+      background: var(--bg-mid);
+    }
+
+    input[type="file"].form-input {
+      padding: 12px 14px;
+      border-style: dashed;
+      cursor: pointer;
+    }
+
+    .form-btns {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 13px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text-sub);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-submit {
+      flex: 2;
+      padding: 13px;
+      background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(109, 40, 217, 0.4);
+      transition: transform 0.18s, box-shadow 0.18s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 28px rgba(109, 40, 217, 0.5);
+    }
+
+    .btn-submit.teal {
+      background: linear-gradient(135deg, #0d9488, #14b8a6);
+      box-shadow: 0 6px 20px rgba(20, 184, 166, 0.35);
+    }
+
+    .btn-submit.dark {
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      box-shadow: 0 6px 20px rgba(30, 27, 75, 0.5);
+    }
+
+    /* detail modal info grid */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .detail-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(139, 92, 246, 0.1);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .detail-key {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 5px;
+    }
+
+    .detail-val {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .detail-full {
+      grid-column: 1 / -1;
+    }
+
+    .transaksi-section {
+      margin-top: 1.25rem;
+    }
+
+    .transaksi-head {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .transaksi-head::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(52, 211, 153, 0.2);
+    }
+
+    .transaksi-box {
+      background: rgba(52, 211, 153, 0.06);
+      border: 1px solid rgba(52, 211, 153, 0.15);
+      border-radius: 14px;
+      padding: 1rem;
+    }
+
+    /* ── SECTION TAG ── */
+    .section-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: 1px solid var(--border-gold);
+      background: rgba(212, 168, 83, 0.08);
+      border-radius: 100px;
+      padding: 4px 14px;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1200px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ── TOAST ── */
+    .toast-container {
+      position: fixed;
+      top: 90px;
+      right: 2rem;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: var(--bg-mid);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 260px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+      animation: toastIn 400ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .toast.success {
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .toast.success .toast-icon {
+      color: var(--success);
+    }
+
+    .toast.error {
+      border-color: rgba(248, 113, 113, 0.3);
+    }
+
+    .toast.error .toast-icon {
+      color: var(--danger);
+    }
+
+    select#tAgen {
+      cursor: pointer !important;
+      /* Memaksa kursor selalu jadi tangan menunjuk */
+    }
+
+    /* Opsional: Menghilangkan kursor dilarang saat mase hover di dalam daftarnya */
+    select#tAgen option:disabled {
+      cursor: default;
+    }
+
+    select#eAgen {
+      cursor: pointer !important;
+      /* Memaksa kursor selalu jadi tangan menunjuk */
+    }
+
+    /* Opsional: Menghilangkan kursor dilarang saat mase hover di dalam daftarnya */
+    select#eAgen option:disabled {
+      cursor: default;
+    }
+
+    select#tKategori {
+      cursor: pointer !important;
+      /* Memaksa kursor selalu jadi tangan menunjuk */
+    }
+
+    /* Opsional: Menghilangkan kursor dilarang saat mase hover di dalam daftarnya */
+    select#tKategori option:disabled {
+      cursor: default;
+    }
+
+    select#tLokasi {
+      cursor: pointer !important;
+      /* Memaksa kursor selalu jadi tangan menunjuk */
+    }
+
+    /* Opsional: Menghilangkan kursor dilarang saat mase hover di dalam daftarnya */
+    select#tLokasi option:disabled {
+      cursor: default;
+    }
+
+    select#eLokasi {
+      cursor: pointer !important;
+      /* Memaksa kursor selalu jadi tangan menunjuk */
+    }
+
+    /* Opsional: Menghilangkan kursor dilarang saat mase hover di dalam daftarnya */
+    select#eLokasi option:disabled {
+      cursor: default;
+    }
+
+    select#eTipe {
+      cursor: pointer !important;
+      /* Memaksa kursor selalu jadi tangan menunjuk */
+    }
+
+    /* Opsional: Menghilangkan kursor dilarang saat mase hover di dalam daftarnya */
+    select#eTipe option:disabled {
+      cursor: default;
+    }
+  </style>
 </head>
 
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans antialiased min-h-screen flex flex-col transition-colors duration-300">
+<body>
 
-    <nav class="glass-nav fixed w-full top-0 z-40 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20 relative">
-                <div class="flex items-center gap-4 z-10">
-                    <div class="w-10 h-10 rounded-full bg-primary flex justify-center items-center text-white shadow-lg">
-                        <i class="fas fa-building text-lg"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">Admaja<span class="text-primary">Majesti</span></h1>
-                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">PT. Admaja Properti Graha Majesti</p>
-                    </div>
-                </div>
-                <div class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-500 dark:text-slate-400 absolute left-1/2 transform -translate-x-1/2 w-max z-10">
-                    <a href="dashboard.html" class="text-primary border-b-2 border-primary py-2 transition-colors">Dashboard</a>
-                    <a href="riwayat-transaksi.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Riwayat Transaksi</a>
-                    <a href="laporan.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Laporan</a>
-                    <a href="manajemen-agen.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Manajemen Akun</a>
-                    <a href="setting.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Pengaturan</a>
-                </div>
+  <!-- Ambient BG -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid-overlay"></div>
+  <div class="particles" id="particles"></div>
+  <div class="toast-container" id="toastContainer"></div>
 
-                <div class="flex items-center gap-4 z-10">
-                    <button onclick="openModal('tambahModal')" class="bg-primary hover:opacity-90 text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-md flex items-center gap-2 transform hover:-translate-y-0.5">
-                        <i class="fas fa-plus"></i> Tambah Properti
-                    </button>
-                    <div id="userAvatar" onclick="window.location.href='setting.html'" title="Pengaturan Akun" class="w-10 h-10 rounded-full bg-primary hover:opacity-90 cursor-pointer transition flex justify-center items-center font-black text-white text-lg shadow-md overflow-hidden">
-                        A
-                    </div>
-                    <button onclick="prosesLogout()" class="bg-red-50 dark:bg-rose-500/10 hover:bg-red-100 dark:hover:bg-rose-500/20 text-red-600 font-bold py-2.5 px-4 rounded-xl transition text-sm flex items-center gap-2 border border-red-100 dark:border-rose-500/20" title="Keluar">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
-            </div>
+  <!-- ── NAV ── -->
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+            <path d="M6 20h12V4H6v16zm2-12h2v2H8V8zm4 0h2v2h-2V8zm-4 4h2v2H8v-2zm4 0h2v2h-2v-2zm-2 8h-2v-3h2v3z" />
+          </svg>
         </div>
-    </nav>
-
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
-        <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
-            <div>
-                <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">
-                    Halo, <span id="namaUserAktif" class="text-primary capitalize">Pengguna</span>! 👋
-                </h2>
-                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Kelola seluruh data perumahan dan apartemen Anda dari satu tempat.</p>
-            </div>
-            <button onclick="openModal('beliModal')" class="bg-slate-900 hover:bg-black dark:bg-slate-800 dark:hover:bg-slate-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-lg shadow-slate-900/20">
-                <i class="fas fa-shopping-cart text-xs"></i> Transaksi Baru
-            </button>
+        <div>
+          <div class="nav-brand-name">Admaja<span>Majesti</span></div>
+          <div class="nav-brand-sub">PT. Admaja Properti Graha Majesti</div>
         </div>
+      </a>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-5 transition-colors">
-                <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex justify-center items-center text-2xl"><i class="fas fa-list-ol"></i></div>
-                <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Properti</p>
-                    <h4 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-1" id="statTotal">0</h4>
-                </div>
-            </div>
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-5 transition-colors">
-                <div class="w-14 h-14 rounded-2xl bg-orange-50 dark:bg-orange-500/10 text-orange-500 dark:text-orange-400 flex justify-center items-center text-2xl"><i class="fas fa-door-open"></i></div>
-                <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tersedia</p>
-                    <h4 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-1" id="statTersedia">0</h4>
-                </div>
-            </div>
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-5 transition-colors">
-                <div class="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 flex justify-center items-center text-2xl"><i class="fas fa-handshake"></i></div>
-                <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Terjual (Lunas)</p>
-                    <h4 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-1" id="statTerjual">0</h4>
-                </div>
-            </div>
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-5 transition-colors">
-                <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-blue-500 dark:text-blue-400 flex justify-center items-center text-2xl"><i class="fas fa-wallet"></i></div>
-                <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Omset</p>
-                    <h4 class="text-xl font-extrabold text-slate-800 dark:text-white mt-1" id="statOmset">Rp0</h4>
-                </div>
-            </div>
+      <ul class="nav-links">
+        <li><a href="dashboard.html" class="active">Dashboard</a></li>
+        <li><a href="riwayat-transaksi.html">Riwayat Transaksi</a></li>
+        <li><a href="laporan.html">Laporan</a></li>
+        <li><a href="manajemen-agen.html">Manajemen Akun</a></li>
+        <li><a href="setting.html">Pengaturan</a></li>
+      </ul>
+
+      <div class="nav-right">
+        <button class="btn-nav-add" onclick="openModal('tambahModal')">
+          <i class="fas fa-plus" style="font-size:11px;"></i> Tambah Properti
+        </button>
+        <div class="nav-avatar" id="userAvatar" onclick="window.location.href='setting.html'" title="Pengaturan Akun">A
         </div>
+        <button class="btn-logout" onclick="prosesLogout()" title="Keluar">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
 
-        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8 transition-colors">
-            <div class="mb-6">
-                <h3 class="font-extrabold text-xl text-slate-800 dark:text-white">Daftar Aset Aktif</h3>
-                <p class="text-xs text-slate-400 font-medium mt-1" id="tabelSubInfo">Mensinkronkan data...</p>
-            </div>
+  <!-- ── MAIN ── -->
+  <main>
 
-            <div class="flex flex-col md:flex-row gap-3 mb-6">
-                <div class="relative flex-1">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-primary"></i>
-                    <input type="text" id="searchProp" oninput="applyFilters()" placeholder="Cari nama properti, pembeli, kode..." 
-                        class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-[13px] font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary transition-colors">
-                </div>
-                <div class="flex gap-3">
-                    <select id="filterStatus" onchange="applyFilters()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-[13px] font-medium text-slate-600 dark:text-slate-300 focus:outline-none focus:border-primary transition-colors cursor-pointer w-32 md:w-40">
-                        <option value="">Status</option>
-                        <option value="Lunas">Lunas</option>
-                        <option value="Tersedia">Tersedia</option>
-                    </select>
-                    <select id="filterKategori" onchange="applyFilters()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-[13px] font-medium text-slate-600 dark:text-slate-300 focus:outline-none focus:border-primary transition-colors cursor-pointer w-36 md:w-44">
-                        <option value="">Kategori</option>
-                        <option value="Apartemen">Apartemen</option>
-                        <option value="Rumah">Rumah</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto hide-scrollbar">
-                <table class="w-full text-left laporan-table">
-                    <thead>
-                        <tr>
-                            <th>Identitas</th>
-                            <th>Nama Properti</th>
-                            <th>Harga Prop.</th>
-                            <th>Info Lokasi</th>
-                            <th>Kategori</th>
-                            <th>Status</th>
-                            <th>Data Pembeli</th>
-                            <th>Nilai Transaksi</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="propertyTableBody">
-                        <tr><td colspan="9" class="text-center py-10 text-slate-400">Mensinkronkan data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
-                <div class="text-[13px] text-slate-400 font-medium" id="pageInfoText">Menampilkan 0-0 dari 0 properti</div>
-                <div class="flex items-center gap-1.5" id="paginationNumbers"></div>
-            </div>
-        </div>
-    </main>
-
-    <div id="tambahModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 opacity-100 transition-opacity">
-        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-xl overflow-hidden transform scale-100 transition-all max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
-            <div class="px-8 pt-8 pb-6 text-center">
-                <div class="w-16 h-16 bg-primary/10 text-primary rounded-full flex justify-center items-center mx-auto mb-4 text-2xl">
-                    <i class="fas fa-home"></i>
-                </div>
-                <h3 class="font-extrabold text-2xl text-slate-900 dark:text-white">Properti Baru</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Masukkan detail aset properti ke sistem.</p>
-            </div>
-            
-            <form id="formTambah" onsubmit="submitTambah(event)" class="px-8 pb-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Kode Properti</label>
-                        <input type="text" id="tKode" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Nama Properti</label>
-                        <input type="text" id="tNama" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Harga</label>
-                        <input type="number" id="tHarga" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Lokasi</label>
-                        <input type="text" id="tLokasi" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Kategori</label>
-                        <select id="tKategori" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all cursor-pointer">
-                            <option value="Rumah">Rumah</option>
-                            <option value="Apartemen">Apartemen</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Pilih Agen</label>
-                        <select id="tAgen" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all cursor-pointer">
-                            <option value="">-- Memuat data agen... --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Kamar Tidur (KT)</label>
-                        <input type="text" id="tKt" placeholder="Cth: 3+1" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Kamar Mandi (KM)</label>
-                        <input type="text" id="tKm" placeholder="Cth: 2+1" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
-                    </div>
-                    
-                    <div id="tambahKhususRumah" class="col-span-1 md:col-span-2 grid grid-cols-2 gap-5">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Tipe Rumah</label>
-                            <input type="text" id="tTipeRumah" placeholder="Cth: 36/72" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Luas Tanah (m²)</label>
-                            <input type="number" id="tLuasTanah" placeholder="M2" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
-                        </div>
-                    </div>
-                    <div id="tambahKhususApartemen" class="col-span-1 md:col-span-2 hidden">
-                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Posisi Lantai</label>
-                        <input type="number" id="tLantai" placeholder="Cth: 12" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-all">
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">Unggah Foto Rumah</label>
-                        <input type="file" id="tFoto" accept="image/*" required class="w-full border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl px-4 py-4 text-sm bg-slate-50 dark:bg-slate-900 text-slate-500 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition focus:outline-none focus:border-primary">
-                    </div>
-                </div>
-                
-                <div class="flex gap-3">
-                    <button type="button" onclick="closeModal('tambahModal')" class="w-1/3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 font-bold py-3.5 rounded-xl transition text-sm">Batal</button>
-                    <button type="submit" class="w-2/3 bg-primary hover:opacity-90 text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg">Simpan Properti</button>
-                </div>
-            </form>
-        </div>
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <div class="section-tag">✦ Panel Admin</div>
+        <h1 class="page-greeting">
+          Halo, <span class="name" id="namaUserAktif">Pengguna</span>
+        </h1>
+        <p class="page-sub">Kelola seluruh aset properti dari satu panel terpusat.</p>
+      </div>
+      <button class="btn-transaksi" onclick="openModal('beliModal')">
+        <i class="fas fa-shopping-cart" style="font-size:11px;"></i> Transaksi Baru
+      </button>
     </div>
 
-    <div id="editModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 opacity-100 transition-opacity">
-        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden transform scale-100 transition-all max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
-            <div class="px-8 pt-8 pb-6 text-center">
-                <div class="w-16 h-16 bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-full flex justify-center items-center mx-auto mb-4 text-2xl"><i class="fas fa-edit"></i></div>
-                <h3 class="font-extrabold text-2xl text-slate-900 dark:text-white">Edit Properti</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Ubah informasi aset yang sudah ada.</p>
-            </div>
-            <form id="formEdit" onsubmit="submitEdit(event)" class="px-8 pb-8 space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Kode (Terkunci)</label>
-                        <input type="text" id="eKode" readonly class="w-full bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 text-slate-400 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none cursor-not-allowed">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Kategori</label>
-                        <select id="eTipe" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all cursor-pointer">
-                            <option value="Rumah">Rumah</option>
-                            <option value="Apartemen">Apartemen</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Properti</label>
-                    <input type="text" id="eNama" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Harga (Rp)</label>
-                        <input type="number" id="eHarga" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Lokasi</label>
-                        <input type="text" id="eLokasi" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">KT</label>
-                        <input type="text" id="eKt" placeholder="Cth: 3+1" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">KM</label>
-                        <input type="text" id="eKm" placeholder="Cth: 2+1" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
-                    </div>
-                </div>
-                <div id="editKhususRumah" class="grid grid-cols-2 gap-4 hidden">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tipe Rumah</label>
-                        <input type="text" id="eTipeRumah" placeholder="Cth: 36/72" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Luas (m²)</label>
-                        <input type="number" id="eLuasTanah" placeholder="M2" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
-                    </div>
-                </div>
-                <div id="editKhususApartemen" class="hidden">
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Posisi Lantai</label>
-                    <input type="number" id="eLantai" placeholder="Cth: 12" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 transition-all">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Ganti Foto (Opsional)</label>
-                    <input type="file" id="eFoto" accept="image/*" class="w-full border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl px-4 py-3 text-sm bg-slate-50 dark:bg-slate-900 text-slate-500 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition focus:outline-none focus:border-teal-500">
-                </div>
-                <div class="flex gap-3 pt-3">
-                    <button type="button" onclick="closeModal('editModal')" class="w-1/3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 font-bold py-3.5 rounded-xl transition text-sm">Batal</button>
-                    <button type="submit" class="w-2/3 bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg">Update Aset</button>
-                </div>
-            </form>
-        </div>
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card d-1">
+        <div class="stat-icon icon-purple"><i class="fas fa-list-ol"></i></div>
+        <div class="stat-label">Total Properti</div>
+        <div class="stat-value" id="statTotal">0</div>
+      </div>
+      <div class="stat-card d-2">
+        <div class="stat-icon icon-gold"><i class="fas fa-door-open"></i></div>
+        <div class="stat-label">Tersedia</div>
+        <div class="stat-value" id="statTersedia">0</div>
+      </div>
+      <div class="stat-card d-3">
+        <div class="stat-icon icon-green"><i class="fas fa-handshake"></i></div>
+        <div class="stat-label">Terjual (Lunas)</div>
+        <div class="stat-value" id="statTerjual">0</div>
+      </div>
+      <div class="stat-card d-4">
+        <div class="stat-icon icon-blue"><i class="fas fa-wallet"></i></div>
+        <div class="stat-label">Total Omset</div>
+        <div class="stat-value small" id="statOmset">Rp0</div>
+      </div>
     </div>
 
-    <div id="detailModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 opacity-100 transition-opacity">
-        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden transform scale-100 transition-all flex flex-col max-h-[90vh] border border-slate-200 dark:border-slate-700">
-            <div class="px-8 pt-8 pb-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-start">
-                <div>
-                    <div class="flex items-center gap-3 mb-1">
-                        <span id="dKode" class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs font-bold"></span>
-                        <span id="dStatus" class="text-xs font-bold px-2 py-1 rounded"></span>
-                    </div>
-                    <h3 id="dNama" class="font-extrabold text-2xl text-slate-900 dark:text-white">Nama Properti</h3>
-                    <p id="dLokasi" class="text-sm text-slate-500 dark:text-slate-400 mt-1"><i class="fas fa-map-marker-alt text-slate-300"></i> Lokasi</p>
-                </div>
-                <button onclick="closeModal('detailModal')" class="w-8 h-8 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 rounded-full flex justify-center items-center transition"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="px-8 py-6 overflow-y-auto">
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Informasi Dasar</h4>
-                <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-700 mb-6 grid grid-cols-2 gap-4">
-                    <div><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Harga Properti</p><p id="dHarga" class="font-mono text-sm font-bold text-indigo-600 dark:text-indigo-400"></p></div>
-                    <div><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Kategori</p><p id="dKategori" class="text-sm font-bold text-slate-700 dark:text-slate-200"></p></div>
-                    <div id="boxKt"><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Kamar Tidur</p><p id="dKt" class="text-sm font-bold text-slate-700 dark:text-slate-200"></p></div>
-                    <div id="boxKm"><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Kamar Mandi</p><p id="dKm" class="text-sm font-bold text-slate-700 dark:text-slate-200"></p></div>
-                    <div id="boxTipeRumah" class="hidden"><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Tipe Rumah</p><p id="dTipeRumah" class="text-sm font-bold text-slate-700 dark:text-slate-200"></p></div>
-                    <div id="boxLuasTanah" class="hidden"><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Luas Tanah</p><p id="dLuasTanah" class="text-sm font-bold text-slate-700 dark:text-slate-200"></p></div>
-                    <div id="boxLantai" class="hidden"><p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Posisi Lantai</p><p id="dLantai" class="text-sm font-bold text-slate-700 dark:text-slate-200"></p></div>
-                </div>
-                <div id="boxTransaksi" class="hidden">
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Detail Pembelian</h4>
-                    <div class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800 grid grid-cols-2 gap-4">
-                        <div class="col-span-2"><p class="text-[10px] text-emerald-600/70 dark:text-emerald-400/70 font-bold uppercase mb-1">Nama Pembeli</p><p id="dNamaPembeli" class="text-sm font-bold text-emerald-900 dark:text-emerald-300"></p></div>
-                        <div class="col-span-2"><p class="text-[10px] text-emerald-600/70 dark:text-emerald-400/70 font-bold uppercase mb-1">Alamat Kontak</p><p id="dAlamatPembeli" class="text-sm font-bold text-emerald-900 dark:text-emerald-300"></p></div>
-                        <div><p class="text-[10px] text-emerald-600/70 dark:text-emerald-400/70 font-bold uppercase mb-1">No HP</p><p id="dNoHp" class="text-sm font-bold text-emerald-900 dark:text-emerald-300"></p></div>
-                        <div><p class="text-[10px] text-emerald-600/70 dark:text-emerald-400/70 font-bold uppercase mb-1">Metode Bayar</p><p id="dMetode" class="text-sm font-bold text-emerald-900 dark:text-emerald-300"></p></div>
-                    </div>
-                </div>
-            </div>
+    <!-- Main Table Card -->
+    <div class="content-card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Daftar Aset Aktif</div>
+          <div class="card-sub" id="tabelSubInfo">Mensinkronkan data...</div>
         </div>
+      </div>
+
+      <div class="filters-row">
+        <div class="search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" class="search-input" id="searchProp" oninput="applyFilters()"
+            placeholder="Cari nama, kode, atau pembeli...">
+        </div>
+        <select class="filter-select" id="filterStatus" onchange="applyFilters()">
+          <option value="">Semua Status</option>
+          <option value="Lunas">Lunas</option>
+          <option value="Tersedia">Tersedia</option>
+        </select>
+        <select class="filter-select" id="filterKategori" onchange="applyFilters()">
+          <option value="">Semua Kategori</option>
+          <option value="Apartemen">Apartemen</option>
+          <option value="Rumah">Rumah</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Kode</th>
+              <th>Nama Properti</th>
+              <th>Harga</th>
+              <th>Lokasi</th>
+              <th>Kategori</th>
+              <th>Status</th>
+              <th>Pembeli</th>
+              <th>Nilai Trans.</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="propertyTableBody">
+            <tr>
+              <td colspan="9" style="text-align:center; padding: 3rem; color: var(--text-label);">Mensinkronkan data...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-row">
+        <div class="page-info" id="pageInfoText">Menampilkan 0 dari 0 properti</div>
+        <div class="page-btns" id="paginationNumbers"></div>
+      </div>
     </div>
 
-    <div id="beliModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 opacity-100 transition-opacity">
-        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden transform scale-100 transition-all border border-slate-200 dark:border-slate-700">
-            <div class="px-8 pt-8 pb-6 text-center">
-                <div class="w-16 h-16 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full flex justify-center items-center mx-auto mb-4 text-2xl"><i class="fas fa-file-invoice-dollar"></i></div>
-                <h3 class="font-extrabold text-2xl text-slate-900 dark:text-white">Transaksi Pembelian</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Proses penjualan properti ke klien.</p>
+  </main>
+
+
+  <!-- ── MODAL TAMBAH ── -->
+  <div class="modal-overlay" id="tambahModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-icon modal-icon-purple"><i class="fas fa-home"></i></div>
+        <div class="modal-title">Properti Baru</div>
+        <div class="modal-sub">Masukkan detail aset properti ke sistem.</div>
+      </div>
+      <div class="modal-body">
+        <form id="formTambah" onsubmit="submitTambah(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Kode Properti</label>
+              <input type="text" id="tKode" required class="form-input" placeholder="Cth: R01">
             </div>
-            <form id="formBeli" onsubmit="submitBeli(event)" class="px-8 pb-8 space-y-4">
-                <div class="bg-indigo-50/50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
-                    <label class="block text-[11px] font-bold text-indigo-400 dark:text-indigo-300 uppercase tracking-wider mb-2">Kode Target (Wajib Valid)</label>
-                    <input type="text" id="bKode" placeholder="Ketik kode (cth: R01)" required class="w-full bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-700 rounded-lg px-4 py-2.5 text-sm font-bold text-indigo-900 dark:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Data Klien</label>
-                    <input type="text" id="bNama" placeholder="Nama lengkap pembeli" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-t-xl border-b-0 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary focus:z-10 relative">
-                    <input type="text" id="bAlamat" placeholder="Alamat lengkap" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 border-b-0 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary focus:z-10 relative">
-                    <input type="number" id="bNoHp" placeholder="Nomor Handphone" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-b-xl px-4 py-3 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary focus:z-10 relative">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tgl. Transaksi</label>
-                        <input type="date" id="bTanggal" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Metode</label>
-                        <select id="bMetode" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary cursor-pointer">
-                            <option value="Cash">Cash Keras</option>
-                            <option value="Transfer">Transfer Bank</option>
-                            <option value="KPA/KPR">KPA / KPR</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="closeModal('beliModal')" class="w-1/3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 font-bold py-3.5 rounded-xl transition text-sm">Batal</button>
-                    <button type="submit" class="w-2/3 bg-slate-900 hover:bg-black dark:bg-white dark:text-slate-900 dark:hover:opacity-90 text-white font-bold py-3.5 rounded-xl transition text-sm shadow-lg">Proses Transaksi</button>
-                </div>
-            </form>
-        </div>
+            <div class="form-group">
+              <label>Nama Properti</label>
+              <input type="text" id="tNama" required class="form-input" placeholder="Nama unit">
+            </div>
+            <div class="form-group">
+              <label>Harga (Rp)</label>
+              <input type="number" id="tHarga" required class="form-input" placeholder="0">
+            </div>
+            <div class="form-group">
+              <label>Lokasi</label>
+              <select id="tLokasi" required class="form-input">
+                <option value="" disabled selected hidden>-- Pilih Kota / Kabupaten --</option>
+
+                <option value="Kota. Batu">Kota. Batu</option>
+                <option value="Kota. Blitar">Kota. Blitar</option>
+                <option value="Kota. Kediri">Kota. Kediri</option>
+                <option value="Kota. Madiun">Kota. Madiun</option>
+                <option value="Kota. Malang">Kota. Malang</option>
+                <option value="Kota. Mojokerto">Kota. Mojokerto</option>
+                <option value="Kota. Pasuruan">Kota. Pasuruan</option>
+                <option value="Kota. Probolinggo">Kota. Probolinggo</option>
+                <option value="Kota. Surabaya">Kota. Surabaya</option>
+
+                <option value="Kab. Bangkalan">Kab. Bangkalan</option>
+                <option value="Kab. Banyuwangi">Kab. Banyuwangi</option>
+                <option value="Kab. Blitar">Kab. Blitar</option>
+                <option value="Kab. Bojonegoro">Kab. Bojonegoro</option>
+                <option value="Kab. Bondowoso">Kab. Bondowoso</option>
+                <option value="Kab. Gresik">Kab. Gresik</option>
+                <option value="Kab. Jember">Kab. Jember</option>
+                <option value="Kab. Jombang">Kab. Jombang</option>
+                <option value="Kab. Kediri">Kab. Kediri</option>
+                <option value="Kab. Lamongan">Kab. Lamongan</option>
+                <option value="Kab. Lumajang">Kab. Lumajang</option>
+                <option value="Kab. Madiun">Kab. Madiun</option>
+                <option value="Kab. Magetan">Kab. Magetan</option>
+                <option value="Kab. Malang">Kab. Malang</option>
+                <option value="Kab. Mojokerto">Kab. Mojokerto</option>
+                <option value="Kab. Nganjuk">Kab. Nganjuk</option>
+                <option value="Kab. Ngawi">Kab. Ngawi</option>
+                <option value="Kab. Pacitan">Kab. Pacitan</option>
+                <option value="Kab. Pamekasan">Kab. Pamekasan</option>
+                <option value="Kab. Pasuruan">Kab. Pasuruan</option>
+                <option value="Kab. Ponorogo">Kab. Ponorogo</option>
+                <option value="Kab. Probolinggo">Kab. Probolinggo</option>
+                <option value="Kab. Sampang">Kab. Sampang</option>
+                <option value="Kab. Sidoarjo">Kab. Sidoarjo</option>
+                <option value="Kab. Situbondo">Kab. Situbondo</option>
+                <option value="Kab. Sumenep">Kab. Sumenep</option>
+                <option value="Kab. Trenggalek">Kab. Trenggalek</option>
+                <option value="Kab. Tuban">Kab. Tuban</option>
+                <option value="Kab. Tulungagung">Kab. Tulungagung</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Kategori</label>
+              <select id="tKategori" required class="form-input">
+                <option value="Rumah">Rumah</option>
+                <option value="Apartemen">Apartemen</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Pilih Agen</label>
+              <select id="tAgen" required class="form-input">
+                <option value="">-- Memuat agen... --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Kamar Tidur (KT)</label>
+              <input type="text" id="tKt" class="form-input" placeholder="Cth: 3+1">
+            </div>
+            <div class="form-group">
+              <label>Kamar Mandi (KM)</label>
+              <input type="text" id="tKm" class="form-input" placeholder="Cth: 2+1">
+            </div>
+            <div id="tambahKhususRumah" class="form-group form-full"
+              style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div class="form-group">
+                <label>Tipe Rumah</label>
+                <input type="text" id="tTipeRumah" class="form-input" placeholder="Cth: 36/72">
+              </div>
+              <div class="form-group">
+                <label>Luas Tanah (m²)</label>
+                <input type="number" id="tLuasTanah" class="form-input" placeholder="M2">
+              </div>
+            </div>
+            <div id="tambahKhususApartemen" class="form-group form-full" style="display:none;">
+              <label>Posisi Lantai</label>
+              <input type="number" id="tLantai" class="form-input" placeholder="Cth: 12">
+            </div>
+            <div class="form-group form-full">
+              <label>Foto Properti</label>
+              <input type="file" id="tFoto" accept="image/*" required class="form-input">
+            </div>
+          </div>
+          <div class="form-btns">
+            <button type="button" class="btn-cancel" onclick="closeModal('tambahModal')">Batal</button>
+            <button type="submit" class="btn-submit">Simpan Properti</button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 
-    <script>
-        if (sessionStorage.getItem('isLoggedIn') !== 'true') window.location.href = 'login.html';
-        const currentUsername = sessionStorage.getItem('username') || 'A';
-        if (document.getElementById('namaUserAktif')) document.getElementById('namaUserAktif').innerText = currentUsername;
+  <!-- ── MODAL EDIT ── -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-icon modal-icon-teal"><i class="fas fa-edit"></i></div>
+        <div class="modal-title">Edit Properti</div>
+        <div class="modal-sub">Ubah informasi aset yang sudah ada.</div>
+      </div>
+      <div class="modal-body">
+        <form id="formEdit" onsubmit="submitEdit(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Kode (Terkunci)</label>
+              <input type="text" id="eKode" readonly class="form-input">
+            </div>
+            <div class="form-group">
+              <label>Kategori</label>
+              <select id="eTipe" class="form-input">
+                <option value="Rumah">Rumah</option>
+                <option value="Apartemen">Apartemen</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Nama Properti</label>
+              <input type="text" id="eNama" required class="form-input">
+            </div>
+            <div class="form-group">
+              <label>Pilih Agen</label>
+              <select id="eAgen" required class="form-input">
+                <option value="" disabled selected hidden>-- Pilih Agen --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Harga (Rp)</label>
+              <input type="number" id="eHarga" required class="form-input">
+            </div>
+            <div class="form-group">
+              <label>Lokasi</label>
+              <select id="eLokasi" required class="form-input">
+                <option value="" disabled selected hidden>-- Pilih Kota / Kabupaten --</option>
 
-        // INI DIA TERSANGKANYA! SAYA TAMBAHKAN KEMBALI AGAR FUNGSI CRUD BEKERJA!
-        const API_URL = 'http://localhost:8080/api/properti'; 
+                <option value="Kota. Batu">Kota. Batu</option>
+                <option value="Kota. Blitar">Kota. Blitar</option>
+                <option value="Kota. Kediri">Kota. Kediri</option>
+                <option value="Kota. Madiun">Kota. Madiun</option>
+                <option value="Kota. Malang">Kota. Malang</option>
+                <option value="Kota. Mojokerto">Kota. Mojokerto</option>
+                <option value="Kota. Pasuruan">Kota. Pasuruan</option>
+                <option value="Kota. Probolinggo">Kota. Probolinggo</option>
+                <option value="Kota. Surabaya">Kota. Surabaya</option>
 
-        const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-        
-        let globalDataProperti = [];
-        let filteredData = [];
-        let currentPage = 1;
-        const itemsPerPage = 5; 
+                <option value="Kab. Bangkalan">Kab. Bangkalan</option>
+                <option value="Kab. Banyuwangi">Kab. Banyuwangi</option>
+                <option value="Kab. Blitar">Kab. Blitar</option>
+                <option value="Kab. Bojonegoro">Kab. Bojonegoro</option>
+                <option value="Kab. Bondowoso">Kab. Bondowoso</option>
+                <option value="Kab. Gresik">Kab. Gresik</option>
+                <option value="Kab. Jember">Kab. Jember</option>
+                <option value="Kab. Jombang">Kab. Jombang</option>
+                <option value="Kab. Kediri">Kab. Kediri</option>
+                <option value="Kab. Lamongan">Kab. Lamongan</option>
+                <option value="Kab. Lumajang">Kab. Lumajang</option>
+                <option value="Kab. Madiun">Kab. Madiun</option>
+                <option value="Kab. Magetan">Kab. Magetan</option>
+                <option value="Kab. Malang">Kab. Malang</option>
+                <option value="Kab. Mojokerto">Kab. Mojokerto</option>
+                <option value="Kab. Nganjuk">Kab. Nganjuk</option>
+                <option value="Kab. Ngawi">Kab. Ngawi</option>
+                <option value="Kab. Pacitan">Kab. Pacitan</option>
+                <option value="Kab. Pamekasan">Kab. Pamekasan</option>
+                <option value="Kab. Pasuruan">Kab. Pasuruan</option>
+                <option value="Kab. Ponorogo">Kab. Ponorogo</option>
+                <option value="Kab. Probolinggo">Kab. Probolinggo</option>
+                <option value="Kab. Sampang">Kab. Sampang</option>
+                <option value="Kab. Sidoarjo">Kab. Sidoarjo</option>
+                <option value="Kab. Situbondo">Kab. Situbondo</option>
+                <option value="Kab. Sumenep">Kab. Sumenep</option>
+                <option value="Kab. Trenggalek">Kab. Trenggalek</option>
+                <option value="Kab. Tuban">Kab. Tuban</option>
+                <option value="Kab. Tulungagung">Kab. Tulungagung</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>KT</label>
+              <input type="text" id="eKt" class="form-input" placeholder="Cth: 3+1">
+            </div>
+            <div class="form-group">
+              <label>KM</label>
+              <input type="text" id="eKm" class="form-input" placeholder="Cth: 2+1">
+            </div>
+            <div id="editKhususRumah" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="form-full">
+              <div class="form-group">
+                <label>Tipe Rumah</label>
+                <input type="text" id="eTipeRumah" class="form-input" placeholder="Cth: 36/72">
+              </div>
+              <div class="form-group">
+                <label>Luas (m²)</label>
+                <input type="number" id="eLuasTanah" class="form-input">
+              </div>
+            </div>
+            <div id="editKhususApartemen" class="form-group form-full" style="display:none;">
+              <label>Posisi Lantai</label>
+              <input type="number" id="eLantai" class="form-input" placeholder="Cth: 12">
+            </div>
+            <div class="form-group form-full">
+              <label>Ganti Foto (Opsional)</label>
+              <input type="file" id="eFoto" accept="image/*" class="form-input">
+            </div>
+          </div>
+          <div class="form-btns">
+            <button type="button" class="btn-cancel" onclick="closeModal('editModal')">Batal</button>
+            <button type="submit" class="btn-submit teal">Update Aset</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
-        // AMBIL FOTO PROFIL DINAMIS UNTUK NAVBAR
-        async function muatAvatarNavbar() {
-            try {
-                const res = await fetch('http://localhost:8080/api/users');
-                const users = await res.json();
-                const myProfile = users.find(u => u.username === currentUsername);
-                if (myProfile) {
-                    const namaTampil = myProfile.namaLengkap || currentUsername;
-                    const inisial = namaTampil.charAt(0).toUpperCase();
-                    let htmlAvatar = inisial;
-                    if (myProfile.fotoProfil && myProfile.fotoProfil !== "default_profil.png" && myProfile.fotoProfil !== "null") {
-                        const urlFoto = `http://localhost:8080/uploads/profil/${encodeURIComponent(myProfile.fotoProfil)}`;
-                        htmlAvatar = `<img src="${urlFoto}" alt="Profil" class="w-full h-full object-cover">`;
-                    }
-                    document.getElementById('userAvatar').innerHTML = htmlAvatar;
-                }
-            } catch (err) { console.error(err); }
-        }
-        muatAvatarNavbar();
+  <!-- ── MODAL DETAIL ── -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal-box" style="max-width:520px;">
+      <div class="modal-head" style="padding-bottom:0;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; text-align:left;">
+          <div>
+            <div style="display:flex; gap:8px; margin-bottom:8px;">
+              <span id="dKode" class="badge badge-kode"></span>
+              <span id="dStatus" class="badge"></span>
+            </div>
+            <div class="modal-title" id="dNama" style="text-align:left;"></div>
+            <div style="font-size:13px; color:var(--text-sub); margin-top:5px;" id="dLokasi"><i
+                class="fas fa-map-marker-alt" style="color:#f87171; margin-right:5px;"></i></div>
+          </div>
+          <button onclick="closeModal('detailModal')"
+            style="width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text-sub);cursor:pointer;font-size:14px;flex-shrink:0;margin-top:4px;">✕</button>
+        </div>
+      </div>
+      <div class="modal-body" style="padding-top:1.5rem;">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-key">Harga Properti</div>
+            <div class="detail-val" id="dHarga"
+              style="color:var(--accent-glow); font-family:'Cormorant Garamond',serif; font-size:18px;"></div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-key">Kategori</div>
+            <div class="detail-val" id="dKategori"></div>
+          </div>
+          <div class="detail-item" id="boxKt">
+            <div class="detail-key">Kamar Tidur</div>
+            <div class="detail-val" id="dKt"></div>
+          </div>
+          <div class="detail-item" id="boxKm">
+            <div class="detail-key">Kamar Mandi</div>
+            <div class="detail-val" id="dKm"></div>
+          </div>
+          <div class="detail-item" id="boxTipeRumah" style="display:none;">
+            <div class="detail-key">Tipe Rumah</div>
+            <div class="detail-val" id="dTipeRumah"></div>
+          </div>
+          <div class="detail-item" id="boxLuasTanah" style="display:none;">
+            <div class="detail-key">Luas Tanah</div>
+            <div class="detail-val" id="dLuasTanah"></div>
+          </div>
+          <div class="detail-item" id="boxAgen" style="grid-column: 1 / -1;">
+            <div class="detail-key">Agen Properti</div>
+            <div class="detail-val" id="dAgen"></div>
+          </div>
+          <div class="detail-item" id="boxLantai" style="display:none;">
+            <div class="detail-key">Posisi Lantai</div>
+            <div class="detail-val" id="dLantai"></div>
+          </div>
+        </div>
+        <div class="transaksi-section" id="boxTransaksi" style="display:none;">
+          <div class="transaksi-head">Detail Pembelian</div>
+          <div class="transaksi-box">
+            <div class="detail-grid">
+              <div class="detail-item detail-full" style="background:transparent;border:none;padding:0 0 8px;">
+                <div class="detail-key">Nama Pembeli</div>
+                <div class="detail-val" id="dNamaPembeli"></div>
+              </div>
+              <div class="detail-item detail-full" style="background:transparent;border:none;padding:0 0 8px;">
+                <div class="detail-key">Alamat</div>
+                <div class="detail-val" id="dAlamatPembeli"></div>
+              </div>
+              <div class="detail-item" style="background:transparent;border:none;padding:0;">
+                <div class="detail-key">No HP</div>
+                <div class="detail-val" id="dNoHp"></div>
+              </div>
+              <div class="detail-item" style="background:transparent;border:none;padding:0;">
+                <div class="detail-key">Metode</div>
+                <div class="detail-val" id="dMetode"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        async function fetchProperti() {
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                globalDataProperti = data;
-                filteredData = data;
+  <!-- ── MODAL TRANSAKSI ── -->
+  <div class="modal-overlay" id="beliModal">
+    <div class="modal-box" style="max-width:480px;">
+      <div class="modal-head">
+        <div class="modal-icon modal-icon-dark"><i class="fas fa-file-invoice-dollar"></i></div>
+        <div class="modal-title">Transaksi Pembelian</div>
+        <div class="modal-sub">Proses penjualan properti ke klien.</div>
+      </div>
+      <div class="modal-body">
+        <form id="formBeli" onsubmit="submitBeli(event)">
+          <div class="form-grid">
+            <div class="form-group form-full">
+              <label>Kode Target Properti</label>
+              <input type="text" id="bKode" required class="form-input" placeholder="Cth: R01">
+            </div>
+            <div class="form-group form-full">
+              <label>Nama Lengkap Pembeli</label>
+              <input type="text" id="bNama" required class="form-input" placeholder="Nama pembeli">
+            </div>
+            <div class="form-group form-full">
+              <label>Alamat Pembeli</label>
+              <input type="text" id="bAlamat" required class="form-input" placeholder="Alamat lengkap">
+            </div>
+            <div class="form-group">
+              <label>No Handphone</label>
+              <input type="number" id="bNoHp" required class="form-input" placeholder="08xx...">
+            </div>
+            <div class="form-group">
+              <label>Tanggal Transaksi</label>
+              <input type="date" id="bTanggal" required class="form-input">
+            </div>
+            <div class="form-group form-full">
+              <label>Metode Pembayaran</label>
+              <select id="bMetode" class="form-input">
+                <option value="Cash">Cash Keras</option>
+                <option value="Transfer">Transfer Bank</option>
+                <option value="KPA/KPR">KPA / KPR</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-btns">
+            <button type="button" class="btn-cancel" onclick="closeModal('beliModal')">Batal</button>
+            <button type="submit" class="btn-submit dark">Proses Transaksi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
-                let total = 0, tersedia = 0, terjual = 0, omset = 0;
-                data.forEach(item => {
-                    total++;
-                    if(item.terjual) { terjual++; omset += item.harga; }
-                    else { tersedia++; }
-                });
+  <script src="js/dashboard.js"></script>
 
-                document.getElementById('statTotal').innerText = total;
-                document.getElementById('statTersedia').innerText = tersedia;
-                document.getElementById('statTerjual').innerText = terjual; 
-                document.getElementById('statOmset').innerText = formatRupiah(omset);
-                document.getElementById('tabelSubInfo').innerText = `${total} properti terdaftar · ${terjual} lunas · ${tersedia} tersedia`;
-
-                renderTabel();
-            } catch (error) { console.error('Error fetching:', error); }
-        }
-
-        function renderTabel() {
-            const tbody = document.getElementById('propertyTableBody');
-            tbody.innerHTML = '';
-            const totalItems = filteredData.length;
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-            if (totalItems === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-10 text-slate-400">Tidak ada data ditemukan.</td></tr>`;
-                document.getElementById('pageInfoText').innerText = `Menampilkan 0-0 dari 0 properti`;
-                document.getElementById('paginationNumbers').innerHTML = '';
-                return;
-            }
-
-            if (currentPage < 1) currentPage = 1;
-            if (currentPage > totalPages) currentPage = totalPages;
-
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-            const paginatedItems = filteredData.slice(startIndex, endIndex);
-
-            paginatedItems.forEach(item => {
-                let idBadge = 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400';
-                if(item.kode.includes('G') || item.kode.includes('R')) idBadge = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
-                else if(item.kode.includes('P')) idBadge = 'bg-primary/10 text-primary';
-
-                let catBadge = item.jenisProperti === 'Apartemen' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400';
-                let statBadge = item.terjual ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400';
-                let statIcon = item.terjual ? 'fa-circle text-[8px]' : 'fa-clock text-[10px]';
-                
-                let pembeli = item.terjual ? `<span class="font-medium text-slate-700 dark:text-slate-300">${item.namaPembeli}</span>` : `<span class="italic text-slate-400">Belum ada</span>`;
-                let nilaiTrans = item.terjual ? `<span class="font-bold text-slate-900 dark:text-white">${formatRupiah(item.harga)}</span>` : `<span class="italic text-slate-400">-</span>`;
-
-                let actionBtns = '';
-                if(item.terjual) {
-                    actionBtns = `
-                        <div class="flex items-center gap-1.5">
-                            <button onclick="lihatDetail('${item.kode}')" class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-500 dark:text-blue-400 hover:bg-blue-500 hover:text-white transition flex justify-center items-center" title="Detail"><i class="fas fa-eye text-xs"></i></button>
-                            <button class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 text-orange-400/50 flex justify-center items-center cursor-not-allowed" title="Terkunci (Sudah Lunas)"><i class="fas fa-lock text-xs"></i></button>
-                        </div>`;
-                } else {
-                    actionBtns = `
-                        <div class="flex items-center gap-1.5">
-                            <button onclick="lihatDetail('${item.kode}')" class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-500 dark:text-blue-400 hover:bg-blue-500 hover:text-white transition flex justify-center items-center" title="Detail"><i class="fas fa-eye text-xs"></i></button>
-                            <button onclick="siapkanEdit('${item.kode}', '${item.nama}', ${item.harga}, '${item.lokasi}', '${item.jenisProperti}', '${item.tipeRumah}', '${item.luasTanah}', '${item.lantai}', '${item.kt || ''}', '${item.km || ''}')" class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white transition flex justify-center items-center" title="Edit"><i class="fas fa-pen text-xs"></i></button>
-                            <button onclick="hapusProperti('${item.kode}', '${item.nama}')" class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/20 text-rose-500 dark:text-rose-400 hover:bg-rose-500 hover:text-white transition flex justify-center items-center" title="Hapus"><i class="fas fa-trash text-xs"></i></button>
-                        </div>`;
-                }
-
-                const row = `
-                    <tr>
-                        <td><span class="inline-flex justify-center items-center px-3 py-1.5 rounded-lg text-xs font-bold ${idBadge}">${item.kode}</span></td>
-                        <td class="font-bold text-slate-800 dark:text-white">${item.nama}</td>
-                        <td class="font-bold text-slate-800 dark:text-slate-200">${item.hargaFormat || formatRupiah(item.harga)}</td>
-                        <td class="text-slate-500 dark:text-slate-400 text-[13px]"><i class="fas fa-map-pin text-rose-500 mr-1.5"></i>${item.lokasi}</td>
-                        <td><span class="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${catBadge}">${item.jenisProperti}</span></td>
-                        <td><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${statBadge}"><i class="fas ${statIcon}"></i> ${item.terjual ? 'Lunas' : 'Tersedia'}</span></td>
-                        <td>${pembeli}</td>
-                        <td>${nilaiTrans}</td>
-                        <td>${actionBtns}</td>
-                    </tr>
-                `;
-                tbody.insertAdjacentHTML('beforeend', row);
-            });
-
-            document.getElementById('pageInfoText').innerText = `Menampilkan ${startIndex + 1}–${endIndex} dari ${totalItems} properti`;
-            renderPaginationButtons(totalPages);
-        }
-
-        function renderPaginationButtons(totalPages) {
-            const container = document.getElementById('paginationNumbers');
-            container.innerHTML = '';
-
-            const btnPrev = document.createElement('button');
-            btnPrev.className = `w-8 h-8 rounded-lg border flex items-center justify-center text-sm transition ${currentPage === 1 ? 'border-slate-100 dark:border-slate-700 text-slate-300 dark:text-slate-600 cursor-not-allowed' : 'border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`;
-            btnPrev.innerHTML = '<i class="fas fa-chevron-left text-[10px]"></i>';
-            if(currentPage > 1) btnPrev.onclick = () => { currentPage--; renderTabel(); };
-            container.appendChild(btnPrev);
-
-            for(let i=1; i<=totalPages; i++) {
-                const btnNum = document.createElement('button');
-                if(i === currentPage) { btnNum.className = 'w-8 h-8 rounded-lg bg-primary text-white font-bold text-sm shadow-md'; } 
-                else {
-                    btnNum.className = 'w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 font-medium text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition';
-                    btnNum.onclick = () => { currentPage = i; renderTabel(); };
-                }
-                btnNum.innerText = i;
-                container.appendChild(btnNum);
-            }
-
-            const btnNext = document.createElement('button');
-            btnNext.className = `w-8 h-8 rounded-lg border flex items-center justify-center text-sm transition ${currentPage === totalPages ? 'border-slate-100 dark:border-slate-700 text-slate-300 dark:text-slate-600 cursor-not-allowed' : 'border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`;
-            btnNext.innerHTML = '<i class="fas fa-chevron-right text-[10px]"></i>';
-            if(currentPage < totalPages) btnNext.onclick = () => { currentPage++; renderTabel(); };
-            container.appendChild(btnNext);
-        }
-
-        function applyFilters() {
-            const query = document.getElementById('searchProp').value.toLowerCase();
-            const stat = document.getElementById('filterStatus').value; 
-            const cat = document.getElementById('filterKategori').value; 
-
-            filteredData = globalDataProperti.filter(p => {
-                const namaPembeliStr = p.namaPembeli ? p.namaPembeli.toLowerCase() : "";
-                const isMatchQuery = p.nama.toLowerCase().includes(query) || p.kode.toLowerCase().includes(query) || namaPembeliStr.includes(query);
-                let isMatchStat = true;
-                if (stat === 'Lunas') isMatchStat = p.terjual === true;
-                if (stat === 'Tersedia') isMatchStat = p.terjual === false;
-                let isMatchCat = true;
-                if (cat !== '') isMatchCat = p.jenisProperti === cat;
-                return isMatchQuery && isMatchStat && isMatchCat;
-            });
-            currentPage = 1; 
-            renderTabel();
-        }
-
-        // ==========================================
-        // FUNGSI MODAL & CRUD
-        // ==========================================
-        async function muatDaftarAgen() {
-            try {
-                const response = await fetch('http://localhost:8080/api/users');
-                const users = await response.json();
-                const dropdownAgen = document.getElementById('tAgen');
-                dropdownAgen.innerHTML = '<option value="" disabled selected>-- Pilih Agen Penanggung Jawab --</option>';
-                users.forEach(user => {
-                    if(user.role === 'ADMIN') {
-                        const namaTampil = user.namaLengkap ? user.namaLengkap : user.username;
-                        dropdownAgen.insertAdjacentHTML('beforeend', `<option value="${user.username}">${namaTampil} (${user.username})</option>`);
-                    }
-                });
-            } catch (error) { document.getElementById('tAgen').innerHTML = '<option value="">Gagal memuat data agen</option>'; }
-        }
-        muatDaftarAgen();
-
-        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
-        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
-
-        document.getElementById('tKategori').addEventListener('change', function () {
-            if (this.value === 'Rumah') {
-                document.getElementById('tambahKhususRumah').classList.remove('hidden');
-                document.getElementById('tambahKhususApartemen').classList.add('hidden');
-            } else {
-                document.getElementById('tambahKhususRumah').classList.add('hidden');
-                document.getElementById('tambahKhususApartemen').classList.remove('hidden');
-            }
-        });
-
-        document.getElementById('eTipe').addEventListener('change', function () {
-            if (this.value === 'Rumah') {
-                document.getElementById('editKhususRumah').classList.remove('hidden');
-                document.getElementById('editKhususApartemen').classList.add('hidden');
-            } else {
-                document.getElementById('editKhususRumah').classList.add('hidden');
-                document.getElementById('editKhususApartemen').classList.remove('hidden');
-            }
-        });
-
-        async function submitTambah(event) {
-            event.preventDefault();
-            const formData = new FormData();
-            formData.append("kode", document.getElementById('tKode').value);
-            formData.append("nama", document.getElementById('tNama').value);
-            formData.append("harga", document.getElementById('tHarga').value);
-            formData.append("lokasi", document.getElementById('tLokasi').value);
-            formData.append("kategori", document.getElementById('tKategori').value);
-            formData.append("usernameAgen", document.getElementById('tAgen').value);
-            formData.append("kt", document.getElementById('tKt').value);
-            formData.append("km", document.getElementById('tKm').value);
-            
-            if(document.getElementById('tKategori').value === 'Rumah') {
-                formData.append("tipeRumah", document.getElementById('tTipeRumah').value);
-                formData.append("luasTanah", document.getElementById('tLuasTanah').value);
-            } else {
-                formData.append("lantai", document.getElementById('tLantai').value);
-            }
-            
-            const fileFoto = document.getElementById('tFoto').files[0];
-            if (fileFoto) formData.append("foto", fileFoto);
-
-            try {
-                const response = await fetch(`${API_URL}/tambah`, { method: 'POST', body: formData });
-                const resultText = await response.text();
-                if (response.ok) {
-                    Swal.fire('Berhasil!', 'Properti berhasil disimpan.', 'success');
-                    closeModal('tambahModal');
-                    document.getElementById('formTambah').reset();
-                    fetchProperti(); 
-                } else { Swal.fire('Gagal', resultText, 'error'); }
-            } catch (error) { Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error'); }
-        }
-
-        function siapkanEdit(kode, nama, harga, lokasi, tipe, tipeRumah, luasTanah, lantai, kt, km) {
-            document.getElementById('eKode').value = kode;
-            document.getElementById('eNama').value = nama;
-            document.getElementById('eHarga').value = harga;
-            document.getElementById('eLokasi').value = lokasi;
-            document.getElementById('eTipe').value = tipe;
-            document.getElementById('eKt').value = kt !== 'null' ? kt : '';
-            document.getElementById('eKm').value = km !== 'null' ? km : '';
-            document.getElementById('eTipeRumah').value = tipeRumah !== 'null' ? tipeRumah : '';
-            document.getElementById('eLuasTanah').value = luasTanah !== 'null' ? luasTanah : '';
-            document.getElementById('eLantai').value = lantai !== 'null' ? lantai : '';
-            document.getElementById('eFoto').value = ''; 
-            document.getElementById('eTipe').dispatchEvent(new Event('change'));
-            openModal('editModal');
-        }
-
-        async function submitEdit(event) {
-            event.preventDefault();
-            const kode = document.getElementById('eKode').value;
-            const formData = new FormData();
-            formData.append("nama", document.getElementById('eNama').value);
-            formData.append("harga", document.getElementById('eHarga').value);
-            formData.append("lokasi", document.getElementById('eLokasi').value);
-            formData.append("tipe", document.getElementById('eTipe').value);
-            formData.append("kt", document.getElementById('eKt').value);
-            formData.append("km", document.getElementById('eKm').value);
-            
-            if(document.getElementById('eTipe').value === 'Rumah') {
-                formData.append("tipeRumah", document.getElementById('eTipeRumah').value);
-                formData.append("luasTanah", document.getElementById('eLuasTanah').value);
-            } else { formData.append("lantai", document.getElementById('eLantai').value); }
-
-            const fileFoto = document.getElementById('eFoto').files[0];
-            if (fileFoto) formData.append("foto", fileFoto);
-
-            try {
-                // 🚀 PERBAIKAN DI SINI: method 'POST' diubah menjadi 'PUT'
-                const response = await fetch(`${API_URL}/${kode}/edit`, { method: 'PUT', body: formData });
-                
-                const resultText = await response.text();
-                if (resultText.includes("Sukses")) {
-                    Swal.fire({ title: 'Berhasil Update!', text: resultText, icon: 'success', timer: 2000, showConfirmButton: false });
-                    closeModal('editModal');
-                    fetchProperti();
-                } else { Swal.fire('Gagal!', resultText, 'error'); }
-            } catch (error) { Swal.fire('Error!', 'Gagal menghubungi server.', 'error'); }
-        }
-
-        function hapusProperti(kode, nama) {
-            Swal.fire({
-                title: 'Hapus Properti?', text: `Anda yakin ingin menghapus ${nama} (${kode})?`, icon: 'warning',
-                showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#94a3b8', confirmButtonText: 'Ya, Hapus!'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try {
-                        const response = await fetch(`${API_URL}/${kode}/hapus`, { method: 'DELETE' });
-                        const resultText = await response.text();
-                        if (resultText.includes("Sukses")) {
-                            Swal.fire({ title: 'Terhapus!', text: resultText, icon: 'success', timer: 2000, showConfirmButton: false });
-                            fetchProperti();
-                        } else { Swal.fire('Gagal!', resultText, 'error'); }
-                    } catch (error) { Swal.fire('Error!', 'Gagal memproses.', 'error'); }
-                }
-            });
-        }
-
-        function lihatDetail(kode) {
-            const item = globalDataProperti.find(p => p.kode === kode);
-            if (!item) return;
-
-            document.getElementById('dKode').innerText = item.kode;
-            document.getElementById('dNama').innerText = item.nama;
-            document.getElementById('dLokasi').innerText = item.lokasi;
-            document.getElementById('dHarga').innerText = item.hargaFormat || formatRupiah(item.harga);
-            document.getElementById('dKategori').innerText = item.jenisProperti;
-            document.getElementById('dKt').innerText = item.kt || '-';
-            document.getElementById('dKm').innerText = item.km || '-';
-
-            const statusBadge = document.getElementById('dStatus');
-            if (item.terjual) {
-                statusBadge.className = 'text-xs font-bold px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400';
-                statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> Lunas';
-            } else {
-                statusBadge.className = 'text-xs font-bold px-2 py-1 rounded bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400';
-                statusBadge.innerHTML = '<i class="fas fa-clock"></i> Tersedia';
-            }
-
-            document.getElementById('boxTipeRumah').classList.add('hidden');
-            document.getElementById('boxLuasTanah').classList.add('hidden');
-            document.getElementById('boxLantai').classList.add('hidden');
-
-            if (item.jenisProperti === 'Rumah') {
-                document.getElementById('boxTipeRumah').classList.remove('hidden');
-                document.getElementById('boxLuasTanah').classList.remove('hidden');
-                document.getElementById('dTipeRumah').innerText = item.tipeRumah || '-';
-                document.getElementById('dLuasTanah').innerText = item.luasTanah ? item.luasTanah + ' m²' : '-';
-            } else if (item.jenisProperti === 'Apartemen') {
-                document.getElementById('boxLantai').classList.remove('hidden');
-                document.getElementById('dLantai').innerText = item.lantai || '-';
-            }
-
-            const boxTransaksi = document.getElementById('boxTransaksi');
-            if (item.terjual && item.transaksi) {
-                boxTransaksi.classList.remove('hidden');
-                document.getElementById('dNamaPembeli').innerText = item.transaksi.namaPembeli || '-';
-                document.getElementById('dAlamatPembeli').innerText = item.transaksi.alamatPembeli || '-';
-                document.getElementById('dNoHp').innerText = item.transaksi.noHp || '-';
-                document.getElementById('dMetode').innerText = item.transaksi.metodePembayaran || '-';
-            } else { boxTransaksi.classList.add('hidden'); }
-            openModal('detailModal');
-        }
-
-        async function submitBeli(event) {
-            event.preventDefault();
-            const kodeProperti = document.getElementById('bKode').value;
-            const dataPembeli = {
-                nama: document.getElementById('bNama').value, alamat: document.getElementById('bAlamat').value,
-                noHp: document.getElementById('bNoHp').value, tanggal: document.getElementById('bTanggal').value,
-                metode: document.getElementById('bMetode').value
-            };
-            try {
-                const response = await fetch(`${API_URL}/${kodeProperti}/beli`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataPembeli)
-                });
-                const resultText = await response.text();
-                if (resultText.includes("Sukses")) {
-                    Swal.fire({ title: 'Berhasil!', text: resultText, icon: 'success', timer: 2000, showConfirmButton: false });
-                    closeModal('beliModal');
-                    document.getElementById('formBeli').reset();
-                    fetchProperti();
-                } else { Swal.fire('Gagal!', resultText, 'error'); }
-            } catch (error) { Swal.fire('Error!', 'Gagal memproses transaksi.', 'error'); }
-        }
-
-        function prosesLogout() {
-            Swal.fire({
-                title: 'Yakin ingin keluar?', text: "Sesi kerja Anda akan diakhiri.", icon: 'question',
-                showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#94a3b8', confirmButtonText: 'Ya, Keluar!', cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    sessionStorage.clear();
-                    window.location.href = 'login.html';
-                }
-            });
-        }
-
-        fetchProperti();
-    </script>
 </body>
+
 </html>

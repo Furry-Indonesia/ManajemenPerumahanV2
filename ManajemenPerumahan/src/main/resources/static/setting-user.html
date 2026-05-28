@@ -1,525 +1,637 @@
 <!DOCTYPE html>
-<html lang="id" class="light">
-
+<html lang="id" class="">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pengaturan – AdmajaMajesti</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
-                    colors: { 
-                        primary: 'var(--color-primary, #6d28d9)', 
-                        secondary: 'var(--color-secondary, #4c1d95)'
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { transition: background-color 0.3s, color 0.3s; }
-        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
-        .dark .glass-nav { background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        
-        .sidebar-item { transition: all 0.2s ease; }
-        .sidebar-item.active { background-color: color-mix(in srgb, var(--color-primary, #6d28d9) 15%, transparent); color: var(--color-primary, #6d28d9); }
-        .sidebar-item:not(.active):hover { background-color: #f8fafc; color: #1e293b; }
-        .dark .sidebar-item:not(.active):hover { background-color: #1e293b; color: #f1f5f9; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pengaturan — AdmajaMajesti</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        .toast {
-            position: fixed; bottom: 28px; right: 28px; background: var(--color-primary, #6d28d9); color: #fff;
-            padding: 12px 20px; border-radius: 12px; font-size: 13.5px; font-weight: 600;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.15); transform: translateY(80px); opacity: 0;
-            transition: transform .3s, opacity .3s; z-index: 999;
-        }
-        .toast.show { transform: translateY(0); opacity: 1; }
-    </style>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-deep:      #0a0a12;
+      --bg-mid:       #10101e;
+      --bg-section:   #0d0d1a;
+      --accent:       #8b5cf6;
+      --accent-glow:  #a78bfa;
+      --accent-dim:   rgba(139,92,246,0.18);
+      --gold:         #d4a853;
+      --gold-light:   #f0c775;
+      --card-bg:      rgba(16,16,30,0.72);
+      --card-bg-solid: #12121f;
+      --border:       rgba(139,92,246,0.22);
+      --border-gold:  rgba(212,168,83,0.25);
+      --text-main:    #f1f0ff;
+      --text-sub:     #8b8aaa;
+      --text-label:   #6b6a8a;
+      --emerald:      #34d399;
+      --emerald-dim:  rgba(52,211,153,0.15);
+      --orange:       #fb923c;
+      --orange-dim:   rgba(251,146,60,0.15);
+      --blue:         #60a5fa;
+      --blue-dim:     rgba(96,165,250,0.15);
+      --red:          #f87171;
+      --red-dim:      rgba(248,113,113,0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-main);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ── Ambient ── */
+    .orb { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; animation: orbFloat linear infinite; }
+    .orb-1 { width:520px;height:520px;background:radial-gradient(circle,rgba(109,40,217,.22) 0%,transparent 70%);top:-180px;left:-140px;animation-duration:24s; }
+    .orb-2 { width:400px;height:400px;background:radial-gradient(circle,rgba(168,85,247,.14) 0%,transparent 70%);bottom:20%;right:-120px;animation-duration:30s;animation-direction:reverse; }
+    .orb-3 { width:300px;height:300px;background:radial-gradient(circle,rgba(212,168,83,.09) 0%,transparent 70%);top:40%;left:55%;animation-duration:20s; }
+    @keyframes orbFloat { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(30px,-25px) scale(1.04)} 66%{transform:translate(-20px,20px) scale(.97)} }
+
+    .grid-overlay {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(139,92,246,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,.04) 1px,transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 40%,black 20%,transparent 100%);
+    }
+
+    .particles { position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden; }
+    .particle { position:absolute;border-radius:50%;animation:particleDrift linear infinite;opacity:0; }
+    @keyframes particleDrift { 0%{transform:translateY(100vh) translateX(0) scale(0);opacity:0} 10%{opacity:1} 90%{opacity:.5} 100%{transform:translateY(-20px) translateX(var(--drift)) scale(1);opacity:0} }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index: 100;
+      background: rgba(10,10,18,0.8);
+      backdrop-filter: blur(28px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+      animation: navReveal 600ms cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes navReveal { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+    .nav-inner { max-width:1280px;margin:0 auto;padding:0 2rem;height:72px;display:flex;align-items:center;justify-content:space-between;gap:2rem; }
+    .nav-logo { display:flex;align-items:center;gap:14px;text-decoration:none; }
+    .nav-logo-icon {
+      width:44px;height:44px;border-radius:12px;
+      background: linear-gradient(135deg,#7c3aed 0%,#a855f7 50%,#d946ef 100%);
+      box-shadow: 0 6px 20px rgba(124,58,237,.4),0 0 0 1px rgba(255,255,255,.08) inset;
+      display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;flex-shrink:0;
+    }
+    .nav-logo-icon::after { content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);animation:logoShine 4s ease infinite; }
+    @keyframes logoShine { 0%,60%,100%{left:-100%} 30%{left:120%} }
+    .nav-brand { display:flex;flex-direction:column; }
+    .nav-brand-name { font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--text-main);line-height:1;letter-spacing:.02em; }
+    .nav-brand-name span { color:var(--accent-glow); }
+    .nav-brand-sub { font-size:7.5px;font-weight:600;color:var(--text-label);letter-spacing:.13em;text-transform:uppercase;margin-top:4px; }
+    .nav-links { display:flex;align-items:center;gap:2rem;list-style:none; }
+    .nav-links a { font-size:13px;font-weight:500;color:var(--text-sub);text-decoration:none;transition:color .2s;position:relative; }
+    .nav-links a::after { content:'';position:absolute;bottom:-3px;left:0;right:0;height:1px;background:var(--accent-glow);transform:scaleX(0);transition:transform .2s ease; }
+    .nav-links a:hover { color:var(--text-main); }
+    .nav-links a:hover::after { transform:scaleX(1); }
+    .nav-links a.active { color:var(--accent-glow);font-weight:600; }
+    .nav-links a.active::after { transform:scaleX(1); }
+    .btn-logout {
+      padding:9px 16px;border-radius:10px;border:1px solid rgba(239,68,68,.25);background:rgba(239,68,68,.1);color:#f87171;
+      font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:6px;
+    }
+    .btn-logout:hover { background:rgba(239,68,68,.2);border-color:rgba(239,68,68,.4);transform:translateY(-1px); }
+    .avatar-btn {
+      width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a855f7);
+      border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;
+      font-weight:800;font-size:15px;color:#fff;transition:border-color .2s,transform .2s;overflow:hidden;flex-shrink:0;
+    }
+    .avatar-btn:hover { border-color:var(--accent-glow);transform:scale(1.05); }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      position: relative; padding: 120px 0 60px; z-index: 10;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--bg-mid) 0%, var(--bg-deep) 100%);
+    }
+    .page-header::before {
+      content:'';position:absolute;inset:0;
+      background: radial-gradient(ellipse 60% 70% at 50% 0%, rgba(139,92,246,.12), transparent);
+    }
+    .section-tag { display:inline-block;font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--border-gold);background:rgba(212,168,83,.08);border-radius:100px;padding:4px 14px;margin-bottom:1rem; }
+    .page-title { font-family:'Cormorant Garamond',serif;font-size:clamp(36px,5vw,56px);font-weight:700;line-height:1.1;color:var(--text-main); }
+    .page-title .hl { background:linear-gradient(135deg,var(--accent-glow) 0%,var(--gold-light) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic; }
+    .page-sub { font-size:15px;color:var(--text-sub);line-height:1.7;margin-top:.75rem; }
+
+    /* ── MAIN ── */
+    main { position:relative;z-index:10;max-width:1280px;margin:0 auto;padding:48px 2rem 80px; }
+
+    /* ── LAYOUT ── */
+    .settings-layout { display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start; }
+
+    /* ── SIDEBAR ── */
+    .sidebar-wrap {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      position: sticky;
+      top: 96px;
+      padding: 8px;
+    }
+    .sidebar-wrap::before { content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(to right,transparent,rgba(167,139,250,.35),transparent); }
+
+    .sidebar-header {
+      padding: 16px 12px 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .sidebar-header-title { font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--text-main); }
+    .sidebar-header-sub { font-size:10px;color:var(--text-label);margin-top:2px;letter-spacing:.05em; }
+
+    .sidebar-item {
+      display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;
+      cursor:pointer;transition:all .25s cubic-bezier(.22,1,.36,1);
+      color:var(--text-sub);font-size:13px;font-weight:600;
+      border:1px solid transparent;margin-bottom:3px;
+      position:relative;
+    }
+    .sidebar-item i { font-size:17px;transition:transform .25s;flex-shrink:0; }
+    .sidebar-item:hover { color:var(--text-main);background:rgba(139,92,246,.08);border-color:var(--border); }
+    .sidebar-item:hover i { transform:scale(1.15); }
+    .sidebar-item.active {
+      color:var(--accent-glow);background:var(--accent-dim);
+      border-color:rgba(139,92,246,.35);
+      box-shadow:0 4px 20px rgba(109,40,217,.15);
+    }
+    .sidebar-item.active::before {
+      content:'';position:absolute;left:0;top:25%;bottom:25%;width:3px;
+      background:var(--accent-glow);border-radius:0 3px 3px 0;
+    }
+    .sidebar-item.danger { color:#f87171; }
+    .sidebar-item.danger:hover { background:var(--red-dim);border-color:rgba(248,113,113,.25);color:#fca5a5; }
+    .sidebar-item.danger.active { color:#f87171;background:var(--red-dim);border-color:rgba(248,113,113,.35); }
+    .sidebar-item.danger.active::before { background:#f87171; }
+    .sidebar-divider { height:1px;background:var(--border);margin:8px 0; }
+
+    /* ── SECTION WRAP ── */
+    .section-wrap {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 24px;
+      animation: sectionFadeIn .45s cubic-bezier(.22,1,.36,1) both;
+    }
+    .section-wrap::before { content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(to right,transparent,rgba(167,139,250,.35),transparent); }
+    @keyframes sectionFadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+    .section-head {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-head-title { font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--text-main); }
+    .section-head-sub { font-size:12px;color:var(--text-label);margin-top:3px; }
+
+    .section-body { padding: 2rem; }
+
+    /* ── INPUTS ── */
+    .form-group { margin-bottom: 20px; }
+    .form-label { display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-label);margin-bottom:8px; }
+    .form-input, .form-textarea {
+      width:100%;background:rgba(10,10,18,.6);border:1px solid var(--border);border-radius:12px;
+      color:var(--text-main);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+      padding:11px 16px;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color:var(--text-label); }
+    .form-input:focus, .form-textarea:focus { border-color:var(--accent);box-shadow:0 0 0 3px rgba(139,92,246,.15);background:rgba(14,14,26,.8); }
+    .form-input.readonly { background:rgba(139,92,246,.06);border-color:rgba(139,92,246,.2);color:var(--text-sub);cursor:not-allowed; }
+    .form-textarea { resize:none;line-height:1.6; }
+
+    .form-grid { display:grid;grid-template-columns:1fr 1fr;gap:20px; }
+
+    /* ── AVATAR SECTION ── */
+    .avatar-section {
+      display:flex;align-items:center;gap:20px;padding:20px;
+      background:rgba(139,92,246,.06);border:1px solid var(--border);border-radius:16px;
+      margin-bottom:24px;
+    }
+    .avatar-big {
+      width:72px;height:72px;border-radius:50%;border:3px solid var(--border);
+      background:linear-gradient(135deg,#7c3aed,#a855f7);
+      display:flex;align-items:center;justify-content:center;font-weight:800;font-size:24px;color:#fff;
+      cursor:pointer;position:relative;overflow:hidden;flex-shrink:0;transition:border-color .2s;
+    }
+    .avatar-big:hover { border-color:var(--accent-glow); }
+    .avatar-big .cam-overlay {
+      position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:50%;
+      display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;
+    }
+    .avatar-big:hover .cam-overlay { opacity:1; }
+    .avatar-info-name { font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--text-main); }
+    .avatar-info-role { font-size:12px;color:var(--text-label);margin-top:3px; }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      padding:10px 20px;border-radius:12px;border:none;
+      background:linear-gradient(135deg,#7c3aed,#a855f7);
+      color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+      cursor:pointer;transition:all .25s;box-shadow:0 4px 16px rgba(109,40,217,.35);
+    }
+    .btn-primary:hover { transform:translateY(-2px);box-shadow:0 8px 24px rgba(109,40,217,.45);filter:brightness(1.1); }
+    .btn-primary:active { transform:translateY(0); }
+
+    .btn-secondary {
+      padding:10px 20px;border-radius:12px;border:1px solid var(--border);
+      background:rgba(139,92,246,.1);color:var(--accent-glow);
+      font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+      cursor:pointer;transition:all .25s;
+    }
+    .btn-secondary:hover { background:var(--accent-dim);border-color:rgba(139,92,246,.4);transform:translateY(-1px); }
+
+    .btn-danger {
+      padding:10px 20px;border-radius:12px;border:1px solid rgba(248,113,113,.25);
+      background:rgba(248,113,113,.1);color:#f87171;
+      font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+      cursor:pointer;transition:all .25s;
+    }
+    .btn-danger:hover { background:rgba(248,113,113,.2);border-color:rgba(248,113,113,.4);transform:translateY(-1px); }
+
+    .section-footer {
+      padding:16px 2rem;border-top:1px solid var(--border);
+      display:flex;justify-content:flex-end;
+    }
+
+    /* ── THEME CARDS ── */
+    .theme-cards { display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px; }
+    .theme-card {
+      border:2px solid var(--border);border-radius:16px;padding:20px;cursor:pointer;
+      text-align:center;transition:all .3s cubic-bezier(.22,1,.36,1);
+      background:rgba(10,10,18,.4);
+    }
+    .theme-card:hover { border-color:rgba(139,92,246,.5);transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.3); }
+    .theme-card.active { border-color:var(--accent-glow);background:var(--accent-dim);box-shadow:0 0 0 1px rgba(139,92,246,.2),0 12px 30px rgba(109,40,217,.15); }
+    .theme-card-icon { font-size:28px;margin-bottom:8px;display:block;transition:transform .3s; }
+    .theme-card:hover .theme-card-icon { transform:scale(1.15) rotate(-5deg); }
+    .theme-card-label { font-size:13px;font-weight:700;color:var(--text-sub); }
+    .theme-card.active .theme-card-label { color:var(--accent-glow); }
+
+    /* ── COLOR SWATCHES ── */
+    .color-section-label { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-label);margin-bottom:16px; }
+    .color-swatches { display:flex;gap:12px;flex-wrap:wrap; }
+    .swatch {
+      width:48px;height:48px;border-radius:14px;cursor:pointer;
+      border:3px solid transparent;transition:all .25s cubic-bezier(.22,1,.36,1);
+      position:relative;display:flex;align-items:center;justify-content:center;
+    }
+    .swatch:hover { transform:scale(1.12) translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.4); }
+    .swatch.active { border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.2); }
+    .swatch i { font-size:16px;color:#fff;opacity:0;transition:opacity .2s; }
+    .swatch.active i { opacity:1; }
+
+    /* ── DANGER CARDS ── */
+    .danger-card {
+      border:1px solid rgba(248,113,113,.2);background:rgba(248,113,113,.06);border-radius:16px;
+      padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;
+      margin-bottom:12px;transition:border-color .2s;
+    }
+    .danger-card:hover { border-color:rgba(248,113,113,.35); }
+    .danger-card-neutral { border-color:var(--border);background:rgba(139,92,246,.04); }
+    .danger-card-neutral:hover { border-color:rgba(139,92,246,.3); }
+    .danger-card h4 { font-size:14px;font-weight:700;color:#f87171;margin-bottom:4px; }
+    .danger-card-neutral h4 { color:var(--text-sub); }
+    .danger-card p { font-size:11.5px;color:var(--text-label);line-height:1.5; }
+
+    /* ── TEAM CARD ── */
+    .team-placeholder {
+      padding:48px 24px;text-align:center;border:1px dashed rgba(139,92,246,.25);
+      border-radius:16px;background:rgba(139,92,246,.04);
+    }
+    .team-placeholder i { font-size:40px;color:var(--text-label);margin-bottom:14px;display:block; }
+    .team-placeholder h4 { font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--text-main);margin-bottom:8px; }
+    .team-placeholder p { font-size:13px;color:var(--text-label);max-width:340px;margin:0 auto 20px;line-height:1.6; }
+
+    /* ── SECURITY INPUT WRAP ── */
+    .security-card {
+      background:rgba(10,10,18,.5);border:1px solid var(--border);border-radius:16px;padding:24px;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position:fixed;bottom:28px;right:28px;z-index:999;
+      background:linear-gradient(135deg,#7c3aed,#a855f7);
+      color:#fff;padding:12px 20px;border-radius:14px;
+      font-size:13px;font-weight:700;
+      box-shadow:0 8px 30px rgba(109,40,217,.4);
+      transform:translateY(100px);opacity:0;
+      transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s;
+      pointer-events:none;
+    }
+    .toast.show { transform:translateY(0);opacity:1; }
+
+    /* ── REVEAL ── */
+    .reveal { opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1); }
+    .reveal.visible { opacity:1;transform:translateY(0); }
+    .d-100{transition-delay:.1s}.d-200{transition-delay:.2s}.d-300{transition-delay:.3s}
+
+    /* ── SECTION SWITCH ── */
+    .sec { display:none; }
+    .sec.active { display:block; }
+
+    /* RESPONSIVE */
+    @media(max-width:1024px){ .settings-layout{grid-template-columns:1fr} .sidebar-wrap{position:static} }
+    @media(max-width:768px){ .nav-links{display:none} .form-grid{grid-template-columns:1fr} .theme-cards{grid-template-columns:1fr 1fr} }
+  </style>
 </head>
+<body>
 
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans antialiased min-h-screen flex flex-col pt-28 transition-colors duration-300">
+<!-- Ambient -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="grid-overlay"></div>
+<div class="particles" id="particles"></div>
 
-    <nav class="glass-nav fixed w-full top-0 z-40 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20 relative">
-                <div class="flex items-center gap-4 z-10">
-                    <div class="w-10 h-10 rounded-full bg-primary flex justify-center items-center text-white shadow-lg">
-                        <i class="fas fa-cog text-lg"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">Admaja<span class="text-primary">Majesti</span></h1>
-                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">PT. Admaja Properti Graha Majesti</p>
-                    </div>
-                </div>
-                <div class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-500 dark:text-slate-400 absolute left-1/2 transform -translate-x-1/2 w-max z-10">
-                    <a href="katalog.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Katalog</a>
-                    <a href="setting-user.html" class="text-primary border-b-2 border-primary py-2 transition-colors">Pengaturan</a>
-                </div>
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M6 20h12V4H6v16zm2-12h2v2H8V8zm4 0h2v2h-2V8zm-4 4h2v2H8v-2zm4 0h2v2h-2v-2zm-2 8h-2v-3h2v3z"/></svg>
+      </div>
+      <div class="nav-brand">
+        <div class="nav-brand-name">Admaja<span>Majesti</span></div>
+        <div class="nav-brand-sub">PT. Admaja Properti Graha Majesti</div>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="katalog.html">Katalog</a></li>
+      <li><a href="setting-user.html" class="active">Pengaturan</a></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="avatar-btn" id="userAvatar" title="Profil">A</div>
+      <button class="btn-logout" onclick="prosesLogout()">
+        <i class="ti ti-logout"></i> Keluar
+      </button>
+    </div>
+  </div>
+</nav>
 
-                <div class="flex items-center gap-4 z-10">
-                    <div id="userAvatar" class="w-10 h-10 rounded-full bg-primary transition flex justify-center items-center font-black text-white text-lg shadow-md overflow-hidden">
-                        A
-                    </div>
-                    <button onclick="prosesLogout()" class="bg-red-50 dark:bg-rose-500/10 hover:bg-red-100 dark:hover:bg-rose-500/20 text-red-600 font-bold py-2.5 px-4 rounded-xl transition text-sm flex items-center gap-2 border border-red-100 dark:border-rose-500/20" title="Keluar">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+  <div style="max-width:1280px;margin:0 auto;padding:0 2rem;position:relative;z-index:1;">
+    <div class="reveal">
+      <div class="section-tag">Panel Akun</div>
+      <h1 class="page-title">Pengaturan <span class="hl">Sistem</span></h1>
+      <p class="page-sub">Kelola profil, keamanan, tampilan, dan referensi sistem Anda.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<main>
+  <div class="settings-layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar-wrap reveal d-100" style="position:relative;">
+      <div class="sidebar-header">
+        <div class="sidebar-header-title">Menu Pengaturan</div>
+        <div class="sidebar-header-sub">Navigasi panel akun</div>
+      </div>
+
+      <div class="sidebar-item active" onclick="switchSection('profil', this)">
+        <i class="ti ti-user-circle"></i>
+        <span>Profil Saya</span>
+      </div>
+      <div class="sidebar-item" onclick="switchSection('keamanan', this)">
+        <i class="ti ti-lock"></i>
+        <span>Keamanan</span>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="sidebar-item danger" onclick="switchSection('bahaya', this)">
+        <i class="ti ti-alert-triangle"></i>
+        <span>Zona Bahaya</span>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="reveal d-200">
+
+      <!-- ── PROFIL ── -->
+      <div id="sec-profil" class="sec active">
+        <div class="section-wrap">
+          <div class="section-head">
+            <div class="section-head-title">Informasi Profil</div>
+            <div class="section-head-sub">Identitas utama Anda di dalam sistem AdmajaMajesti</div>
+          </div>
+          <div class="section-body">
+            <div class="avatar-section">
+              <input type="file" id="pFoto" accept="image/*" class="hidden" style="display:none" onchange="previewFoto(event)">
+              <div class="avatar-big" id="avatarBig" onclick="document.getElementById('pFoto').click()">
+                <div id="profInisial" style="width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;font-weight:800;font-size:24px;">A</div>
+                <div class="cam-overlay"><i class="ti ti-camera" style="font-size:20px;color:#fff;"></i></div>
+              </div>
+              <div>
+                <div class="avatar-info-name" id="profileName">Memuat…</div>
+                <div class="avatar-info-role" id="profileRoleDesc">Role · PT. Admaja Properti</div>
+                <div style="font-size:11px;color:var(--text-label);margin-top:6px;display:flex;align-items:center;gap:4px;"><i class="ti ti-camera" style="font-size:12px;"></i> Klik avatar untuk ganti foto</div>
+              </div>
             </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Nama Lengkap</label>
+                <input type="text" id="pNama" class="form-input" placeholder="Masukkan nama lengkap…">
+              </div>
+              <div class="form-group">
+                <label class="form-label">No. WhatsApp</label>
+                <input type="text" id="pNoWa" class="form-input" placeholder="Contoh: 0812xxxxxxxx">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Username (Terkunci)</label>
+                <input type="text" id="pUsername" class="form-input readonly" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Role Akses (Terkunci)</label>
+                <input type="text" id="pRole" class="form-input readonly" readonly style="color:var(--accent-glow);">
+              </div>
+            </div>
+          </div>
+          <div class="section-footer">
+            <button class="btn-primary" onclick="simpanProfil()">
+              <i class="ti ti-device-floppy" style="margin-right:6px;font-size:14px;"></i>Simpan Profil
+            </button>
+          </div>
         </div>
-    </nav>
+      </div>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
-            <div class="flex-1">
-                <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">Pengaturan <span class="text-primary">Akun</span> ⚙️</h2>
-                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Kelola profil, keamanan, tampilan, dan referensi sistem Anda.</p>
+      <!-- ── KEAMANAN ── -->
+      <div id="sec-keamanan" class="sec">
+        <div class="section-wrap">
+          <div class="section-head">
+            <div class="section-head-title">Keamanan Akun</div>
+            <div class="section-head-sub">Perbarui kata sandi secara berkala untuk menjaga keamanan akun</div>
+          </div>
+          <div class="section-body">
+            <div class="security-card">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+                <div style="width:40px;height:40px;border-radius:12px;background:rgba(139,92,246,.15);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <i class="ti ti-shield-lock" style="color:var(--accent-glow);font-size:18px;"></i>
+                </div>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:var(--text-main);">Ubah Kata Sandi</div>
+                  <div style="font-size:11px;color:var(--text-label);">Minimal 8 karakter, gunakan kombinasi huruf dan angka</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Kata Sandi Baru</label>
+                <input type="password" id="sandiBaru" class="form-input" placeholder="Minimal 8 karakter…">
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Konfirmasi Sandi Baru</label>
+                <input type="password" id="sandiKonfirmasi" class="form-input" placeholder="Ketik ulang sandi baru…">
+              </div>
             </div>
+          </div>
+          <div class="section-footer">
+            <button class="btn-secondary" onclick="ubahSandi()">
+              <i class="ti ti-key" style="margin-right:6px;font-size:14px;"></i>Perbarui Kata Sandi
+            </button>
+          </div>
         </div>
+      </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-            
-            <div class="col-span-1 bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 p-4 sticky top-28 transition-colors">
-                <div class="sidebar-item active cursor-pointer flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-500 dark:text-slate-400" onclick="showSection('profil', this)">
-                    <i class="fas fa-user text-lg w-6 text-center"></i> Profil Saya
-                </div>
-                <div class="sidebar-item cursor-pointer flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-500 dark:text-slate-400 mt-1" onclick="showSection('keamanan', this)">
-                    <i class="fas fa-lock text-lg w-6 text-center"></i> Keamanan
-                </div>
-                <div class="sidebar-item cursor-pointer flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-500 dark:text-slate-400 mt-1" onclick="showSection('tampilan', this)">
-                    <i class="fas fa-palette text-lg w-6 text-center"></i> Tampilan
-                </div>
-                <div class="my-3 border-t border-slate-100 dark:border-slate-700"></div>
-                <div class="sidebar-item cursor-pointer flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-600 transition" onclick="showSection('bahaya', this)">
-                    <i class="fas fa-exclamation-triangle text-lg w-6 text-center"></i> Zona Bahaya
-                </div>
+      <!-- ── TAMPILAN ── -->
+      <div id="sec-tampilan" class="sec">
+        <div class="section-wrap">
+          <div class="section-head">
+            <div class="section-head-title">Tema Antarmuka</div>
+            <div class="section-head-sub">Ubah nuansa aplikasi menjadi terang atau gelap sesuka hati</div>
+          </div>
+          <div class="section-body">
+            <div class="color-section-label" style="margin-bottom:12px;">Pilih Mode</div>
+            <div class="theme-cards">
+              <div id="btnThemeLight" class="theme-card" onclick="setThemeMode('light')">
+                <span class="theme-card-icon">☀️</span>
+                <div class="theme-card-label">Mode Terang</div>
+              </div>
+              <div id="btnThemeDark" class="theme-card" onclick="setThemeMode('dark')">
+                <span class="theme-card-icon">🌙</span>
+                <div class="theme-card-label">Mode Gelap</div>
+              </div>
             </div>
 
-            <div class="col-span-1 lg:col-span-3">
+            <div style="height:1px;background:var(--border);margin:24px 0;"></div>
 
-                <div id="sec-profil" class="section block space-y-6">
-                    <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 p-6 md:p-8 transition-colors">
-                        <div class="mb-6">
-                            <h3 class="font-extrabold text-xl text-slate-800 dark:text-white">Informasi Profil</h3>
-                            <p class="text-xs text-slate-400 font-medium mt-1">Identitas utama Anda di dalam sistem.</p>
-                        </div>
-                        
-                        <div class="flex items-center gap-5 mb-8 border-b border-slate-100 dark:border-slate-700 pb-8">
-                            <input type="file" id="pFoto" accept="image/*" class="hidden" onchange="previewFoto(event)">
-                            <div class="relative w-20 h-20 rounded-full bg-primary flex justify-center items-center text-white text-3xl font-black shadow-md cursor-pointer group" onclick="document.getElementById('pFoto').click()">
-                                <div id="profInisial" class="w-full h-full rounded-full flex justify-center items-center overflow-hidden">
-                                    A
-                                </div>
-                                <div class="absolute inset-0 bg-black/40 rounded-full flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <i class="fas fa-camera text-white"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-slate-800 dark:text-white text-xl" id="profileName">Loading...</h4>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5" id="profileRoleDesc">Role · PT. Admaja Properti</p>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Lengkap</label>
-                                <input type="text" id="pNama" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-[13px] font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary transition-colors">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">No. WhatsApp</label>
-                                <input type="text" id="pNoWa" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-[13px] font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary transition-colors">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Username (Terkunci)</label>
-                                <input type="text" id="pUsername" readonly class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-[13px] font-bold text-slate-500 dark:text-slate-400 cursor-not-allowed">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Role Akses (Terkunci)</label>
-                                <input type="text" id="pRole" readonly class="w-full bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 text-[13px] font-bold text-primary cursor-not-allowed">
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
-                            <button class="bg-primary hover:opacity-90 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-md transition" onclick="simpanProfil()">Simpan Profil</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="sec-keamanan" class="section hidden space-y-6">
-                    <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 p-6 md:p-8 transition-colors">
-                        <div class="mb-6">
-                            <h3 class="font-extrabold text-xl text-slate-800 dark:text-white">Keamanan Akun</h3>
-                            <p class="text-xs text-slate-400 font-medium mt-1">Perbarui kata sandi secara berkala untuk menjaga keamanan akun.</p>
-                        </div>
-
-                        <div class="bg-slate-50 dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Kata Sandi Baru</label>
-                                    <input type="password" id="sandiBaru" placeholder="Minimal 8 karakter" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-[13px] font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary transition-colors">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Konfirmasi Sandi Baru</label>
-                                    <input type="password" id="sandiKonfirmasi" placeholder="Ketik ulang sandi baru" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-[13px] font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary transition-colors">
-                                </div>
-                            </div>
-                            <div class="flex justify-end mt-6">
-                                <button class="bg-slate-900 dark:bg-white dark:text-slate-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-md hover:opacity-90 transition" onclick="ubahSandi()">Perbarui Kata Sandi</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="sec-tampilan" class="section hidden space-y-6">
-                    <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 p-6 md:p-8 transition-colors">
-                        <div class="mb-6">
-                            <h3 class="font-extrabold text-xl text-slate-800 dark:text-white">Tema Antarmuka</h3>
-                            <p class="text-xs text-slate-400 font-medium mt-1">Ubah nuansa aplikasi menjadi terang atau gelap sesuka hati Anda.</p>
-                        </div>
-
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                            <div id="btnThemeLight" onclick="setThemeMode('light')" class="theme-opt border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-2xl p-4 cursor-pointer text-center transition hover:border-primary">
-                                <div class="text-3xl mb-2 text-amber-500">☀️</div>
-                                <div class="text-[13px] font-bold text-slate-800 dark:text-slate-200">Mode Terang</div>
-                            </div>
-                            <div id="btnThemeDark" onclick="setThemeMode('dark')" class="theme-opt border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-2xl p-4 cursor-pointer text-center transition hover:border-primary">
-                                <div class="text-3xl mb-2 text-indigo-400">🌙</div>
-                                <div class="text-[13px] font-bold text-slate-800 dark:text-slate-200">Mode Gelap</div>
-                            </div>
-                        </div>
-
-                        <div class="border-t border-slate-100 dark:border-slate-700 my-6"></div>
-                        
-                        <div class="mb-5">
-                            <h4 class="font-extrabold text-lg text-slate-800 dark:text-white">Warna Aksen Aplikasi</h4>
-                            <p class="text-xs text-slate-400 font-medium mt-1">Personalisasikan warna tombol dan detail UI lainnya.</p>
-                        </div>
-
-                        <div class="flex gap-4 flex-wrap">
-                            <div onclick="selectColor(this,'#6d28d9', '#ede9fe')" class="color-opt w-12 h-12 rounded-2xl cursor-pointer border-[3px] border-transparent shadow-sm transition transform hover:scale-110 flex justify-center items-center" style="background:#6d28d9" title="Ungu Majesti"></div>
-                            <div onclick="selectColor(this,'#3b82f6', '#dbeafe')" class="color-opt w-12 h-12 rounded-2xl cursor-pointer border-[3px] border-transparent shadow-sm transition transform hover:scale-110 flex justify-center items-center" style="background:#3b82f6" title="Biru"></div>
-                            <div onclick="selectColor(this,'#10b981', '#d1fae5')" class="color-opt w-12 h-12 rounded-2xl cursor-pointer border-[3px] border-transparent shadow-sm transition transform hover:scale-110 flex justify-center items-center" style="background:#10b981" title="Hijau"></div>
-                            <div onclick="selectColor(this,'#f97316', '#ffedd5')" class="color-opt w-12 h-12 rounded-2xl cursor-pointer border-[3px] border-transparent shadow-sm transition transform hover:scale-110 flex justify-center items-center" style="background:#f97316" title="Oranye"></div>
-                            <div onclick="selectColor(this,'#e11d48', '#ffe4e6')" class="color-opt w-12 h-12 rounded-2xl cursor-pointer border-[3px] border-transparent shadow-sm transition transform hover:scale-110 flex justify-center items-center" style="background:#e11d48" title="Merah"></div>
-                            <div onclick="selectColor(this,'#334155', '#e2e8f0')" class="color-opt w-12 h-12 rounded-2xl cursor-pointer border-[3px] border-transparent shadow-sm transition transform hover:scale-110 flex justify-center items-center" style="background:#334155" title="Batu Tulis"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="sec-tim" class="section hidden space-y-6">
-                    <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 p-6 md:p-8 transition-colors">
-                        <div class="bg-slate-50 dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center text-center">
-                            <i class="fas fa-users-cog text-5xl text-primary mb-4"></i>
-                            <h4 class="font-extrabold text-slate-800 dark:text-white text-lg">Hak Akses Terpusat</h4>
-                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-md">Pengaturan tambah, edit, atau hapus anggota tim dan klien kini dikelola secara terpusat di halaman <strong>Manajemen Agen</strong>.</p>
-                            <button onclick="window.location.href='manajemen-agen.html'" class="mt-6 bg-primary text-white px-6 py-3 rounded-xl text-sm font-bold shadow-md hover:opacity-90 transition">Pergi ke Manajemen Agen</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="sec-perusahaan" class="section hidden space-y-6">
-                    <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 p-6 md:p-8 transition-colors">
-                        <div class="mb-6">
-                            <h3 class="font-extrabold text-xl text-slate-800 dark:text-white">Informasi Perusahaan</h3>
-                            <p class="text-xs text-slate-400 font-medium mt-1">Data identitas perusahaan yang digunakan untuk dokumen cetak/laporan.</p>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Perusahaan (PT)</label>
-                                <input type="text" id="cNama" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-[13px] font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary transition-colors">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Brand Dagang</label>
-                                <input type="text" id="cBrand" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-[13px] font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary transition-colors">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">NPWP Perusahaan</label>
-                                <input type="text" id="cNpwp" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-[13px] font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary transition-colors">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Email Official</label>
-                                <input type="email" id="cEmail" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-[13px] font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary transition-colors">
-                            </div>
-                        </div>
-
-                        <div class="space-y-5">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Alamat Lengkap Kantor Pusat</label>
-                                <textarea id="cAlamat" rows="3" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-[13px] font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary transition-colors resize-none"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
-                            <button class="bg-primary hover:opacity-90 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-md transition" onclick="simpanPerusahaan()">Simpan Data Perusahaan</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="sec-bahaya" class="section hidden space-y-6">
-                    <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 p-6 md:p-8 transition-colors">
-                        <div class="mb-6">
-                            <h3 class="font-extrabold text-xl text-rose-600"><i class="fas fa-exclamation-triangle mr-2"></i>Zona Bahaya</h3>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Hati-hati! Tindakan di bawah ini bersifat permanen.</p>
-                        </div>
-
-                        <div class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-5 mb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div>
-                                <h4 class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Reset Pengaturan Tampilan</h4>
-                                <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium max-w-md">Mengembalikan warna dan tema aplikasi ke kondisi bawaan pabrik (Default).</p>
-                            </div>
-                            <button class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-100 transition w-full md:w-auto shadow-sm" onclick="resetPengaturanUI()">Reset Tampilan</button>
-                        </div>
-
-                        <div class="border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-900/10 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div>
-                                <h4 class="text-sm font-bold text-rose-700 dark:text-rose-400 mb-1">Hapus Akun Permanen</h4>
-                                <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium max-w-md">Menghapus akun Anda dari server. Anda akan otomatis keluar dari sistem.</p>
-                            </div>
-                            <button class="bg-rose-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-rose-700 transition w-full md:w-auto shadow-md" onclick="hapusAkunSendiri()">Hapus Akun Saya</button>
-                        </div>
-                    </div>
-                </div>
-
+            <div class="color-section-label">Warna Aksen Aplikasi</div>
+            <div style="font-size:12px;color:var(--text-label);margin-bottom:16px;">Personalisasikan warna tombol dan elemen utama UI</div>
+            <div class="color-swatches">
+              <div class="swatch active" onclick="selectColor(this,'#6d28d9','#ede9fe')" style="background:#6d28d9;" title="Ungu Majesti"><i class="ti ti-check"></i></div>
+              <div class="swatch" onclick="selectColor(this,'#3b82f6','#dbeafe')" style="background:#3b82f6;" title="Biru"><i class="ti ti-check"></i></div>
+              <div class="swatch" onclick="selectColor(this,'#10b981','#d1fae5')" style="background:#10b981;" title="Hijau"><i class="ti ti-check"></i></div>
+              <div class="swatch" onclick="selectColor(this,'#f97316','#ffedd5')" style="background:#f97316;" title="Oranye"><i class="ti ti-check"></i></div>
+              <div class="swatch" onclick="selectColor(this,'#e11d48','#ffe4e6')" style="background:#e11d48;" title="Merah"><i class="ti ti-check"></i></div>
+              <div class="swatch" onclick="selectColor(this,'#334155','#e2e8f0')" style="background:#334155;" title="Batu Tulis"><i class="ti ti-check"></i></div>
             </div>
+          </div>
         </div>
-    </main>
+      </div>
 
-    <div class="toast" id="toast"></div>
+      <!-- ── TIM ── -->
+      <div id="sec-tim" class="sec">
+        <div class="section-wrap">
+          <div class="section-head">
+            <div class="section-head-title">Tim & Agen</div>
+            <div class="section-head-sub">Manajemen hak akses anggota tim dan klien</div>
+          </div>
+          <div class="section-body">
+            <div class="team-placeholder">
+              <i class="ti ti-users-group"></i>
+              <h4>Hak Akses Terpusat</h4>
+              <p>Pengaturan tambah, edit, atau hapus anggota tim dan klien kini dikelola secara terpusat di halaman <strong style="color:var(--accent-glow)">Manajemen Agen</strong>.</p>
+              <button class="btn-primary" onclick="window.location.href='manajemen-agen.html'">
+                <i class="ti ti-arrow-right" style="margin-right:6px;font-size:14px;"></i>Pergi ke Manajemen Agen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <script>
-        // RADAR TEMA (Jalan paling awal agar tidak berkedip)
-        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
-        const savedColor = localStorage.getItem('themeColor');
-        const savedLight = localStorage.getItem('themeColorLight');
-        if(savedColor) {
-            document.documentElement.style.setProperty('--color-primary', savedColor);
-            document.documentElement.style.setProperty('--color-secondary', savedLight);
-        }
+      <!-- ── PERUSAHAAN ── -->
+      <div id="sec-perusahaan" class="sec">
+        <div class="section-wrap">
+          <div class="section-head">
+            <div class="section-head-title">Informasi Perusahaan</div>
+            <div class="section-head-sub">Data identitas perusahaan untuk dokumen cetak dan laporan resmi</div>
+          </div>
+          <div class="section-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Nama Perusahaan (PT)</label>
+                <input type="text" id="cNama" class="form-input" placeholder="PT. Admaja Properti…">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Brand Dagang</label>
+                <input type="text" id="cBrand" class="form-input" placeholder="Nama brand…">
+              </div>
+              <div class="form-group">
+                <label class="form-label">NPWP Perusahaan</label>
+                <input type="text" id="cNpwp" class="form-input" placeholder="00.000.000.0-000.000">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email Official</label>
+                <input type="email" id="cEmail" class="form-input" placeholder="official@perusahaan.com">
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Alamat Lengkap Kantor Pusat</label>
+              <textarea id="cAlamat" class="form-textarea" rows="3" placeholder="Jl. Contoh No. 1, Kota…"></textarea>
+            </div>
+          </div>
+          <div class="section-footer">
+            <button class="btn-primary" onclick="simpanPerusahaan()">
+              <i class="ti ti-device-floppy" style="margin-right:6px;font-size:14px;"></i>Simpan Data Perusahaan
+            </button>
+          </div>
+        </div>
+      </div>
 
-        // 1. OTENTIKASI & INISIALISASI DATA USER
-        if (sessionStorage.getItem('isLoggedIn') !== 'true') window.location.href = 'login.html';
-        const usernameAktif = sessionStorage.getItem('username') || 'A';
-        const roleAktif = sessionStorage.getItem('role') || 'USER';
-        
-        // Cek data user dari Database API
-        async function muatDataProfil() {
-            try {
-                const res = await fetch('http://localhost:8080/api/users');
-                const users = await res.json();
-                const myProfile = users.find(u => u.username === usernameAktif);
+      <!-- ── BAHAYA ── -->
+      <div id="sec-bahaya" class="sec">
+        <div class="section-wrap" style="border-color:rgba(248,113,113,.2);">
+          <div class="section-head" style="border-color:rgba(248,113,113,.15);">
+            <div>
+              <div class="section-head-title" style="color:#f87171;display:flex;align-items:center;gap:8px;">
+                <i class="ti ti-alert-triangle" style="font-size:20px;"></i>Zona Bahaya
+              </div>
+              <div class="section-head-sub">Hati-hati! Tindakan di bawah ini bersifat permanen dan tidak dapat dibatalkan.</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="danger-card" style="margin-bottom:0;">
+              <div>
+                <h4>Hapus Akun Permanen</h4>
+                <p>Menghapus akun Anda dari server secara permanen. Anda akan otomatis keluar dari sistem.</p>
+              </div>
+              <button class="btn-danger" style="background:rgba(248,113,113,.25);font-weight:800;" onclick="hapusAkunSendiri()">
+                <i class="ti ti-user-minus" style="margin-right:6px;font-size:13px;"></i>Hapus Akun
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-                if (myProfile) {
-                    const namaTampil = myProfile.namaLengkap || usernameAktif;
-                    const inisial = namaTampil.charAt(0).toUpperCase();
-                    
-                    document.getElementById('profileName').innerText = namaTampil;
-                    document.getElementById('profileRoleDesc').innerText = `${myProfile.role} · PT. Admaja Properti`;
-                    
-                    // --- LOGIKA MENAMPILKAN FOTO PROFIL ASLI ---
-                    let htmlAvatar = inisial;
-                    if (myProfile.fotoProfil && myProfile.fotoProfil !== "default_profil.png" && myProfile.fotoProfil !== "null") {
-                        const urlFoto = `http://localhost:8080/uploads/profil/${encodeURIComponent(myProfile.fotoProfil)}`;
-                        htmlAvatar = `<img src="${urlFoto}" alt="Profil" class="w-full h-full object-cover">`;
-                    }
-                    
-                    // Pasang ke Navbar & Profil Besar
-                    document.getElementById('userAvatar').innerHTML = htmlAvatar;
-                    document.getElementById('profInisial').innerHTML = htmlAvatar;
+    </div>
+  </div>
+</main>
 
-                    // Isi form profil
-                    document.getElementById('pNama').value = myProfile.namaLengkap || '';
-                    document.getElementById('pNoWa').value = myProfile.noWa || '';
-                    document.getElementById('pUsername').value = myProfile.username;
-                    document.getElementById('pRole').value = myProfile.role;
-                }
-            } catch (err) { console.error("Gagal muat profil:", err); }
-        }
-        muatDataProfil();
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
-        // Fitur Preview Gambar saat dipilih dari komputer
-        function previewFoto(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('profInisial').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-                }
-                reader.readAsDataURL(file);
-            }
-        }
+<script src="js/setting-user.js"></script>
 
-        function prosesLogout() {
-            Swal.fire({
-                title: 'Yakin ingin keluar?', text: "Sesi kerja Anda akan diakhiri.", icon: 'question',
-                showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#94a3b8', confirmButtonText: 'Ya, Keluar!', cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) { sessionStorage.clear(); window.location.href = 'login.html'; }
-            });
-        }
-
-        // 2. FUNGSI NAVIGASI SIDEBAR & UI
-        function showSection(name, el) {
-            document.querySelectorAll('.section').forEach(s => {
-                s.classList.remove('block'); s.classList.add('hidden');
-            });
-            document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
-            document.getElementById('sec-' + name).classList.remove('hidden');
-            document.getElementById('sec-' + name).classList.add('block');
-            el.classList.add('active');
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2800);
-        }
-
-        // 3. FUNGSI SIMPAN PROFIL
-        async function simpanProfil() {
-            const formData = new FormData();
-            formData.append("namaLengkap", document.getElementById('pNama').value);
-            formData.append("noWa", document.getElementById('pNoWa').value);
-            formData.append("role", roleAktif); 
-            
-            const fileFoto = document.getElementById('pFoto').files[0];
-            if (fileFoto) formData.append("foto", fileFoto);
-
-            try {
-                const response = await fetch(`http://localhost:8080/api/users/edit/${usernameAktif}`, { 
-                    method: 'PUT', body: formData 
-                });
-                if (response.ok) {
-                    showToast('✅ Profil berhasil diperbarui!');
-                    muatDataProfil(); // Refresh UI untuk menampilkan foto baru
-                } else { Swal.fire('Gagal', 'Terjadi kesalahan sistem', 'error'); }
-            } catch (error) { Swal.fire('Error', 'Gagal menyambung ke server.', 'error'); }
-        }
-
-        // 4. FUNGSI UBAH SANDI (Sudah Benar-benar Sempurna!)
-        async function ubahSandi() {
-            const sandiBaru = document.getElementById('sandiBaru').value;
-            const konfirmasi = document.getElementById('sandiKonfirmasi').value;
-
-            if(!sandiBaru || !konfirmasi) return Swal.fire('Peringatan', 'Lengkapi form kata sandi!', 'warning');
-            if(sandiBaru !== konfirmasi) return Swal.fire('Peringatan', 'Konfirmasi sandi tidak cocok!', 'warning');
-            if(sandiBaru.length < 8) return Swal.fire('Peringatan', 'Sandi baru minimal 8 karakter!', 'warning');
-
-            const namaVal = document.getElementById('pNama').value || usernameAktif;
-            const noWaVal = document.getElementById('pNoWa').value || "-";
-
-            const formData = new FormData();
-            formData.append("namaLengkap", namaVal);
-            formData.append("noWa", noWaVal); 
-            formData.append("role", roleAktif);
-            formData.append("password", sandiBaru);
-
-            try {
-                const response = await fetch(`http://localhost:8080/api/users/edit/${usernameAktif}`, { 
-                    method: 'PUT', body: formData 
-                });
-                
-                if (response.ok) {
-                    Swal.fire('Berhasil', 'Kata sandi telah diubah. Silakan gunakan sandi baru untuk login selanjutnya.', 'success');
-                    // Kotak sandi lama sudah tidak ada, jadi kita bersihkan yang baru saja
-                    document.getElementById('sandiBaru').value = '';
-                    document.getElementById('sandiKonfirmasi').value = '';
-                } else { 
-                    const resultText = await response.text();
-                    Swal.fire('Gagal', resultText || 'Gagal mengubah kata sandi.', 'error'); 
-                }
-            } catch (error) { 
-                console.error(error); // Agar error asli terlihat di console browser (F12)
-                Swal.fire('Error', 'Gagal memproses data.', 'error'); 
-            }
-        }
-
-        // 5. FITUR DARK MODE & WARNA AKSEN
-        function setThemeMode(mode) {
-            const htmlTag = document.documentElement;
-            if(mode === 'dark') {
-                htmlTag.classList.add('dark'); localStorage.setItem('theme', 'dark');
-            } else {
-                htmlTag.classList.remove('dark'); localStorage.setItem('theme', 'light');
-            }
-            
-            document.querySelectorAll('.theme-opt').forEach(o => {
-                o.classList.remove('border-primary'); o.classList.add('border-slate-200', 'dark:border-slate-700');
-            });
-            const btn = mode === 'dark' ? document.getElementById('btnThemeDark') : document.getElementById('btnThemeLight');
-            btn.classList.remove('border-slate-200', 'dark:border-slate-700'); btn.classList.add('border-primary');
-            showToast(`🎨 Tema ${mode === 'dark' ? 'Gelap' : 'Terang'} diterapkan!`);
-        }
-
-        function selectColor(el, colorHex, lightHex) {
-            document.querySelectorAll('.color-opt').forEach(o => o.innerHTML = '');
-            el.innerHTML = '<i class="fas fa-check text-white text-xl drop-shadow-md"></i>';
-            document.documentElement.style.setProperty('--color-primary', colorHex);
-            document.documentElement.style.setProperty('--color-secondary', lightHex);
-            localStorage.setItem('themeColor', colorHex);
-            localStorage.setItem('themeColorLight', lightHex);
-            showToast('🎨 Warna aplikasi diperbarui!');
-        }
-
-        // 6. PERUSAHAAN (LOCAL STORAGE)
-        function muatPerusahaan() {
-            const dataStr = localStorage.getItem('dataPerusahaan');
-            if(dataStr) {
-                const data = JSON.parse(dataStr);
-                document.getElementById('cNama').value = data.nama || '';
-                document.getElementById('cBrand').value = data.brand || '';
-                document.getElementById('cNpwp').value = data.npwp || '';
-                document.getElementById('cEmail').value = data.email || '';
-                document.getElementById('cAlamat').value = data.alamat || '';
-            }
-        }
-        muatPerusahaan();
-
-        function simpanPerusahaan() {
-            const data = {
-                nama: document.getElementById('cNama').value, brand: document.getElementById('cBrand').value,
-                npwp: document.getElementById('cNpwp').value, email: document.getElementById('cEmail').value,
-                alamat: document.getElementById('cAlamat').value
-            };
-            localStorage.setItem('dataPerusahaan', JSON.stringify(data));
-            showToast('🏢 Data perusahaan tersimpan!');
-        }
-
-        // 7. ZONA BAHAYA
-        function hapusAkunSendiri() {
-            Swal.fire({
-                title: 'Hapus Akun Anda?', text: "Akses Anda akan terhapus permanen dan Anda akan dikeluarkan dari sistem.",
-                icon: 'warning', showCancelButton: true, confirmButtonColor: '#e11d48', confirmButtonText: 'Ya, Hapus!'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try {
-                        const res = await fetch(`http://localhost:8080/api/users/hapus/${usernameAktif}`, { method: 'DELETE' });
-                        if(res.ok) { sessionStorage.clear(); window.location.href = 'login.html'; }
-                    } catch (e) { Swal.fire('Error', 'Gagal memproses ke server.', 'error'); }
-                }
-            });
-        }
-
-        function resetTransaksi() {
-            Swal.fire({ title: 'Hapus Riwayat Transaksi?', text: "Fitur ini belum dikonfigurasi di sisi Backend API.", icon: 'info' });
-        }
-
-        function resetPengaturanUI() {
-            localStorage.removeItem('theme'); localStorage.removeItem('themeColor'); localStorage.removeItem('themeColorLight');
-            document.documentElement.classList.remove('dark');
-            document.documentElement.style.setProperty('--color-primary', '#6d28d9'); 
-            document.documentElement.style.setProperty('--color-secondary', '#ede9fe');
-            showToast('🔄 Tampilan dikembalikan ke Default');
-            setTimeout(() => window.location.reload(), 1500);
-        }
-    </script>
 </body>
 </html>

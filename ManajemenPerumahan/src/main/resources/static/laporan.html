@@ -1,480 +1,1589 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Aset – AdmajaMajesti</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
-                    colors: { 
-                        primary: 'var(--color-primary, #6d28d9)', 
-                        secondary: 'var(--color-secondary, #4c1d95)'
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laporan Aset — AdmajaMajesti</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
-        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
-        const savedColor = localStorage.getItem('themeColor');
-        const savedLight = localStorage.getItem('themeColorLight');
-        if(savedColor) {
-            document.documentElement.style.setProperty('--color-primary', savedColor);
-            document.documentElement.style.setProperty('--color-secondary', savedLight);
-        }
-    </script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    <style>
-        body { transition: background-color 0.3s, color 0.3s; }
-        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
-        .dark .glass-nav { background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .donut-circle { transition: stroke-dasharray 1s ease-out, stroke-dashoffset 1s ease-out; }
-        
-        .laporan-table th { padding: 16px 12px; font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1.5px solid #f1f5f9; }
-        .laporan-table td { padding: 16px 12px; font-size: 13px; color: #1e293b; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-        .laporan-table tr:last-child td { border-bottom: none; }
-        .laporan-table tr:hover { background-color: #fafbfd; }
-        
-        .dark .laporan-table th { border-bottom-color: #1e293b; }
-        .dark .laporan-table td { border-bottom-color: #1e293b; color: #e2e8f0; }
-        .dark .laporan-table tr:hover { background-color: #0f172a; }
-    </style>
+    :root {
+      --bg-deep: #0a0a12;
+      --bg-mid: #10101e;
+      --bg-section: #0d0d1a;
+      --bg-alt: #0c0c18;
+      --accent: #8b5cf6;
+      --accent-glow: #a78bfa;
+      --accent-dim: rgba(139, 92, 246, 0.18);
+      --gold: #d4a853;
+      --gold-light: #f0c775;
+      --card-bg: rgba(16, 16, 30, 0.72);
+      --card-bg-solid: #12121f;
+      --border: rgba(139, 92, 246, 0.22);
+      --border-gold: rgba(212, 168, 83, 0.25);
+      --text-main: #f1f0ff;
+      --text-sub: #8b8aaa;
+      --text-label: #6b6a8a;
+      --emerald: #34d399;
+      --emerald-dim: rgba(52, 211, 153, 0.15);
+      --orange: #fb923c;
+      --orange-dim: rgba(251, 146, 60, 0.15);
+      --blue: #60a5fa;
+      --blue-dim: rgba(96, 165, 250, 0.15);
+      --indigo-dim: rgba(99, 102, 241, 0.15);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-main);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ── Ambient ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+      animation: orbFloat linear infinite;
+    }
+
+    .orb-1 {
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, rgba(109, 40, 217, .22) 0%, transparent 70%);
+      top: -180px;
+      left: -140px;
+      animation-duration: 24s;
+    }
+
+    .orb-2 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(168, 85, 247, .14) 0%, transparent 70%);
+      bottom: 20%;
+      right: -120px;
+      animation-duration: 30s;
+      animation-direction: reverse;
+    }
+
+    .orb-3 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(212, 168, 83, .09) 0%, transparent 70%);
+      top: 40%;
+      left: 55%;
+      animation-duration: 20s;
+    }
+
+    @keyframes orbFloat {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1)
+      }
+
+      33% {
+        transform: translate(30px, -25px) scale(1.04)
+      }
+
+      66% {
+        transform: translate(-20px, 20px) scale(.97)
+      }
+    }
+
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(139, 92, 246, .04) 1px, transparent 1px), linear-gradient(90deg, rgba(139, 92, 246, .04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 40%, black 20%, transparent 100%);
+    }
+
+    .particles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      animation: particleDrift linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes particleDrift {
+      0% {
+        transform: translateY(100vh) translateX(0) scale(0);
+        opacity: 0
+      }
+
+      10% {
+        opacity: 1
+      }
+
+      90% {
+        opacity: .5
+      }
+
+      100% {
+        transform: translateY(-20px) translateX(var(--drift)) scale(1);
+        opacity: 0
+      }
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(10, 10, 18, 0.8);
+      backdrop-filter: blur(28px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+      animation: navReveal 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes navReveal {
+      from {
+        opacity: 0;
+        transform: translateY(-20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #d946ef 100%);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, .4), 0 0 0 1px rgba(255, 255, 255, .08) inset;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .nav-logo-icon::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .18), transparent);
+      animation: logoShine 4s ease infinite;
+    }
+
+    @keyframes logoShine {
+
+      0%,
+      60%,
+      100% {
+        left: -100%
+      }
+
+      30% {
+        left: 120%
+      }
+    }
+
+    .nav-brand {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-brand-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1;
+      letter-spacing: .02em;
+    }
+
+    .nav-brand-name span {
+      color: var(--accent-glow);
+    }
+
+    .nav-brand-sub {
+      font-size: 7.5px;
+      font-weight: 600;
+      color: var(--text-label);
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sub);
+      text-decoration: none;
+      transition: color .2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--accent-glow);
+      transform: scaleX(0);
+      transition: transform .2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-main);
+    }
+
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+
+    .nav-links a.active {
+      color: var(--accent-glow);
+      font-weight: 600;
+    }
+
+    .nav-links a.active::after {
+      transform: scaleX(1);
+    }
+
+    .btn-logout {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(239, 68, 68, .25);
+      background: rgba(239, 68, 68, .1);
+      color: #f87171;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-logout:hover {
+      background: rgba(239, 68, 68, .2);
+      border-color: rgba(239, 68, 68, .4);
+      transform: translateY(-1px);
+    }
+
+    .avatar-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      border: 2px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 15px;
+      color: #fff;
+      transition: border-color .2s, transform .2s;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .avatar-btn:hover {
+      border-color: var(--accent-glow);
+      transform: scale(1.05);
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      position: relative;
+      padding: 120px 0 60px;
+      z-index: 10;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--bg-mid) 0%, var(--bg-deep) 100%);
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 70% at 50% 0%, rgba(139, 92, 246, .12), transparent);
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      border: 1px solid var(--border-gold);
+      background: rgba(212, 168, 83, .08);
+      border-radius: 100px;
+      padding: 4px 14px;
+      margin-bottom: 1rem;
+    }
+
+    .page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--text-main);
+    }
+
+    .page-title .hl {
+      background: linear-gradient(135deg, var(--accent-glow) 0%, var(--gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-style: italic;
+    }
+
+    .page-sub {
+      font-size: 15px;
+      color: var(--text-sub);
+      line-height: 1.7;
+      margin-top: .75rem;
+    }
+
+    /* ── MAIN ── */
+    main {
+      position: relative;
+      z-index: 10;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 48px 2rem 80px;
+    }
+
+    /* ── STAT CARDS ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s cubic-bezier(.22, 1, .36, 1), box-shadow .3s, border-color .3s;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(167, 139, 250, .4), transparent);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .4), 0 0 30px rgba(109, 40, 217, .12);
+    }
+
+    .stat-card.gold-card:hover {
+      border-color: var(--border-gold);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .4), 0 0 30px rgba(212, 168, 83, .1);
+    }
+
+    .stat-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .icon-purple {
+      background: linear-gradient(135deg, rgba(109, 40, 217, .4), rgba(139, 92, 246, .2));
+      border: 1px solid rgba(139, 92, 246, .3);
+      color: var(--accent-glow);
+    }
+
+    .icon-emerald {
+      background: var(--emerald-dim);
+      border: 1px solid rgba(52, 211, 153, .3);
+      color: var(--emerald);
+    }
+
+    .icon-orange {
+      background: var(--orange-dim);
+      border: 1px solid rgba(251, 146, 60, .3);
+      color: var(--orange);
+    }
+
+    .icon-blue {
+      background: var(--blue-dim);
+      border: 1px solid rgba(96, 165, 250, .3);
+      color: var(--blue);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--text-label);
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1;
+    }
+
+    .stat-value.small {
+      font-size: 20px;
+    }
+
+    /* ── SECTION WRAPPER ── */
+    .section-wrap {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 28px;
+    }
+
+    .section-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(167, 139, 250, .35), transparent);
+    }
+
+    .section-head {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .section-head-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .section-head-sub {
+      font-size: 12px;
+      color: var(--text-label);
+      margin-top: 2px;
+    }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-wrap i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-label);
+      font-size: 15px;
+    }
+
+    .filter-input {
+      background: rgba(10, 10, 18, .6);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-main);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 9px 14px 9px 40px;
+      width: 220px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .filter-input::placeholder {
+      color: var(--text-label);
+    }
+
+    .filter-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, .15);
+    }
+
+    .filter-select {
+      background: rgba(10, 10, 18, .6);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-main);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 14px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+
+    .filter-select:focus {
+      border-color: var(--accent);
+    }
+
+    .filter-select option {
+      background: #12121f;
+      color: var(--text-main);
+    }
+
+    /* ── PROPERTY GRID ── */
+    .prop-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      padding: 24px;
+    }
+
+    .prop-card {
+      background: rgba(10, 10, 18, .5);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform .3s cubic-bezier(.22, 1, .36, 1), border-color .3s, box-shadow .3s;
+    }
+
+    .prop-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(139, 92, 246, .45);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .4), 0 0 30px rgba(109, 40, 217, .12);
+    }
+
+    .prop-img {
+      position: relative;
+      height: 140px;
+      overflow: hidden;
+    }
+
+    .prop-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .5s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .prop-card:hover .prop-img img {
+      transform: scale(1.08);
+    }
+
+    .prop-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(10, 10, 18, .7) 0%, transparent 50%);
+    }
+
+    .badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-lunas {
+      background: rgba(52, 211, 153, .15);
+      border: 1px solid rgba(52, 211, 153, .3);
+      color: var(--emerald);
+    }
+
+    .badge-available {
+      background: rgba(251, 146, 60, .15);
+      border: 1px solid rgba(251, 146, 60, .3);
+      color: var(--orange);
+    }
+
+    .prop-body {
+      padding: 14px 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .prop-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .prop-loc {
+      font-size: 11.5px;
+      color: var(--text-label);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .prop-price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(139, 92, 246, .08);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .prop-price-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--text-label);
+      margin-bottom: 2px;
+    }
+
+    .prop-price-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gold-light);
+    }
+
+    .prop-divider {
+      width: 1px;
+      height: 32px;
+      background: var(--border);
+    }
+
+    .prop-agen-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--text-label);
+      margin-bottom: 2px;
+    }
+
+    .prop-agen-val {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+
+    .prop-specs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .spec-item {
+      background: rgba(139, 92, 246, .06);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 4px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .prop-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .prop-footer-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--text-label);
+    }
+
+    .btn-eye {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      color: var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all .2s;
+      font-size: 13px;
+    }
+
+    .btn-eye:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* ── PAGINATION ── */
+    .pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .page-info {
+      font-size: 13px;
+      color: var(--text-label);
+      font-weight: 500;
+    }
+
+    .page-btns {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .page-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(139, 92, 246, .1);
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+      font-size: 13px;
+    }
+
+    .page-btn:hover {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent-glow);
+    }
+
+    .page-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      padding: 0 8px;
+    }
+
+    /* ── CHARTS ROW ── */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .bar-chart-wrap {
+      padding: 24px;
+    }
+
+    .bar-chart-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .bar-chart-sub {
+      font-size: 12px;
+      color: var(--text-label);
+      margin-top: 2px;
+      margin-bottom: 24px;
+    }
+
+    .bar-chart-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+      height: 140px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .bar-inner {
+      width: 100%;
+      border-radius: 6px 6px 0 0;
+      background: linear-gradient(to top, rgba(109, 40, 217, .8), rgba(167, 139, 250, .9));
+      min-height: 6px;
+      transition: height 1s cubic-bezier(.22, 1, .36, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bar-inner::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(255, 255, 255, .25);
+      border-radius: 6px 6px 0 0;
+    }
+
+    .bar-inner:hover {
+      filter: brightness(1.2);
+    }
+
+    .bar-tooltip {
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity .2s;
+      pointer-events: none;
+    }
+
+    .bar-col:hover .bar-tooltip {
+      opacity: 1;
+    }
+
+    .bar-label {
+      font-size: 10.5px;
+      color: var(--text-label);
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* donut */
+    .donut-wrap {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .donut-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+      align-self: flex-start;
+    }
+
+    .donut-sub {
+      font-size: 12px;
+      color: var(--text-label);
+      margin-top: 2px;
+      align-self: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .donut-svg-wrap {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto;
+    }
+
+    .donut-circle {
+      transition: stroke-dasharray 1.2s cubic-bezier(.22, 1, .36, 1), stroke-dashoffset 1.2s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .donut-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .donut-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1;
+    }
+
+    .donut-unit {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      color: var(--text-label);
+      margin-top: 4px;
+    }
+
+    .donut-legend {
+      width: 100%;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .legend-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .legend-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-sub);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .legend-bar-bg {
+      width: 100%;
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, .07);
+      overflow: hidden;
+    }
+
+    .legend-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1.2s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    /* ── AGEN TABLE ── */
+    .agen-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .agen-table th {
+      padding: 14px 20px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--text-label);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .agen-table td {
+      padding: 14px 20px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(139, 92, 246, .1);
+    }
+
+    .agen-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .agen-table tr:hover td {
+      background: rgba(139, 92, 246, .05);
+    }
+
+    .rank-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .rank-1 {
+      background: rgba(212, 168, 83, .15);
+      border: 1px solid rgba(212, 168, 83, .3);
+      color: var(--gold-light);
+    }
+
+    .rank-2 {
+      background: rgba(148, 163, 184, .12);
+      border: 1px solid rgba(148, 163, 184, .25);
+      color: #94a3b8;
+    }
+
+    .rank-3 {
+      background: rgba(251, 146, 60, .12);
+      border: 1px solid rgba(251, 146, 60, .25);
+      color: var(--orange);
+    }
+
+    .rank-n {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .08);
+      color: var(--text-label);
+    }
+
+    .agen-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 2px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--accent-glow);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .agen-name {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .agen-role {
+      font-size: 10px;
+      color: var(--text-label);
+      margin-top: 1px;
+    }
+
+    .mono {
+      font-family: 'DM Sans', monospace;
+      color: var(--text-sub);
+      font-size: 12px;
+    }
+
+    .omset-val {
+      color: #4ade80;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    /* ── BOTTOM STATS ── */
+    .bottom-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 4px;
+    }
+
+    .mini-stat {
+      padding: 1.5rem;
+    }
+
+    .mini-stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--text-label);
+      margin-bottom: .5rem;
+    }
+
+    .mini-stat-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1;
+    }
+
+    .mini-stat-sub {
+      font-size: 12px;
+      color: var(--text-label);
+      margin-top: .4rem;
+    }
+
+    .mini-bar-bg {
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, .07);
+      margin-top: 1rem;
+      overflow: hidden;
+    }
+
+    .mini-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1.2s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    /* ── REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .7s cubic-bezier(.22, 1, .36, 1), transform .7s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-28px);
+      transition: opacity .7s cubic-bezier(.22, 1, .36, 1), transform .7s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .reveal-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(28px);
+      transition: opacity .7s cubic-bezier(.22, 1, .36, 1), transform .7s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .reveal-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .d-100 {
+      transition-delay: .1s
+    }
+
+    .d-200 {
+      transition-delay: .2s
+    }
+
+    .d-300 {
+      transition-delay: .3s
+    }
+
+    .d-400 {
+      transition-delay: .4s
+    }
+
+    /* empty state */
+    .empty-state {
+      padding: 60px 24px;
+      text-align: center;
+      color: var(--text-label);
+    }
+
+    .empty-state i {
+      font-size: 36px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:1024px) {
+      .stat-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .prop-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .charts-row {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:768px) {
+      .nav-links {
+        display: none
+      }
+
+      .stat-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .prop-grid {
+        grid-template-columns: 1fr
+      }
+
+      .bottom-stats {
+        grid-template-columns: 1fr
+      }
+
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch
+      }
+
+      .filter-input {
+        width: 100%
+      }
+    }
+  </style>
 </head>
 
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans antialiased min-h-screen flex flex-col pt-28 transition-colors duration-300">
+<body>
 
-    <nav class="glass-nav fixed w-full top-0 z-40 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20 relative">
-                <div class="flex items-center gap-4 z-10">
-                    <div class="w-10 h-10 rounded-full bg-primary flex justify-center items-center text-white shadow-lg">
-                        <i class="fas fa-chart-line text-lg"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">Admaja<span class="text-primary">Majesti</span></h1>
-                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">PT. Admaja Properti Graha Majesti</p>
-                    </div>
-                </div>
-                <div class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-500 dark:text-slate-400 absolute left-1/2 transform -translate-x-1/2 w-max z-10">
-                    <a href="dashboard.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Dashboard</a>
-                    <a href="riwayat-transaksi.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Riwayat Transaksi</a>
-                    <a href="laporan.html" class="text-primary border-b-2 border-primary py-2 transition-colors">Laporan</a>
-                    <a href="manajemen-agen.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Manajemen Agen</a>
-                    <a href="setting.html" class="hover:text-slate-900 dark:hover:text-white py-2 transition-colors">Pengaturan</a>
-                </div>
-                <div class="flex items-center gap-4 z-10">
-                    <div id="userAvatar" onclick="window.location.href='setting.html'" title="Pengaturan Akun" class="w-10 h-10 rounded-full bg-primary cursor-pointer transition flex justify-center items-center font-black text-white text-lg shadow-md hover:opacity-90 overflow-hidden">
-                        A
-                    </div>
-                    <button onclick="prosesLogout()" class="bg-red-50 dark:bg-rose-500/10 hover:bg-red-100 dark:hover:bg-rose-500/20 text-red-600 font-bold py-2.5 px-4 rounded-xl transition text-sm flex items-center gap-2 border border-red-100 dark:border-rose-500/20" title="Keluar">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
-            </div>
+  <!-- Ambient -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid-overlay"></div>
+  <div class="particles" id="particles"></div>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+            <path d="M6 20h12V4H6v16zm2-12h2v2H8V8zm4 0h2v2h-2V8zm-4 4h2v2H8v-2zm4 0h2v2h-2v-2zm-2 8h-2v-3h2v3z" />
+          </svg>
         </div>
-    </nav>
-
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <div class="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
-            <div class="flex-1">
-                <div class="flex items-center gap-3">
-                    <div class="flex gap-1.5 bg-slate-900 dark:bg-white p-1.5 rounded-xl text-white dark:text-slate-900 shadow-lg">
-                        <i class="fas fa-building text-sm"></i>
-                        <i class="fas fa-list text-sm"></i>
-                    </div>
-                    <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">Aset <span class="text-primary">Properti Aktif</span> 🏠</h2>
-                </div>
-                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Daftar visual aset properti dengan spesifikasi lengkap dan status terkini.</p>
-            </div>
-            
-            <div class="flex items-center gap-4 flex-wrap">
-                <div class="relative w-full sm:w-64">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" id="searchProp" oninput="applyFilters()" placeholder="Cari nama atau pembeli..." 
-                        class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl pl-10 pr-4 py-2 text-[13px] focus:outline-none focus:border-primary shadow-sm font-medium transition-colors">
-                </div>
-                <select id="filterStatus" onchange="applyFilters()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2 text-[13px] focus:outline-none focus:border-primary shadow-sm font-bold cursor-pointer transition-colors">
-                    <option value="">Status</option>
-                    <option value="Lunas">Lunas</option>
-                    <option value="Tersedia">Tersedia</option>
-                </select>
-                <select id="filterKategori" onchange="applyFilters()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-4 py-2 text-[13px] focus:outline-none focus:border-primary shadow-sm font-bold cursor-pointer transition-colors">
-                    <option value="">Kategori</option>
-                    <option value="Apartemen">Apartemen</option>
-                    <option value="Rumah">Rumah</option>
-                </select>
-            </div>
+        <div class="nav-brand">
+          <div class="nav-brand-name">Admaja<span>Majesti</span></div>
+          <div class="nav-brand-sub">PT. Admaja Properti Graha Majesti</div>
         </div>
-
-        <div id="propCardContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="col-span-1 md:col-span-2 lg:col-span-4 px-6 py-10 text-center text-slate-400">Mensinkronkan data properti...</div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="riwayat-transaksi.html">Riwayat Transaksi</a></li>
+        <li><a href="laporan.html" class="active">Laporan</a></li>
+        <li><a href="manajemen-agen.html">Manajemen Akun</a></li>
+        <li><a href="setting.html">Pengaturan</a></li>
+      </ul>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="avatar-btn" id="userAvatar" onclick="window.location.href='setting.html'" title="Pengaturan Akun">A
         </div>
+        <button class="btn-logout" onclick="prosesLogout()">
+          <i class="ti ti-logout"></i> Keluar
+        </button>
+      </div>
+    </div>
+  </nav>
 
-        <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 mb-8 transition-colors">
-            <div id="pageInfoText" class="text-sm text-slate-500 dark:text-slate-400 font-medium">Menampilkan 0-0 dari 0 properti</div>
-            <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-1.5 rounded-full border border-slate-200 dark:border-slate-700">
-                <button onclick="changePage(-1)" class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-primary transition flex justify-center items-center border border-slate-200 dark:border-slate-700">
-                    <i class="fas fa-chevron-left text-sm"></i>
-                </button>
-                <span id="pageSlideText" class="font-bold text-slate-800 dark:text-white px-3 text-sm">Halaman 0 / 0</span>
-                <button onclick="changePage(1)" class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-primary transition flex justify-center items-center border border-slate-200 dark:border-slate-700">
-                    <i class="fas fa-chevron-right text-sm"></i>
-                </button>
-            </div>
+  <!-- ── PAGE HEADER ── -->
+  <div class="page-header">
+    <div style="max-width:1280px;margin:0 auto;padding:0 2rem;position:relative;z-index:1;">
+      <div class="reveal">
+        <div class="section-tag">Panel Laporan</div>
+        <h1 class="page-title">Laporan <span class="hl">Aset Properti</span></h1>
+        <p class="page-sub">Visualisasi lengkap aset, performa penjualan, dan produktivitas agen.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <main>
+
+    <!-- KPI CARDS -->
+    <div class="stat-grid reveal">
+      <div class="stat-card">
+        <div class="stat-icon icon-purple"><i class="ti ti-building-estate"></i></div>
+        <div>
+          <div class="stat-label">Total Properti</div>
+          <div class="stat-value" id="lapTotal">—</div>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-5 transition-colors">
-                <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex justify-center items-center text-2xl"><i class="fas fa-building"></i></div>
-                <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Properti</p>
-                    <h4 class="text-2xl font-extrabold text-slate-800 dark:text-white mt-1" id="lapTotal">0</h4>
-                </div>
-            </div>
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-5 transition-colors">
-                <div class="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 flex justify-center items-center text-2xl"><i class="fas fa-check-circle"></i></div>
-                <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Terjual</p>
-                    <h4 class="text-2xl font-extrabold text-slate-800 dark:text-white mt-1" id="lapLunas">0</h4>
-                </div>
-            </div>
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-5 transition-colors">
-                <div class="w-14 h-14 rounded-2xl bg-orange-50 dark:bg-orange-500/10 text-orange-500 dark:text-orange-400 flex justify-center items-center text-2xl"><i class="fas fa-door-open"></i></div>
-                <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tersedia</p>
-                    <h4 class="text-2xl font-extrabold text-slate-800 dark:text-white mt-1" id="lapTersedia">0</h4>
-                </div>
-            </div>
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-5 transition-colors">
-                <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-blue-500 dark:text-blue-400 flex justify-center items-center text-2xl"><i class="fas fa-wallet"></i></div>
-                <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Omset</p>
-                    <h4 class="text-lg font-extrabold text-slate-800 dark:text-white mt-1" id="lapOmset">Rp0</h4>
-                </div>
-            </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon icon-emerald"><i class="ti ti-circle-check"></i></div>
+        <div>
+          <div class="stat-label">Terjual</div>
+          <div class="stat-value" id="lapLunas">—</div>
         </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div class="col-span-1 lg:col-span-2 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 flex flex-col justify-between transition-colors">
-                <div class="flex justify-between items-start mb-6">
-                    <div>
-                        <h3 class="font-bold text-lg text-slate-800 dark:text-white">Grafik Penjualan 6 Bulan</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Jumlah unit yang berhasil terjual per bulan</p>
-                    </div>
-                </div>
-                <div class="flex items-end justify-between gap-2 h-40 pt-4 border-b border-slate-100 dark:border-slate-700 pb-2" id="barChartContainer"></div>
-                <div class="flex gap-6 mt-4 justify-center">
-                    <div class="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400"><div class="w-2.5 h-2.5 rounded bg-primary"></div> Unit Terjual</div>
-                </div>
-            </div>
-
-            <div class="col-span-1 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 flex flex-col items-center transition-colors">
-                <div class="w-full mb-2">
-                    <h3 class="font-bold text-lg text-slate-800 dark:text-white">Komposisi Properti</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Berdasarkan kategori unit</p>
-                </div>
-                <div class="relative w-40 h-40 my-4">
-                    <svg viewBox="0 0 160 160" class="w-full h-full transform -rotate-90">
-                        <circle id="donutRumah" class="donut-circle" cx="80" cy="80" r="58" fill="none" stroke="#f97316" stroke-width="22" stroke-dasharray="0 364.4" stroke-dashoffset="0" />
-                        <circle id="donutApt" class="donut-circle" cx="80" cy="80" r="58" fill="none" stroke="var(--color-primary)" stroke-width="22" stroke-dasharray="0 364.4" stroke-dashoffset="0" />
-                    </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="text-2xl font-black text-slate-800 dark:text-white" id="donutTotalText">0</span>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Unit</span>
-                    </div>
-                </div>
-                <div class="w-full space-y-3 mt-2">
-                    <div>
-                        <div class="flex justify-between text-xs font-bold mb-1.5"><span class="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><div class="w-2 h-2 rounded bg-orange-500"></div> Rumah</span><span class="text-slate-800 dark:text-white" id="pctRumahText">0%</span></div>
-                        <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full"><div id="barRumah" class="bg-orange-500 h-full rounded-full transition-all duration-1000" style="width: 0%"></div></div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-xs font-bold mb-1.5"><span class="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><div class="w-2 h-2 rounded bg-primary"></div> Apartemen</span><span class="text-slate-800 dark:text-white" id="pctAptText">0%</span></div>
-                        <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full"><div id="barApt" class="bg-primary h-full rounded-full transition-all duration-1000" style="width: 0%"></div></div>
-                    </div>
-                </div>
-            </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon icon-orange"><i class="ti ti-door-enter"></i></div>
+        <div>
+          <div class="stat-label">Tersedia</div>
+          <div class="stat-value" id="lapTersedia">—</div>
         </div>
-
-        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden mb-8 transition-colors">
-            <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex flex-col md:flex-row justify-between items-center bg-slate-50/50 dark:bg-slate-900/50 gap-4">
-                <div>
-                    <h3 class="font-bold text-lg text-slate-800 dark:text-white">Peringkat & Produktivitas Agen</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Daftar pencapaian marketing berdasarkan total nilai transaksi.</p>
-                </div>
-            </div>
-            <div class="overflow-x-auto hide-scrollbar">
-                <table class="w-full text-left border-collapse whitespace-nowrap">
-                    <thead>
-                        <tr class="bg-white dark:bg-slate-800 text-slate-400 text-xs uppercase tracking-widest font-bold border-b border-slate-100 dark:border-slate-700">
-                            <th class="px-6 py-5 text-center">Rank</th>
-                            <th class="px-6 py-5">Profil Agen</th>
-                            <th class="px-6 py-5">Username</th>
-                            <th class="px-6 py-5 text-center">Unit Terjual</th>
-                            <th class="px-6 py-5 text-right">Total Omset (Rp)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="agenTableBody" class="divide-y divide-slate-50 dark:divide-slate-700/50 text-sm">
-                        <tr><td colspan="5" class="px-6 py-10 text-center text-slate-400">Menghitung performa agen...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+      </div>
+      <div class="stat-card gold-card">
+        <div class="stat-icon icon-blue"><i class="ti ti-wallet"></i></div>
+        <div>
+          <div class="stat-label">Total Omset</div>
+          <div class="stat-value small" id="lapOmset">—</div>
         </div>
+      </div>
+    </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors">
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Rata-rata Harga Properti</h4>
-                <p class="text-2xl font-extrabold text-slate-800 dark:text-white" id="lapRataHarga">Rp0</p>
-                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1" id="lapRataSub">Dari 0 properti terdaftar</p>
-                <div class="w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full mt-4 overflow-hidden">
-                    <div class="bg-blue-500 h-full rounded-full" style="width: 100%"></div>
-                </div>
-            </div>
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors">
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tingkat Konversi Penjualan</h4>
-                <p class="text-2xl font-extrabold text-slate-800 dark:text-white" id="lapKonversiText">0%</p>
-                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1" id="lapKonversiSub">0 dari 0 properti terjual lunas</p>
-                <div class="w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full mt-4 overflow-hidden">
-                    <div id="lapKonversiBar" class="bg-emerald-500 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
-                </div>
-            </div>
+    <!-- PROPERTY CARDS -->
+    <div class="section-wrap reveal d-100">
+      <div class="section-head">
+        <div>
+          <div class="section-head-title">Aset Properti Aktif</div>
+          <div class="section-head-sub">Daftar visual aset dengan spesifikasi lengkap dan status terkini</div>
         </div>
-    </main>
+        <div class="filter-bar">
+          <div class="search-wrap">
+            <i class="ti ti-search"></i>
+            <input type="text" class="filter-input" id="searchProp" oninput="applyFilters()"
+              placeholder="Cari nama atau pembeli...">
+          </div>
+          <select class="filter-select" id="filterStatus" onchange="applyFilters()">
+            <option value="">Semua Status</option>
+            <option value="Lunas">Lunas</option>
+            <option value="Tersedia">Tersedia</option>
+          </select>
+          <select class="filter-select" id="filterKategori" onchange="applyFilters()">
+            <option value="">Semua Kategori</option>
+            <option value="Apartemen">Apartemen</option>
+            <option value="Rumah">Rumah</option>
+          </select>
+        </div>
+      </div>
+      <div class="prop-grid" id="propCardContainer">
+        <div class="empty-state" style="grid-column:1/-1;">
+          <i class="ti ti-loader-2"></i>
+          <p>Mensinkronkan data properti…</p>
+        </div>
+      </div>
+      <div class="pagination-bar">
+        <div class="page-info" id="pageInfoText">Menampilkan 0–0 dari 0 properti</div>
+        <div class="page-btns">
+          <button class="page-btn" onclick="changePage(-1)"><i class="ti ti-chevron-left"></i></button>
+          <span class="page-label" id="pageSlideText">1 / 1</span>
+          <button class="page-btn" onclick="changePage(1)"><i class="ti ti-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
 
-    <script>
-        if (sessionStorage.getItem('isLoggedIn') !== 'true') window.location.href = 'login.html';
-        if (sessionStorage.getItem('role') !== 'ADMIN') window.location.href = 'katalog.html';
+    <!-- CHARTS -->
+    <div class="charts-row reveal d-200">
+      <!-- Bar Chart -->
+      <div class="section-wrap" style="margin-bottom:0">
+        <div class="bar-chart-wrap">
+          <div class="bar-chart-title">Grafik Penjualan 6 Bulan</div>
+          <div class="bar-chart-sub">Jumlah unit yang berhasil terjual per bulan</div>
+          <div class="bar-chart-bars" id="barChartContainer"></div>
+          <div style="display:flex;gap:16px;margin-top:12px;justify-content:center;">
+            <div
+              style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--text-label);">
+              <div style="width:10px;height:10px;border-radius:3px;background:var(--accent);"></div> Unit Terjual
+            </div>
+          </div>
+        </div>
+      </div>
 
-        const currentUsername = sessionStorage.getItem('username') || 'A';
+      <!-- Donut -->
+      <div class="section-wrap" style="margin-bottom:0">
+        <div class="donut-wrap">
+          <div class="donut-title">Komposisi Properti</div>
+          <div class="donut-sub">Berdasarkan kategori unit</div>
+          <div class="donut-svg-wrap">
+            <svg viewBox="0 0 160 160" class="w-full h-full" style="transform:rotate(-90deg)">
+              <circle id="donutRumah" class="donut-circle" cx="80" cy="80" r="58" fill="none" stroke="#fb923c"
+                stroke-width="22" stroke-dasharray="0 364.4" stroke-dashoffset="0" />
+              <circle id="donutApt" class="donut-circle" cx="80" cy="80" r="58" fill="none" stroke="#8b5cf6"
+                stroke-width="22" stroke-dasharray="0 364.4" stroke-dashoffset="0" />
+            </svg>
+            <div class="donut-center">
+              <div class="donut-num" id="donutTotalText">0</div>
+              <div class="donut-unit">Unit</div>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="legend-row">
+              <div class="legend-label">
+                <span style="display:flex;align-items:center;gap:6px;">
+                  <div class="legend-dot" style="background:#fb923c"></div> Rumah
+                </span>
+                <span id="pctRumahText">0%</span>
+              </div>
+              <div class="legend-bar-bg">
+                <div id="barRumah" class="legend-bar-fill" style="background:#fb923c;width:0%"></div>
+              </div>
+            </div>
+            <div class="legend-row">
+              <div class="legend-label">
+                <span style="display:flex;align-items:center;gap:6px;">
+                  <div class="legend-dot" style="background:var(--accent)"></div> Apartemen
+                </span>
+                <span id="pctAptText">0%</span>
+              </div>
+              <div class="legend-bar-bg">
+                <div id="barApt" class="legend-bar-fill" style="background:var(--accent);width:0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        function prosesLogout() {
-            Swal.fire({
-                title: 'Yakin ingin keluar?', text: "Sesi kerja Anda akan diakhiri.", icon: 'question', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#94a3b8', confirmButtonText: 'Ya, Keluar!'
-            }).then((result) => {
-                if (result.isConfirmed) { sessionStorage.clear(); window.location.href = 'login.html'; }
-            });
-        }
+    <!-- AGEN TABLE -->
+    <div class="section-wrap reveal d-300">
+      <div class="section-head">
+        <div>
+          <div class="section-head-title">Peringkat & Produktivitas Agen</div>
+          <div class="section-head-sub">Daftar pencapaian marketing berdasarkan total nilai transaksi</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="agen-table">
+          <thead>
+            <tr>
+              <th style="text-align:center;width:60px;">Rank</th>
+              <th>Profil Agen</th>
+              <th>Username</th>
+              <th style="text-align:center;">Unit Terjual</th>
+              <th style="text-align:right;">Total Omset</th>
+            </tr>
+          </thead>
+          <tbody id="agenTableBody">
+            <tr>
+              <td colspan="5" style="padding:40px 20px;text-align:center;color:var(--text-label);">Menghitung performa
+                agen…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-        const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+    <!-- BOTTOM METRICS -->
+    <div class="bottom-stats reveal d-400">
+      <div class="section-wrap" style="margin-bottom:0">
+        <div class="mini-stat">
+          <div class="mini-stat-label">Rata-rata Harga Properti</div>
+          <div class="mini-stat-val" id="lapRataHarga">Rp0</div>
+          <div class="mini-stat-sub" id="lapRataSub">Dari 0 properti terdaftar</div>
+          <div class="mini-bar-bg">
+            <div class="mini-bar-fill" style="background:var(--blue);width:100%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-wrap" style="margin-bottom:0">
+        <div class="mini-stat">
+          <div class="mini-stat-label">Tingkat Konversi Penjualan</div>
+          <div class="mini-stat-val" id="lapKonversiText">0%</div>
+          <div class="mini-stat-sub" id="lapKonversiSub">0 dari 0 properti terjual lunas</div>
+          <div class="mini-bar-bg">
+            <div id="lapKonversiBar" class="mini-bar-fill" style="background:var(--emerald);width:0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        let globalPropertiLaporan = [];
-        let filteredPropertiForPagination = [];
-        let currentPage = 1;
-        const itemsPerPage = 4;
+  </main>
 
-        // AMBIL FOTO PROFIL DINAMIS UNTUK NAVBAR LAPORAN
-        async function muatAvatarNavbar() {
-            try {
-                const res = await fetch('http://localhost:8080/api/users');
-                const users = await res.json();
-                const myProfile = users.find(u => u.username === currentUsername);
-                if (myProfile) {
-                    const namaTampil = myProfile.namaLengkap || currentUsername;
-                    const inisial = namaTampil.charAt(0).toUpperCase();
-                    let htmlAvatar = inisial;
-                    if (myProfile.fotoProfil && myProfile.fotoProfil !== "default_profil.png" && myProfile.fotoProfil !== "null") {
-                        const urlFoto = `http://localhost:8080/uploads/profil/${encodeURIComponent(myProfile.fotoProfil)}`;
-                        htmlAvatar = `<img src="${urlFoto}" alt="Profil" class="w-full h-full object-cover">`;
-                    }
-                    document.getElementById('userAvatar').innerHTML = htmlAvatar;
-                }
-            } catch (err) { console.error(err); }
-        }
-        muatAvatarNavbar();
-
-        async function muatDataLaporan() {
-            try {
-                const resProperti = await fetch('http://localhost:8080/api/properti');
-                const propertiRaw = await resProperti.json();
-                const resUsers = await fetch('http://localhost:8080/api/users');
-                const users = await resUsers.json();
-
-                const properti = propertiRaw.map(p => {
-                    return {
-                        ...p,
-                        inisialAgen: p.usernameAgen ? p.usernameAgen.substring(0,1).toUpperCase() : '?',
-                        hargaFormatShort: p.harga >= 1000000000 ? (p.harga / 1000000000).toFixed(1) + ' M' : (p.harga / 1000000).toFixed(1) + ' Jt',
-                        spek: { lantai: p.lantai || 1, kt: p.kt || "3+1", km: p.km || "2+1" }
-                    };
-                });
-
-                globalPropertiLaporan = properti; filteredPropertiForPagination = properti; 
-
-                let totalProp = properti.length; let lunas = 0, tersedia = 0, totalOmset = 0, jmlRumah = 0, jmlApt = 0;
-                properti.forEach(p => {
-                    if (p.terjual) { lunas++; totalOmset += p.harga; } else { tersedia++; }
-                    if (p.jenisProperti === 'Rumah') jmlRumah++; if (p.jenisProperti === 'Apartemen') jmlApt++;
-                });
-
-                document.getElementById('lapTotal').innerText = totalProp; document.getElementById('lapLunas').innerText = lunas;
-                document.getElementById('lapTersedia').innerText = tersedia; document.getElementById('lapOmset').innerText = formatRupiah(totalOmset);
-
-                const circ = 364.4; const pctRumah = totalProp === 0 ? 0 : (jmlRumah / totalProp); const pctApt = totalProp === 0 ? 0 : (jmlApt / totalProp);
-                document.getElementById('donutTotalText').innerText = totalProp; document.getElementById('pctRumahText').innerText = (pctRumah * 100).toFixed(1) + '%';
-                document.getElementById('pctAptText').innerText = (pctApt * 100).toFixed(1) + '%'; document.getElementById('barRumah').style.width = (pctRumah * 100) + '%';
-                document.getElementById('barApt').style.width = (pctApt * 100) + '%';
-                setTimeout(() => {
-                    document.getElementById('donutRumah').setAttribute('stroke-dasharray', `${pctRumah * circ} ${circ}`);
-                    document.getElementById('donutApt').setAttribute('stroke-dasharray', `${pctApt * circ} ${circ}`);
-                    document.getElementById('donutApt').setAttribute('stroke-dashoffset', `-${pctRumah * circ}`);
-                }, 100); 
-
-                let rataHarga = totalProp === 0 ? 0 : (properti.reduce((sum, p) => sum + p.harga, 0) / totalProp);
-                document.getElementById('lapRataHarga').innerText = formatRupiah(rataHarga); document.getElementById('lapRataSub').innerText = `Dari ${totalProp} properti terdaftar`;
-
-                let konversi = totalProp === 0 ? 0 : (lunas / totalProp * 100);
-                document.getElementById('lapKonversiText').innerText = konversi.toFixed(1) + '%'; document.getElementById('lapKonversiSub').innerText = `${lunas} dari ${totalProp} properti terjual`;
-                document.getElementById('lapKonversiBar').style.width = konversi + '%';
-
-                const namaBulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
-                let penjualanBulan = {}; let enamBulan = [];
-                for(let i=5; i>=0; i--) {
-                    let d = new Date(); d.setMonth(d.getMonth() - i); let mKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}`;
-                    penjualanBulan[mKey] = 0; enamBulan.push({ key: mKey, label: namaBulan[d.getMonth()] });
-                }
-                properti.forEach(p => {
-                    if(p.terjual && p.transaksi && p.transaksi.tanggalTransaksi) {
-                        let tgl = p.transaksi.tanggalTransaksi.substring(0, 7); if(penjualanBulan[tgl] !== undefined) { penjualanBulan[tgl]++; }
-                    }
-                });
-                const barContainer = document.getElementById('barChartContainer'); barContainer.innerHTML = '';
-                let maxUnit = Math.max(...Object.values(penjualanBulan)); if (maxUnit === 0) maxUnit = 1; 
-                enamBulan.forEach(b => {
-                    let unit = penjualanBulan[b.key]; let tinggiPersen = (unit / maxUnit) * 100; if(unit === 0) tinggiPersen = 5; 
-                    barContainer.innerHTML += `
-                        <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer relative" title="${unit} Unit Terjual">
-                            <div class="w-full flex gap-1 justify-center items-end h-32 relative">
-                                <div class="w-1/2 bg-primary rounded-t-sm group-hover:opacity-75 transition-all duration-1000" style="height: 0%" data-h="${tinggiPersen}%"></div>
-                                <span class="absolute -top-6 text-[10px] font-bold text-slate-500 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition">${unit}</span>
-                            </div>
-                            <span class="text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase">${b.label}</span>
-                        </div>`;
-                });
-                setTimeout(() => { document.querySelectorAll('#barChartContainer .bg-primary').forEach(bar => { bar.style.height = bar.getAttribute('data-h'); }); }, 100);
-
-                let agenStats = {};
-                users.forEach(u => {
-                    if(u.role === 'ADMIN') { agenStats[u.username] = { nama: u.namaLengkap || u.username, username: u.username, unit: 0, omset: 0, inisial: (u.namaLengkap || u.username).substring(0,2).toUpperCase() }; }
-                });
-                properti.forEach(p => {
-                    if(p.terjual && p.usernameAgen && agenStats[p.usernameAgen]) { agenStats[p.usernameAgen].unit++; agenStats[p.usernameAgen].omset += p.harga; }
-                });
-                let arrAgen = Object.values(agenStats).sort((a, b) => b.omset - a.omset); const tbAgen = document.getElementById('agenTableBody'); tbAgen.innerHTML = '';
-                if(arrAgen.length === 0) { tbAgen.innerHTML = '<tr><td colspan="5" class="px-6 py-10 text-center text-slate-400">Belum ada data performa agen.</td></tr>'; } 
-                else {
-                    arrAgen.forEach((ag, index) => {
-                        let rankBadge = '';
-                        if(index === 0) rankBadge = `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-bold text-xs shadow-sm">1</span>`;
-                        else if(index === 1) rankBadge = `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs shadow-sm">2</span>`;
-                        else if(index === 2) rankBadge = `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-bold text-xs shadow-sm">3</span>`;
-                        else rankBadge = `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 font-bold text-xs">${index+1}</span>`;
-                        tbAgen.innerHTML += `
-                            <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors group">
-                                <td class="px-6 py-4 text-center">${rankBadge}</td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center uppercase">${ag.inisial}</div>
-                                        <div><p class="font-bold text-slate-800 dark:text-white">${ag.nama}</p><p class="text-[10px] text-slate-400 font-medium">Marketing Advisor</p></div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 font-mono text-slate-500 dark:text-slate-400 font-semibold">${ag.username}</td>
-                                <td class="px-6 py-4 text-center font-bold text-slate-700 dark:text-slate-300">${ag.unit} Unit</td>
-                                <td class="px-6 py-4 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">${formatRupiah(ag.omset)}</td>
-                            </tr>`;
-                    });
-                }
-                applyFilters();
-            } catch (error) { console.error(error); }
-        }
-
-        function renderPropertiCards() {
-            const container = document.getElementById('propCardContainer'); container.innerHTML = '';
-            const data = filteredPropertiForPagination; const totalItems = data.length; const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-            if (totalItems === 0) {
-                container.innerHTML = `<div class="col-span-1 md:col-span-2 lg:col-span-4 px-6 py-16 text-center text-slate-400 border border-dashed border-slate-200 dark:border-slate-700 rounded-3xl bg-white dark:bg-slate-800"><i class="fas fa-home text-3xl mb-3"></i><br>Tidak ada aset properti ditemukan.</div>`;
-                updatePaginationSlide(0, 0, 0, 0, 0); return;
-            }
-            if (currentPage < 1) currentPage = 1; if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
-            const startIndex = (currentPage - 1) * itemsPerPage; const endIndex = Math.min(startIndex + itemsPerPage, totalItems); const paginatedItems = data.slice(startIndex, endIndex);
-
-            paginatedItems.forEach(item => {
-                const badgeColor = item.terjual ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800' : 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-800';
-                const statusIcon = item.terjual ? 'fa-check-circle' : 'fa-clock'; const statusText = item.terjual ? 'Lunas' : 'Tersedia';
-                const btnMata = `<button onclick="window.location.href='dashboard.html'" class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500 hover:text-white transition flex justify-center items-center shadow-sm" title="Buka di Dashboard"><i class="fas fa-eye text-xs"></i></button>`;
-                const fotoPath = item.fotoProperti ? `http://localhost:8080/uploads/properti/${item.fotoProperti}` : `https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=600&auto=format&fit=crop`;
-
-                const cardHtml = `
-                    <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg transition group flex flex-col">
-                        <div class="relative h-36 w-full overflow-hidden">
-                            <img src="${fotoPath}" alt="${item.nama}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute top-3 left-3 flex gap-2">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${badgeColor}"><i class="fas ${statusIcon}"></i> ${statusText}</span>
-                            </div>
-                        </div>
-                        <div class="p-5 flex-1 flex flex-col justify-between">
-                            <div>
-                                <h4 class="font-bold text-slate-900 dark:text-white group-hover:text-primary transition line-clamp-1">${item.nama}</h4>
-                                <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2.5 line-clamp-1"><i class="fas fa-map-marker-alt text-slate-300 dark:text-slate-600"></i> ${item.lokasi}</p>
-                                <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-2xl px-4 py-2 mb-3">
-                                    <div><p class="text-[10px] text-slate-400 font-bold uppercase mb-0.5">Omset</p><p class="font-mono text-sm font-bold text-slate-900 dark:text-white">${item.hargaFormatShort}</p></div>
-                                    <div class="w-1.5 h-6 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-                                    <div class="flex items-center gap-1.5">
-                                        <div class="w-8 h-8 rounded-full bg-slate-900 dark:bg-slate-700 text-white flex justify-center items-center font-bold text-xs">${item.inisialAgen}</div>
-                                        <div><p class="text-[10px] text-slate-400 font-bold uppercase mb-0.5">Agen</p><p class="text-xs font-bold text-slate-700 dark:text-slate-300">${item.usernameAgen || '-'}</p></div>
-                                    </div>
-                                </div>
-                                <div class="grid grid-cols-3 gap-2 text-center text-xs text-slate-600 dark:text-slate-400 mb-1">
-                                    <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-2 border border-slate-100 dark:border-slate-700"><i class="fas fa-building text-slate-400 dark:text-slate-500 mr-1"></i> ${item.spek.lantai} Lt</div>
-                                    <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-2 border border-slate-100 dark:border-slate-700"><i class="fas fa-bed text-slate-400 dark:text-slate-500 mr-1"></i> ${item.spek.kt} KT</div>
-                                    <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-2 border border-slate-100 dark:border-slate-700"><i class="fas fa-bath text-slate-400 dark:text-slate-500 mr-1"></i> ${item.spek.km} KM</div>
-                                </div>
-                            </div>
-                            <div class="pt-4 mt-1 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Detail Laporan</span>
-                                ${btnMata}
-                            </div>
-                        </div>
-                    </div>`; container.insertAdjacentHTML('beforeend', cardHtml);
-            });
-            updatePaginationSlide(currentPage, totalPages, startIndex, endIndex, totalItems);
-        }
-
-        function updatePaginationSlide(current, total, start, end, totalItems) {
-            document.getElementById('pageInfoText').innerText = `Menampilkan ${totalItems === 0 ? 0 : start + 1}-${end} dari ${totalItems} properti`;
-            document.getElementById('pageSlideText').innerText = `Halaman ${current} / ${total}`;
-        }
-
-        function changePage(direction) {
-            const totalPages = Math.ceil(filteredPropertiForPagination.length / itemsPerPage); currentPage += direction;
-            if (currentPage < 1) currentPage = 1; if (currentPage > totalPages) currentPage = totalPages; renderPropertiCards();
-        }
-
-        function applyFilters() {
-            const query = document.getElementById('searchProp').value.toLowerCase(); const stat = document.getElementById('filterStatus').value; const cat = document.getElementById('filterKategori').value;
-            const filteredData = globalPropertiLaporan.filter(p => {
-                const namaPembeliStr = p.namaPembeli ? p.namaPembeli.toLowerCase() : "";
-                const isMatchQuery = p.nama.toLowerCase().includes(query) || p.kode.toLowerCase().includes(query) || namaPembeliStr.includes(query);
-                let isMatchStat = true; if (stat === 'Lunas') isMatchStat = p.terjual === true; if (stat === 'Tersedia') isMatchStat = p.terjual === false;
-                let isMatchCat = true; if (cat !== '') isMatchCat = p.jenisProperti === cat; return isMatchQuery && isMatchStat && isMatchCat;
-            });
-            filteredPropertiForPagination = filteredData; currentPage = 1; renderPropertiCards();
-        }
-
-        muatDataLaporan();
-    </script>
+  <script src="/js/laporan.js"></script>
+  
 </body>
+
 </html>

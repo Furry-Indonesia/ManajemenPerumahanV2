@@ -1,488 +1,1154 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
-
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AdmajaMajesti - Temukan Hunian Impian Anda</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AdmajaMajesti — Hunian Impian Anda</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        majesti: {
-                            purple: '#8b5cf6',
-                            purpleHover: '#7c3aed',
-                            darkBg: '#0f121b',
-                            darkCard: '#1e2235'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Poppins', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    :root {
+      --bg-deep:      #0a0a12;
+      --bg-mid:       #10101e;
+      --bg-section:   #0d0d1a;
+      --bg-alt:       #0c0c18;
+      --accent:       #8b5cf6;
+      --accent-glow:  #a78bfa;
+      --accent-dim:   rgba(139,92,246,0.18);
+      --gold:         #d4a853;
+      --gold-light:   #f0c775;
+      --card-bg:      rgba(16,16,30,0.72);
+      --card-bg-solid: #12121f;
+      --border:       rgba(139,92,246,0.22);
+      --border-gold:  rgba(212,168,83,0.25);
+      --text-main:    #f1f0ff;
+      --text-sub:     #8b8aaa;
+      --text-label:   #6b6a8a;
+    }
 
-    <style>
-        body {
-            overflow-x: hidden;
-        }
+    html { scroll-behavior: smooth; }
 
-        * {
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-    </style>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    /* ── Shared Ambient Background ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+      animation: orbFloat linear infinite;
+    }
+    .orb-1 {
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(109,40,217,0.22) 0%, transparent 70%);
+      top: -180px; left: -140px;
+      animation-duration: 24s;
+    }
+    .orb-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(168,85,247,0.14) 0%, transparent 70%);
+      bottom: 20%; right: -120px;
+      animation-duration: 30s;
+      animation-direction: reverse;
+    }
+    .orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(212,168,83,0.09) 0%, transparent 70%);
+      top: 40%; left: 55%;
+      animation-duration: 20s;
+    }
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      33%       { transform: translate(30px,-25px) scale(1.04); }
+      66%       { transform: translate(-20px,20px) scale(0.97); }
+    }
+
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(139,92,246,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(139,92,246,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 40%, black 20%, transparent 100%);
+    }
+
+    .particles {
+      position: fixed;
+      inset: 0; z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      animation: particleDrift linear infinite;
+      opacity: 0;
+    }
+    @keyframes particleDrift {
+      0%   { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.5; }
+      100% { transform: translateY(-20px) translateX(var(--drift)) scale(1); opacity: 0; }
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(10,10,18,0.8);
+      backdrop-filter: blur(28px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.03);
+      animation: navReveal 600ms cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes navReveal {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+    .nav-logo-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #d946ef 100%);
+      box-shadow: 0 6px 20px rgba(124,58,237,0.4), 0 0 0 1px rgba(255,255,255,0.08) inset;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; flex-shrink: 0;
+    }
+    .nav-logo-icon::after {
+      content: '';
+      position: absolute; top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      animation: logoShine 4s ease infinite;
+    }
+    @keyframes logoShine {
+      0%, 60%, 100% { left: -100%; }
+      30% { left: 120%; }
+    }
+    .nav-brand { display: flex; flex-direction: column; }
+    .nav-brand-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--text-main);
+      line-height: 1; letter-spacing: 0.02em;
+    }
+    .nav-brand-name span { color: var(--accent-glow); }
+    .nav-brand-sub {
+      font-size: 7.5px; font-weight: 600;
+      color: var(--text-label);
+      letter-spacing: 0.13em;
+      text-transform: uppercase; margin-top: 4px;
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px; font-weight: 500;
+      color: var(--text-sub);
+      text-decoration: none;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0; right: 0; height: 1px;
+      background: var(--accent-glow);
+      transform: scaleX(0);
+      transition: transform 0.2s ease;
+    }
+    .nav-links a:hover { color: var(--text-main); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-links a.active { color: var(--accent-glow); font-weight: 600; }
+    .nav-links a.active::after { transform: scaleX(1); }
+
+    .nav-cta {
+      display: flex; align-items: center; gap: 1rem;
+      flex-shrink: 0;
+    }
+    .btn-nav {
+      padding: 9px 22px;
+      background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+      color: #fff; font-size: 13px; font-weight: 700;
+      border: none; border-radius: 10px; cursor: pointer;
+      font-family: inherit; letter-spacing: 0.03em;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(109,40,217,0.4);
+      transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
+      position: relative; overflow: hidden;
+    }
+    .btn-nav::before {
+      content: '';
+      position: absolute; top: 0; left: -120%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transition: left 0.4s ease;
+    }
+    .btn-nav:hover::before { left: 130%; }
+    .btn-nav:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(109,40,217,0.5); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--text-sub); border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ── HERO ── */
+    #beranda {
+      position: relative;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 2rem 80px;
+      overflow: hidden;
+    }
+    .hero-content { position: relative; z-index: 10; max-width: 780px; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(139,92,246,0.12);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 12px; font-weight: 600;
+      color: var(--accent-glow);
+      letter-spacing: 0.05em;
+      margin-bottom: 2rem;
+      animation: badgePop 800ms cubic-bezier(0.22,1,0.36,1) 200ms both;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent-glow);
+      box-shadow: 0 0 8px var(--accent-glow);
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+    @keyframes badgePop {
+      from { opacity: 0; transform: translateY(12px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(48px, 7vw, 88px);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      color: var(--text-main);
+      margin-bottom: 1.5rem;
+      animation: heroTitleReveal 900ms cubic-bezier(0.22,1,0.36,1) 350ms both;
+    }
+    .hero-title .accent-word {
+      background: linear-gradient(135deg, var(--accent-glow) 0%, var(--gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-style: italic;
+    }
+    @keyframes heroTitleReveal {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-sub {
+      font-size: 16px; font-weight: 400;
+      color: var(--text-sub);
+      line-height: 1.7;
+      max-width: 560px; margin: 0 auto 2.5rem;
+      animation: heroSubReveal 900ms cubic-bezier(0.22,1,0.36,1) 500ms both;
+    }
+    @keyframes heroSubReveal {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-actions {
+      display: flex; gap: 1rem;
+      justify-content: center; align-items: center;
+      flex-wrap: wrap;
+      animation: heroActionsReveal 900ms cubic-bezier(0.22,1,0.36,1) 650ms both;
+    }
+    @keyframes heroActionsReveal {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .btn-primary {
+      position: relative;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 50%, #8b5cf6 100%);
+      color: #fff; font-size: 14.5px; font-weight: 700;
+      border: none; border-radius: 12px; cursor: pointer;
+      font-family: inherit; letter-spacing: 0.04em;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 28px rgba(109,40,217,0.45), 0 0 0 1px rgba(255,255,255,0.06) inset;
+      transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
+      overflow: hidden;
+    }
+    .btn-primary::before {
+      content: '';
+      position: absolute; top: 0; left: -120%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transition: left 0.5s ease;
+    }
+    .btn-primary:hover::before { left: 130%; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(109,40,217,0.55); }
+
+    .btn-ghost {
+      padding: 14px 32px;
+      background: var(--accent-dim);
+      color: var(--accent-glow); font-size: 14.5px; font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: 12px; cursor: pointer;
+      font-family: inherit; letter-spacing: 0.03em;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover {
+      background: rgba(139,92,246,0.25);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* hero stats */
+    .hero-stats {
+      display: flex; gap: 2rem; justify-content: center;
+      margin-top: 3.5rem;
+      animation: heroActionsReveal 900ms cubic-bezier(0.22,1,0.36,1) 800ms both;
+    }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px; font-weight: 700;
+      color: var(--text-main); line-height: 1;
+    }
+    .stat-num span { color: var(--gold-light); }
+    .stat-label { font-size: 11px; color: var(--text-label); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+    .stat-divider { width: 1px; background: var(--border); }
+
+    /* hero decorative ring */
+    .hero-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(139,92,246,0.12);
+      animation: ringExpand linear infinite;
+      pointer-events: none;
+    }
+    @keyframes ringExpand {
+      0%   { transform: scale(0.9); opacity: 0.5; }
+      50%  { opacity: 0.15; }
+      100% { transform: scale(1.1); opacity: 0.5; }
+    }
+
+    /* ── SECTION SHARED ── */
+    section { position: relative; z-index: 10; }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 10px; font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.2em; text-transform: uppercase;
+      border: 1px solid var(--border-gold);
+      background: rgba(212,168,83,0.08);
+      border-radius: 100px;
+      padding: 4px 14px;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 700; line-height: 1.15;
+      color: var(--text-main);
+      margin-bottom: 1rem;
+    }
+    .section-title .hl { color: var(--accent-glow); font-style: italic; }
+    .section-sub {
+      font-size: 15px; color: var(--text-sub);
+      line-height: 1.7; max-width: 560px;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+    /* divider line */
+    .gold-divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      opacity: 0.25;
+    }
+
+    /* ── LAYANAN ── */
+    #layanan {
+      background: var(--bg-mid);
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+    }
+    .layanan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 3.5rem;
+    }
+    .layanan-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s, border-color 0.3s;
+      cursor: default;
+    }
+    .layanan-card::before {
+      content: '';
+      position: absolute; top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(167,139,250,0.5), transparent);
+    }
+    .layanan-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 30% 0%, rgba(139,92,246,0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .layanan-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(139,92,246,0.45);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4), 0 0 40px rgba(109,40,217,0.15);
+    }
+    .layanan-icon {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; margin-bottom: 1.5rem;
+      position: relative; z-index: 1;
+    }
+    .icon-purple { background: linear-gradient(135deg, rgba(109,40,217,0.4), rgba(139,92,246,0.2)); border: 1px solid rgba(139,92,246,0.3); color: var(--accent-glow); }
+    .icon-blue   { background: linear-gradient(135deg, rgba(37,99,235,0.4), rgba(96,165,250,0.2)); border: 1px solid rgba(96,165,250,0.3); color: #93c5fd; }
+    .icon-gold   { background: linear-gradient(135deg, rgba(180,130,30,0.4), rgba(212,168,83,0.2)); border: 1px solid rgba(212,168,83,0.3); color: var(--gold-light); }
+
+    .layanan-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--text-main); margin-bottom: 0.75rem;
+      position: relative; z-index: 1;
+    }
+    .layanan-desc {
+      font-size: 13.5px; color: var(--text-sub);
+      line-height: 1.7; position: relative; z-index: 1;
+    }
+    .layanan-arrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600;
+      color: var(--accent-glow);
+      margin-top: 1.25rem; position: relative; z-index: 1;
+      transition: gap 0.2s;
+    }
+    .layanan-card:hover .layanan-arrow { gap: 10px; }
+
+    /* ── KEUNGGULAN ── */
+    #keunggulan {
+      background: var(--bg-section);
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+    }
+    .keunggulan-layout {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 64px; align-items: center;
+    }
+    .keunggulan-image-wrap {
+      position: relative; border-radius: 24px; overflow: hidden;
+      aspect-ratio: 4/3;
+      border: 1px solid var(--border);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 60px rgba(109,40,217,0.1);
+    }
+    .keunggulan-image-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+    .keunggulan-image-wrap:hover img { transform: scale(1.06); }
+    .keunggulan-image-wrap::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(10,10,18,0.6) 100%);
+    }
+    .keunggulan-badge {
+      position: absolute; bottom: 1.5rem; left: 1.5rem; z-index: 2;
+      background: rgba(10,10,18,0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-gold);
+      border-radius: 12px; padding: 12px 16px;
+    }
+    .keunggulan-badge-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; font-weight: 700; color: var(--gold-light);
+      line-height: 1;
+    }
+    .keunggulan-badge-label { font-size: 10px; color: var(--text-label); text-transform: uppercase; letter-spacing: 0.1em; }
+
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2.5rem; }
+    .feature-item {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1.25rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .feature-item:hover { border-color: rgba(139,92,246,0.4); transform: translateX(4px); }
+    .feature-icon {
+      width: 40px; height: 40px; flex-shrink: 0;
+      border-radius: 10px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--accent-glow);
+      margin-top: 1px;
+    }
+    .feature-title { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 3px; }
+    .feature-desc { font-size: 13px; color: var(--text-sub); line-height: 1.6; }
+
+    /* ── ABOUT ── */
+    #tentang {
+      background: var(--bg-alt);
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+    }
+    .about-layout {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 64px; align-items: center;
+    }
+    .about-image-wrap {
+      position: relative; border-radius: 24px; overflow: hidden;
+      aspect-ratio: 4/3;
+      border: 1px solid var(--border);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    }
+    .about-image-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .about-image-wrap::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(109,40,217,0.15) 0%, transparent 60%);
+    }
+    .about-deco {
+      position: absolute; bottom: -20px; right: -20px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139,92,246,0.3), transparent 70%);
+      z-index: 3;
+      animation: orbFloat 14s ease infinite;
+    }
+    .about-stats {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px; margin-top: 2.5rem;
+    }
+    .about-stat {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.25rem;
+      text-align: center;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .about-stat:hover { border-color: var(--border-gold); transform: translateY(-3px); }
+    .about-stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 40px; font-weight: 700;
+      color: var(--gold-light); line-height: 1;
+    }
+    .about-stat-label { font-size: 10.5px; color: var(--text-label); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 5px; }
+
+    /* ── TIM ── */
+    #tim {
+      background: var(--bg-mid);
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+    }
+    .tim-grid {
+      display: flex; flex-wrap: wrap;
+      gap: 20px; justify-content: center;
+      margin-top: 3.5rem;
+    }
+    .tim-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      width: calc(25% - 15px);
+      min-width: 200px;
+      position: relative; overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s, border-color 0.3s;
+    }
+    .tim-card::before {
+      content: '';
+      position: absolute; top: 0; left: 20%; right: 20%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(167,139,250,0.4), transparent);
+    }
+    .tim-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 30px rgba(109,40,217,0.12);
+    }
+    .tim-avatar-wrap { position: relative; width: 80px; margin: 0 auto 1.2rem; }
+    .tim-avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%; object-fit: cover;
+      border: 2px solid var(--border);
+      transition: border-color 0.3s;
+    }
+    .tim-card:hover .tim-avatar { border-color: var(--accent); }
+    .tim-avatar-ring {
+      position: absolute; inset: -4px;
+      border-radius: 50%;
+      border: 1px solid rgba(139,92,246,0.3);
+      animation: pulseRing 3s ease-out infinite;
+    }
+    @keyframes pulseRing {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.12); opacity: 0; }
+    }
+    .tim-avatar-fallback {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; color: var(--accent-glow);
+      margin: 0 auto 1.2rem;
+    }
+    .tim-name {
+      font-size: 13.5px; font-weight: 700;
+      color: var(--text-main); margin-bottom: 0.5rem; line-height: 1.3;
+    }
+    .tim-nim {
+      font-size: 11px; font-weight: 600;
+      color: var(--accent-glow); letter-spacing: 0.08em;
+      font-family: 'DM Sans', monospace;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 4px 10px;
+      display: inline-block;
+    }
+    .card-purple:hover { border-color: rgba(139,92,246,0.5); }
+    .card-blue:hover   { border-color: rgba(96,165,250,0.5); }
+    .card-green:hover  { border-color: rgba(52,211,153,0.5); }
+    .card-pink:hover   { border-color: rgba(244,114,182,0.5); }
+    .card-yellow:hover { border-color: rgba(251,191,36,0.5); }
+    .card-orange:hover { border-color: rgba(251,146,60,0.5); }
+    .card-teal:hover   { border-color: rgba(45,212,191,0.5); }
+
+    /* ── FAQ ── */
+    #faq {
+      background: var(--bg-section);
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+    }
+    .faq-list { display: flex; flex-direction: column; gap: 12px; margin-top: 3.5rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+    .faq-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.25s;
+    }
+    .faq-item.open { border-color: rgba(139,92,246,0.4); }
+    .faq-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.25rem 1.5rem;
+      cursor: pointer; gap: 1rem;
+    }
+    .faq-question {
+      font-size: 15px; font-weight: 600; color: var(--text-main); line-height: 1.4;
+    }
+    .faq-icon {
+      width: 30px; height: 30px; flex-shrink: 0;
+      border-radius: 8px; background: var(--accent-dim);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: var(--accent-glow);
+      transition: transform 0.3s, background 0.2s;
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); background: rgba(139,92,246,0.25); }
+    .faq-answer {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.22,1,0.36,1), padding 0.3s;
+      padding: 0 1.5rem;
+      font-size: 14px; color: var(--text-sub); line-height: 1.7;
+    }
+    .faq-item.open .faq-answer {
+      max-height: 200px;
+      padding: 0 1.5rem 1.25rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg-alt);
+      border-top: 1px solid var(--border);
+      padding: 48px 0 32px;
+      position: relative; z-index: 10;
+    }
+    .footer-inner {
+      display: grid; grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 3rem; margin-bottom: 3rem;
+    }
+    .footer-brand-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--text-main); margin-bottom: 0.5rem;
+    }
+    .footer-brand-name span { color: var(--accent-glow); }
+    .footer-brand-sub { font-size: 10px; color: var(--text-label); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1rem; }
+    .footer-desc { font-size: 13px; color: var(--text-sub); line-height: 1.7; }
+    .footer-col-title { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-label); margin-bottom: 1rem; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .footer-links a { font-size: 13.5px; color: var(--text-sub); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text-main); }
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: var(--text-label);
+    }
+    .gold-dot { color: var(--gold); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left { opacity: 0; transform: translateX(-32px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-right { opacity: 0; transform: translateX(32px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+    /* delay helpers */
+    .d-100 { transition-delay: 0.1s; }
+    .d-200 { transition-delay: 0.2s; }
+    .d-300 { transition-delay: 0.3s; }
+    .d-400 { transition-delay: 0.4s; }
+    .d-500 { transition-delay: 0.5s; }
+    .d-600 { transition-delay: 0.6s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .layanan-grid { grid-template-columns: 1fr 1fr; }
+      .keunggulan-layout, .about-layout { grid-template-columns: 1fr; gap: 40px; }
+      .keunggulan-image-wrap, .about-image-wrap { aspect-ratio: 16/9; }
+      .tim-card { width: calc(33.333% - 14px); }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .layanan-grid { grid-template-columns: 1fr; }
+      .tim-card { width: calc(50% - 10px); }
+      .footer-inner { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; gap: 0.5rem; text-align: center; }
+      .hero-stats { gap: 1.2rem; }
+      .stat-num { font-size: 28px; }
+    }
+    @media (max-width: 480px) {
+      .tim-card { width: 100%; }
+      .about-stats { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
+<body>
 
-<body
-    class="bg-gray-50 text-gray-800 dark:bg-majesti-darkBg dark:text-white flex flex-col transition-colors duration-300">
+<!-- Ambient BG -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="grid-overlay"></div>
+<div class="particles" id="particles"></div>
 
-    <nav class="fixed top-0 w-full z-50 bg-white/90 dark:bg-majesti-darkBg/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-all duration-300"
-        data-aos="fade-down" data-aos-duration="800">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+<!-- ── NAV ── -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#beranda" class="nav-logo">
+      <div class="nav-logo-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+          <path d="M6 20h12V4H6v16zm2-12h2v2H8V8zm4 0h2v2h-2V8zm-4 4h2v2H8v-2zm4 0h2v2h-2v-2zm-2 8h-2v-3h2v3z"/>
+        </svg>
+      </div>
+      <div class="nav-brand">
+        <div class="nav-brand-name">Admaja<span>Majesti</span></div>
+        <div class="nav-brand-sub">PT. Admaja Properti Graha Majesti</div>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#beranda" class="active">Beranda</a></li>
+      <li><a href="#layanan">Layanan</a></li>
+      <li><a href="#keunggulan">Keunggulan</a></li>
+      <li><a href="#tentang">Tentang Kami</a></li>
+      <li><a href="#tim">Tim Kami</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <a href="login.html" class="btn-nav">Masuk <i class="ti ti-arrow-right" style="font-size:12px;"></i></a>
+    </div>
+  </div>
+</nav>
 
-            <div class="flex items-center gap-3">
-                <div
-                    class="w-12 h-12 rounded-full bg-majesti-purple flex items-center justify-center shadow-lg shadow-purple-500/20">
-                    <i class="fa-solid fa-city text-white text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold leading-tight text-gray-900 dark:text-white tracking-tight">
-                        AdmajaMajesti</h1>
-                    <p class="text-[10px] text-gray-500 dark:text-gray-400 tracking-wider font-medium">PT. ADMAJA
-                        PROPERTI GRAHA MAJESTI</p>
-                </div>
-            </div>
+<!-- ── HERO ── -->
+<section id="beranda">
+  <!-- decorative rings -->
+  <div class="hero-ring" style="width:500px;height:500px;top:50%;left:50%;transform:translate(-50%,-50%);animation-duration:8s;"></div>
+  <div class="hero-ring" style="width:750px;height:750px;top:50%;left:50%;transform:translate(-50%,-50%);animation-duration:12s;animation-delay:2s;"></div>
 
-            <div class="hidden lg:flex gap-6 text-sm font-medium text-gray-600 dark:text-gray-300">
-                <a href="#beranda"
-                    class="nav-link text-majesti-purple dark:text-purple-400 font-bold hover:text-majesti-purple dark:hover:text-white transition duration-200">Beranda</a>
-                <a href="#layanan"
-                    class="nav-link hover:text-majesti-purple dark:hover:text-white transition duration-200">Layanan</a>
-                <a href="#keunggulan"
-                    class="nav-link hover:text-majesti-purple dark:hover:text-white transition duration-200">Keunggulan</a>
-                <a href="#tentang"
-                    class="nav-link hover:text-majesti-purple dark:hover:text-white transition duration-200">Tentang
-                    Kami</a>
-                <a href="#tim"
-                    class="nav-link hover:text-majesti-purple dark:hover:text-white transition duration-200">Tim
-                    Kami</a>
-                <a href="#faq"
-                    class="nav-link hover:text-majesti-purple dark:hover:text-white transition duration-200">FAQ</a>
-            </div>
+  <div class="hero-content">
+    <div class="hero-badge">✦ Mewujudkan Hunian Idaman Anda</div>
 
-            <div class="flex items-center gap-4">
-                <button id="theme-toggle" type="button"
-                    class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none rounded-lg text-sm p-2.5 transition-colors">
-                    <i id="theme-toggle-dark-icon" class="fa-solid fa-moon text-lg"></i>
-                    <i id="theme-toggle-light-icon" class="fa-solid fa-sun text-lg hidden"></i>
-                </button>
+    <h1 class="hero-title">
+      Melangkah ke Masa Depan<br>
+      Bersama <span class="accent-word">AdmajaMajesti</span>
+    </h1>
 
-                <a href="login.html"
-                    class="bg-majesti-purple hover:bg-majesti-purpleHover text-white text-sm font-semibold py-2.5 px-6 rounded-full transition duration-300 shadow-lg shadow-purple-500/20">
-                    Masuk <span class="hidden sm:inline">/ Login</span> <i
-                        class="fa-solid fa-arrow-right ml-1.5 text-xs"></i>
-                </a>
-            </div>
+    <p class="hero-sub">
+      Lebih dari sekadar bangunan — kami menghadirkan ruang kehidupan dengan legalitas terjamin, desain modern, dan kemudahan akses ke pusat kota.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#layanan" class="btn-primary">
+        Mulai Eksplorasi <i class="ti ti-arrow-right"></i>
+      </a>
+      <a href="#tentang" class="btn-ghost">
+        <i class="ti ti-info-circle"></i> Tentang Kami
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">15<span>+</span></div>
+        <div class="stat-label">Proyek Sukses</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-num">100<span>%</span></div>
+        <div class="stat-label">Legalitas Aman</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-num">7<span>+</span></div>
+        <div class="stat-label">Tahun Pengalaman</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── LAYANAN ── -->
+<section id="layanan">
+  <div class="container">
+    <div class="text-center reveal" style="text-align:center;">
+      <div class="section-tag">Layanan Kami</div>
+      <h2 class="section-title">Solusi <span class="hl">Properti Terpadu</span></h2>
+      <p class="section-sub" style="margin: 0 auto;">Layanan end-to-end untuk memudahkan langkah Anda memiliki properti impian.</p>
+    </div>
+
+    <div class="layanan-grid">
+      <div class="layanan-card reveal d-100">
+        <div class="layanan-icon icon-purple"><i class="ti ti-home-check"></i></div>
+        <div class="layanan-title">Jual & Beli Properti</div>
+        <div class="layanan-desc">Pilihan rumah dan apartemen premium dengan harga kompetitif dan proses serah terima yang transparan serta terpercaya.</div>
+        <div class="layanan-arrow">Selengkapnya <i class="ti ti-arrow-right" style="font-size:12px;"></i></div>
+      </div>
+      <div class="layanan-card reveal d-200">
+        <div class="layanan-icon icon-blue"><i class="ti ti-file-certificate"></i></div>
+        <div class="layanan-title">Konsultasi Legalitas & KPR</div>
+        <div class="layanan-desc">Bantuan penuh pengurusan SHM, AJB, hingga pendampingan persetujuan KPR dengan bank rekanan kami.</div>
+        <div class="layanan-arrow">Selengkapnya <i class="ti ti-arrow-right" style="font-size:12px;"></i></div>
+      </div>
+      <div class="layanan-card reveal d-300">
+        <div class="layanan-icon icon-gold"><i class="ti ti-building-estate"></i></div>
+        <div class="layanan-title">Manajemen Sewa Aset</div>
+        <div class="layanan-desc">Jadikan properti Anda mesin pencetak uang. Kami bantu kelola penyewaan aset Anda secara profesional dan optimal.</div>
+        <div class="layanan-arrow">Selengkapnya <i class="ti ti-arrow-right" style="font-size:12px;"></i></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── KEUNGGULAN ── -->
+<section id="keunggulan">
+  <div class="container">
+    <div class="keunggulan-layout">
+      <div class="reveal-left">
+        <div class="keunggulan-image-wrap">
+          <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=700&auto=format&fit=crop" alt="Perumahan Modern AdmajaMajesti" loading="lazy">
+          <div class="keunggulan-badge">
+            <div class="keunggulan-badge-num">100%</div>
+            <div class="keunggulan-badge-label">Legalitas SHM Aman</div>
+          </div>
         </div>
-    </nav>
-
-    <section id="beranda"
-        class="min-h-screen flex flex-col justify-center items-center text-center pt-24 pb-16 px-6 relative overflow-hidden">
-        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-300/30 dark:bg-purple-900/20 rounded-full blur-3xl -z-10"
-            data-aos="zoom-in" data-aos-duration="2000"></div>
-        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-300/30 dark:bg-blue-900/20 rounded-full blur-3xl -z-10"
-            data-aos="zoom-in" data-aos-duration="2000" data-aos-delay="500"></div>
-
-        <div data-aos="fade-up" data-aos-duration="1000"
-            class="inline-block bg-white dark:bg-majesti-darkCard px-4 py-1.5 rounded-full text-xs font-semibold text-majesti-purple dark:text-purple-400 mb-6 border border-purple-200 dark:border-purple-500/20 shadow-sm">
-            ✨ Mewujudkan Hunian Idaman Anda
-        </div>
-        <h2 data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100"
-            class="text-5xl md:text-6xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6 tracking-tight">
-            Melangkah ke Masa Depan<br>Bersama AdmajaMajesti
-        </h2>
-        <p data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200"
-            class="text-gray-600 dark:text-gray-400 text-base md:text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
-            Lebih dari sekadar bangunan. Kami menghadirkan ruang kehidupan dengan legalitas terjamin, desain modern, dan
-            kemudahan akses ke pusat kota.
-        </p>
-        <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300"
-            class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="#layanan"
-                class="w-full sm:w-auto bg-majesti-purple hover:bg-majesti-purpleHover text-white font-semibold py-3.5 px-8 rounded-xl transition duration-300 shadow-lg shadow-purple-500/30 text-base text-center">
-                Mulai Eksplorasi
-            </a>
-        </div>
-    </section>
-
-    <section id="layanan"
-        class="py-24 bg-gray-100 dark:bg-[#141824] px-6 border-t border-gray-200 dark:border-gray-800/50">
-        <div class="container mx-auto">
-            <div class="text-center mb-16" data-aos="fade-up">
-                <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Solusi <span
-                        class="text-majesti-purple">Properti Terpadu</span></h3>
-                <p class="text-gray-600 dark:text-gray-400">Layanan end-to-end untuk memudahkan langkah Anda memiliki
-                    properti.</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div data-aos="fade-up" data-aos-delay="100"
-                    class="bg-white dark:bg-majesti-darkCard p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:-translate-y-2 hover:shadow-xl transition duration-300">
-                    <div
-                        class="w-14 h-14 rounded-xl bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center mb-6">
-                        <i class="fa-solid fa-house-circle-check text-2xl text-majesti-purple dark:text-purple-400"></i>
-                    </div>
-                    <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Jual & Beli Properti</h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Pilihan rumah dan apartemen
-                        premium dengan harga kompetitif dan proses serah terima yang transparan.</p>
-                </div>
-                <div data-aos="fade-up" data-aos-delay="200"
-                    class="bg-white dark:bg-majesti-darkCard p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:-translate-y-2 hover:shadow-xl transition duration-300">
-                    <div
-                        class="w-14 h-14 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center mb-6">
-                        <i class="fa-solid fa-file-signature text-2xl text-blue-600 dark:text-blue-400"></i>
-                    </div>
-                    <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Konsultasi Legalitas & KPR</h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Bantuan penuh pengurusan SHM,
-                        AJB, hingga pendampingan persetujuan KPR dengan bank rekanan kami.</p>
-                </div>
-                <div data-aos="fade-up" data-aos-delay="300"
-                    class="bg-white dark:bg-majesti-darkCard p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:-translate-y-2 hover:shadow-xl transition duration-300">
-                    <div
-                        class="w-14 h-14 rounded-xl bg-green-100 dark:bg-green-500/20 flex items-center justify-center mb-6">
-                        <i class="fa-solid fa-handshake-angle text-2xl text-green-600 dark:text-green-400"></i>
-                    </div>
-                    <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Manajemen Sewa Aset</h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Jadikan properti Anda mesin
-                        pencetak uang. Kami bantu kelola penyewaan aset Anda secara profesional.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="keunggulan" class="py-24 bg-gray-50 dark:bg-majesti-darkBg px-6">
-        <div class="container mx-auto">
-            <div class="flex flex-col lg:flex-row items-center gap-16">
-                <div class="lg:w-1/2" data-aos="fade-right">
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Mengapa Memilih <span
-                            class="text-majesti-purple">AdmajaMajesti?</span></h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">Kami berkomitmen menjadi mitra
-                        tepercaya untuk membantu Anda menemukan hunian impian di lingkungan yang aman, nyaman, dan
-                        bernilai investasi tinggi.</p>
-                    <div class="space-y-6">
-                        <div class="flex items-start gap-4" data-aos="fade-up" data-aos-delay="100">
-                            <div
-                                class="mt-1 w-10 h-10 rounded-full bg-white dark:bg-majesti-darkCard flex items-center justify-center flex-shrink-0 border border-gray-200 dark:border-gray-700 shadow-sm">
-                                <i class="fa-solid fa-map-location-dot text-majesti-purple dark:text-purple-400"></i>
-                            </div>
-                            <div>
-                                <h5 class="font-bold text-lg text-gray-900 dark:text-white">Lokasi Super Strategis</h5>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Dekat dengan fasilitas umum, tol,
-                                    sekolah, dan pusat perbelanjaan.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-4" data-aos="fade-up" data-aos-delay="200">
-                            <div
-                                class="mt-1 w-10 h-10 rounded-full bg-white dark:bg-majesti-darkCard flex items-center justify-center flex-shrink-0 border border-gray-200 dark:border-gray-700 shadow-sm">
-                                <i class="fa-solid fa-shield-check text-majesti-purple dark:text-purple-400"></i>
-                            </div>
-                            <div>
-                                <h5 class="font-bold text-lg text-gray-900 dark:text-white">Keamanan 24 Jam (One Gate
-                                    System)</h5>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Dilengkapi CCTV dan petugas keamanan
-                                    profesional di setiap klaster.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-4" data-aos="fade-up" data-aos-delay="300">
-                            <div
-                                class="mt-1 w-10 h-10 rounded-full bg-white dark:bg-majesti-darkCard flex items-center justify-center flex-shrink-0 border border-gray-200 dark:border-gray-700 shadow-sm">
-                                <i class="fa-solid fa-leaf text-majesti-purple dark:text-purple-400"></i>
-                            </div>
-                            <div>
-                                <h5 class="font-bold text-lg text-gray-900 dark:text-white">Konsep Green Living & Bebas
-                                    Banjir</h5>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Tata kota mandiri dengan resapan air
-                                    maksimal and area terbuka hijau.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="lg:w-1/2 w-full h-96 bg-white dark:bg-majesti-darkCard rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden relative group"
-                    data-aos="fade-left">
-                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=600&auto=format&fit=crop"
-                        alt="Perumahan Modern AdmajaMajesti"
-                        class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                    <div class="absolute inset-0 bg-purple-900/10 group-hover:bg-purple-900/30 transition duration-500">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="tentang"
-        class="py-24 bg-gray-100 dark:bg-[#141824] px-6 border-y border-gray-200 dark:border-gray-800/50">
-        <div class="container mx-auto flex flex-col md:flex-row-reverse items-center gap-12">
-            <div class="md:w-1/2" data-aos="fade-left">
-                <div
-                    class="w-full h-80 bg-white dark:bg-majesti-darkCard rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=600&auto=format&fit=crop"
-                        alt="Tim Profesional AdmajaMajesti"
-                        class="w-full h-full object-cover opacity-90 hover:opacity-100 transition duration-300">
-                </div>
-            </div>
-            <div class="md:w-1/2" data-aos="fade-right">
-                <div
-                    class="inline-block px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-majesti-purple dark:text-purple-400 text-xs font-bold rounded-md mb-4 border border-purple-200 dark:border-purple-500/20">
-                    PROFIL PERUSAHAAN</div>
-                <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Membangun Masa Depan, <br><span
-                        class="text-majesti-purple">Satu Hunian Sekaligus</span></h3>
-                <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-                    Berdiri sebagai pilar kepercayaan di industri properti, PT. Admaja Properti Graha Majesti
-                    berkomitmen penuh untuk menghadirkan hunian yang tidak hanya sekadar tempat tinggal, tetapi juga
-                    ruang di mana keluarga tumbuh dan merajut kebahagiaan.
-                </p>
-                <div class="grid grid-cols-2 gap-6 mt-8">
-                    <div class="bg-white dark:bg-majesti-darkBg p-4 rounded-xl border border-gray-200 dark:border-gray-800 text-center shadow-sm"
-                        data-aos="zoom-in" data-aos-delay="100">
-                        <h4 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">15+</h4>
-                        <p class="text-xs text-gray-500 font-medium uppercase">Proyek Sukses</p>
-                    </div>
-                    <div class="bg-white dark:bg-majesti-darkBg p-4 rounded-xl border border-gray-200 dark:border-gray-800 text-center shadow-sm"
-                        data-aos="zoom-in" data-aos-delay="200">
-                        <h4 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">100%</h4>
-                        <p class="text-xs text-gray-500 font-medium uppercase">Legalitas Aman</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="tim"
-        class="py-24 bg-gray-50 dark:bg-majesti-darkBg px-6 border-b border-gray-200 dark:border-gray-800/50">
-        <div class="container mx-auto">
-            <div class="text-center mb-16" data-aos="fade-up">
-                <div
-                    class="inline-block px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-majesti-purple dark:text-purple-400 text-xs font-bold rounded-md mb-4 border border-purple-200 dark:border-purple-500/20">
-                    DEVELOPER TEAM
-                </div>
-                <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Di Balik <span
-                        class="text-majesti-purple">AdmajaMajesti</span></h3>
-                <p class="text-gray-600 dark:text-gray-400">Membangun platform properti terbaik adalah hasil dedikasi
-                    dari tim hebat kami.</p>
-            </div>
-
-            <div class="flex flex-wrap justify-center gap-6">
-                <div data-aos="zoom-in" data-aos-delay="50"
-                    class="bg-white dark:bg-majesti-darkCard w-full sm:w-[calc(50%-1.5rem)] md:w-[calc(33.333%-1.5rem)] lg:w-[calc(25%-1.5rem)] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 text-center hover:-translate-y-2 hover:border-purple-400 transition duration-300 shadow-md">
-                    <div class="w-20 h-20 mx-auto rounded-full overflow-hidden mb-4 border-2 border-purple-300">
-                        <img src="/alvin.jpeg" alt="Foto Profil" class="w-full h-full object-cover rounded-full">
-                    </div>
-                    <h5 class="font-bold text-gray-900 dark:text-white text-sm mb-2">Mohammad Alvin Firmansyah</h5>
-                    <p
-                        class="text-xs text-purple-700 dark:text-purple-300 font-mono bg-purple-50 dark:bg-purple-900/40 py-1.5 px-2 rounded-lg inline-block border border-purple-200 dark:border-purple-500/20">
-                        25051204401</p>
-                </div>
-
-                <div data-aos="zoom-in" data-aos-delay="100"
-                    class="bg-white dark:bg-majesti-darkCard w-full sm:w-[calc(50%-1.5rem)] md:w-[calc(33.333%-1.5rem)] lg:w-[calc(25%-1.5rem)] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 text-center hover:-translate-y-2 hover:border-blue-400 transition duration-300 shadow-md">
-                    <div class="w-20 h-20 mx-auto rounded-full overflow-hidden mb-4 border-2 border-blue-300">
-                        <img src="/naila.jpeg" alt="Foto Profil" class="w-full h-full object-cover rounded-full">
-                    </div>
-                    <h5 class="font-bold text-gray-900 dark:text-white text-sm mb-2">Naila Nurul Faizah</h5>
-                    <p
-                        class="text-xs text-blue-700 dark:text-blue-300 font-mono bg-blue-50 dark:bg-blue-900/40 py-1.5 px-2 rounded-lg inline-block border border-blue-200 dark:border-purple-500/20">
-                        25051204343</p>
-                </div>
-
-                <div data-aos="zoom-in" data-aos-delay="150"
-                    class="bg-white dark:bg-majesti-darkCard w-full sm:w-[calc(50%-1.5rem)] md:w-[calc(33.333%-1.5rem)] lg:w-[calc(25%-1.5rem)] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 text-center hover:-translate-y-2 hover:border-green-400 transition duration-300 shadow-md">
-                    <div
-                        class="w-16 h-16 mx-auto rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center mb-4 border border-green-200 dark:border-green-500/30">
-                        <i class="fa-solid fa-user-gear text-2xl text-green-600 dark:text-green-400"></i>
-                    </div>
-                    <h5 class="font-bold text-gray-900 dark:text-white text-sm mb-2">Maulana Halim</h5>
-                    <p
-                        class="text-xs text-green-700 dark:text-green-300 font-mono bg-green-50 dark:bg-green-900/40 py-1.5 px-2 rounded-lg inline-block border border-green-200 dark:border-purple-500/20">
-                        25051204386</p>
-                </div>
-
-                <div data-aos="zoom-in" data-aos-delay="200"
-                    class="bg-white dark:bg-majesti-darkCard w-full sm:w-[calc(50%-1.5rem)] md:w-[calc(33.333%-1.5rem)] lg:w-[calc(25%-1.5rem)] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 text-center hover:-translate-y-2 hover:border-pink-400 transition duration-300 shadow-md">
-                    <div
-                        class="w-16 h-16 mx-auto rounded-full bg-pink-100 dark:bg-pink-500/20 flex items-center justify-center mb-4 border border-pink-200 dark:border-pink-500/30">
-                        <i class="fa-solid fa-user-pen text-2xl text-pink-600 dark:text-pink-400"></i>
-                    </div>
-                    <h5 class="font-bold text-gray-900 dark:text-white text-sm mb-2">Dea Apriani Agustin</h5>
-                    <p
-                        class="text-xs text-pink-700 dark:text-pink-300 font-mono bg-pink-50 dark:bg-pink-900/40 py-1.5 px-2 rounded-lg inline-block border border-pink-200 dark:border-purple-500/20">
-                        25051204387</p>
-                </div>
-
-                <div data-aos="zoom-in" data-aos-delay="250"
-                    class="bg-white dark:bg-majesti-darkCard w-full sm:w-[calc(50%-1.5rem)] md:w-[calc(33.333%-1.5rem)] lg:w-[calc(25%-1.5rem)] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 text-center hover:-translate-y-2 hover:border-yellow-400 transition duration-300 shadow-md">
-                    <div class="w-20 h-20 mx-auto rounded-full overflow-hidden mb-4 border-2 border-yellow-300">
-                        <img src="/syifa.jpeg" alt="Foto Profil" class="w-full h-full object-cover">
-                    </div>
-                    <h5 class="font-bold text-gray-900 dark:text-white text-sm mb-2">Indasyifa Debian Wirajati</h5>
-                    <p
-                        class="text-xs text-yellow-700 dark:text-yellow-300 font-mono bg-yellow-50 dark:bg-yellow-900/40 py-1.5 px-2 rounded-lg inline-block border border-yellow-200 dark:border-purple-500/20">
-                        25051204395</p>
-                </div>
-
-                <div data-aos="zoom-in" data-aos-delay="300"
-                    class="bg-white dark:bg-majesti-darkCard w-full sm:w-[calc(50%-1.5rem)] md:w-[calc(33.333%-1.5rem)] lg:w-[calc(25%-1.5rem)] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 text-center hover:-translate-y-2 hover:border-orange-400 transition duration-300 shadow-md">
-                    <div class="w-20 h-20 mx-auto rounded-full overflow-hidden mb-4 border-2 border-orange-300">
-                        <img src="/akhdan.jpeg" alt="Foto Profil" class="w-full h-full object-cover">
-                    </div>
-                    <h5 class="font-bold text-gray-900 dark:text-white text-sm mb-2">Akhdan Farrel Bernadine</h5>
-                    <p
-                        class="text-xs text-orange-700 dark:text-orange-300 font-mono bg-orange-50 dark:bg-orange-900/40 py-1.5 px-2 rounded-lg inline-block border border-orange-200 dark:border-purple-500/20">
-                        25051204398</p>
-                </div>
-
-                <div data-aos="zoom-in" data-aos-delay="350"
-                    class="bg-white dark:bg-majesti-darkCard w-full sm:w-[calc(50%-1.5rem)] md:w-[calc(33.333%-1.5rem)] lg:w-[calc(25%-1.5rem)] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 text-center hover:-translate-y-2 hover:border-teal-400 transition duration-300 shadow-md">
-                    <div
-                        class="w-16 h-16 mx-auto rounded-full bg-teal-100 dark:bg-teal-500/20 flex items-center justify-center mb-4 border border-teal-200 dark:border-teal-500/30">
-                        <i class="fa-solid fa-user-ninja text-2xl text-teal-600 dark:text-teal-400"></i>
-                    </div>
-                    <h5 class="font-bold text-gray-900 dark:text-white text-sm mb-2">Widya Pramudyaning Tyas</h5>
-                    <p
-                        class="text-xs text-teal-700 dark:text-teal-300 font-mono bg-teal-50 dark:bg-teal-900/40 py-1.5 px-2 rounded-lg inline-block border border-teal-200 dark:border-purple-500/20">
-                        25051204405</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="faq" class="py-24 bg-gray-100 dark:bg-[#141824] px-6">
-        <div class="container mx-auto max-w-4xl">
-            <div class="text-center mb-16" data-aos="fade-up">
-                <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Pertanyaan yang <span
-                        class="text-majesti-purple">Sering Diajukan</span></h3>
-                <p class="text-gray-600 dark:text-gray-400">Temukan jawaban cepat untuk pertanyaan seputar pembelian
-                    properti di sini.</p>
-            </div>
-            <div class="space-y-4">
-                <div data-aos="fade-up" data-aos-delay="100"
-                    class="bg-white dark:bg-majesti-darkCard p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
-                    <h5 class="font-bold text-lg text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-                        <i class="fa-solid fa-circle-question text-majesti-purple dark:text-purple-400"></i> Apakah
-                        sertifikat rumah sudah SHM?
-                    </h5>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm ml-8">Ya, seluruh properti yang kami tawarkan
-                        dipastikan sudah memiliki Sertifikat Hak Milik (SHM) yang sah dan siap balik nama.</p>
-                </div>
-                <div data-aos="fade-up" data-aos-delay="200"
-                    class="bg-white dark:bg-majesti-darkCard p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
-                    <h5 class="font-bold text-lg text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-                        <i class="fa-solid fa-circle-question text-majesti-purple dark:text-purple-400"></i> Bagaimana
-                        sistem pembayaran yang tersedia?
-                    </h5>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm ml-8">Kami menerima pembayaran secara Cash Keras,
-                        Cash Bertahap (Installment developer), dan KPR (Kredit Pemilikan Rumah) melalui berbagai bank
-                        rekanan kami.</p>
-                </div>
-                <div data-aos="fade-up" data-aos-delay="300"
-                    class="bg-white dark:bg-majesti-darkCard p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
-                    <h5 class="font-bold text-lg text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-                        <i class="fa-solid fa-circle-question text-majesti-purple dark:text-purple-400"></i> Apakah
-                        harga yang tertera sudah termasuk biaya notaris?
-                    </h5>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm ml-8">Harga yang tertera biasanya belum termasuk
-                        Biaya BPHTB, Biaya KPR, dan Notaris. Namun, kami sering mengadakan promo bebas biaya. Silakan
-                        hubungi agen kami untuk info promo terbaru.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer class="border-t border-gray-200 dark:border-gray-900 py-8 bg-white dark:bg-[#0a0c13]">
-        <div
-            class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 dark:text-gray-500 text-sm">
+      </div>
+      <div class="reveal-right">
+        <div class="section-tag">Keunggulan Kami</div>
+        <h2 class="section-title">Mengapa Memilih<br><span class="hl">AdmajaMajesti?</span></h2>
+        <p class="section-sub">Kami berkomitmen menjadi mitra tepercaya untuk membantu Anda menemukan hunian impian di lingkungan yang aman, nyaman, dan bernilai investasi tinggi.</p>
+        <ul class="feature-list">
+          <li class="feature-item reveal d-100">
+            <div class="feature-icon"><i class="ti ti-map-pin"></i></div>
             <div>
-                &copy; 2026 PT. Admaja Properti Graha Majesti. All rights reserved.
+              <div class="feature-title">Lokasi Super Strategis</div>
+              <div class="feature-desc">Dekat dengan fasilitas umum, tol, sekolah, dan pusat perbelanjaan terkemuka.</div>
             </div>
-            <div class="flex gap-6">
-                <a href="#beranda" class="hover:text-majesti-purple transition">Beranda</a>
-                <a href="/login" class="hover:text-majesti-purple transition">Admin Panel <i
-                        class="fa-solid fa-lock text-[10px] ml-1"></i></a>
+          </li>
+          <li class="feature-item reveal d-200">
+            <div class="feature-icon"><i class="ti ti-shield-check"></i></div>
+            <div>
+              <div class="feature-title">Keamanan 24 Jam — One Gate System</div>
+              <div class="feature-desc">Dilengkapi CCTV dan petugas keamanan profesional di setiap klaster perumahan.</div>
             </div>
+          </li>
+          <li class="feature-item reveal d-300">
+            <div class="feature-icon"><i class="ti ti-leaf"></i></div>
+            <div>
+              <div class="feature-title">Green Living & Bebas Banjir</div>
+              <div class="feature-desc">Tata kota mandiri dengan resapan air maksimal dan area terbuka hijau yang asri.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TENTANG ── -->
+<section id="tentang">
+  <div class="container">
+    <div class="about-layout">
+      <div class="reveal-right" style="order:2;">
+        <div class="about-image-wrap">
+          <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=700&auto=format&fit=crop" alt="Tim Profesional AdmajaMajesti" loading="lazy">
+          <div class="about-deco"></div>
         </div>
-    </footer>
+      </div>
+      <div class="reveal-left" style="order:1;">
+        <div class="section-tag">Profil Perusahaan</div>
+        <h2 class="section-title">Membangun Masa Depan,<br><span class="hl">Satu Hunian Sekaligus</span></h2>
+        <p class="section-sub">Berdiri sebagai pilar kepercayaan di industri properti, PT. Admaja Properti Graha Majesti berkomitmen penuh untuk menghadirkan hunian yang tidak hanya sekadar tempat tinggal, tetapi juga ruang di mana keluarga tumbuh dan merajut kebahagiaan bersama.</p>
+        <div class="about-stats">
+          <div class="about-stat reveal d-100">
+            <div class="about-stat-num">15+</div>
+            <div class="about-stat-label">Proyek Sukses</div>
+          </div>
+          <div class="about-stat reveal d-200">
+            <div class="about-stat-num">100%</div>
+            <div class="about-stat-label">Legalitas Aman</div>
+          </div>
+          <div class="about-stat reveal d-300">
+            <div class="about-stat-num">7+</div>
+            <div class="about-stat-label">Tahun Berpengalaman</div>
+          </div>
+          <div class="about-stat reveal d-400">
+            <div class="about-stat-num">500+</div>
+            <div class="about-stat-label">Keluarga Terlayani</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        // 1. Inisialisasi AOS (Animasi Scroll)
-        AOS.init({ once: true, offset: 100 });
+<!-- ── TIM ── -->
+<section id="tim">
+  <div class="container">
+    <div class="reveal" style="text-align:center;">
+      <div class="section-tag">Developer Team</div>
+      <h2 class="section-title">Kelompok<span class="hl">Tiga</span></h2>
+      <p class="section-sub" style="margin:0 auto;">Membangun platform properti terbaik adalah hasil dedikasi tim hebat kami.</p>
+    </div>
+    <div class="tim-grid">
 
-        // 2. Logika Toggle Dark Mode / Light Mode
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const darkIcon = document.getElementById('theme-toggle-dark-icon');
-        const lightIcon = document.getElementById('theme-toggle-light-icon');
+      <div class="tim-card card-purple reveal d-100">
+        <div class="tim-avatar-wrap">
+          <img src="/uploads/alvin.jpeg" alt="Mohammad Alvin Firmansyah" class="tim-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="tim-avatar-ring"></div>
+        </div>
+        <div class="tim-name">Mohammad Alvin Firmansyah</div>
+        <div class="tim-nim">25051204401</div>
+      </div>
 
-        function setIconTheme() {
-            if (document.documentElement.classList.contains('dark')) {
-                darkIcon.classList.add('hidden');
-                lightIcon.classList.remove('hidden');
-            } else {
-                lightIcon.classList.add('hidden');
-                darkIcon.classList.remove('hidden');
-            }
-        }
-        setIconTheme();
+      <div class="tim-card card-blue reveal d-200">
+        <div class="tim-avatar-wrap">
+          <img src="/uploads/naila.jpeg" alt="Naila Nurul Faizah" class="tim-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="tim-avatar-ring"></div>
+        </div>
+        <div class="tim-name">Naila Nurul Faizah</div>
+        <div class="tim-nim" style="color:#93c5fd;background:rgba(37,99,235,0.15);border-color:rgba(96,165,250,0.25);">25051204343</div>
+      </div>
 
-        themeToggleBtn.addEventListener('click', function () {
-            document.documentElement.classList.toggle('dark');
-            setIconTheme();
-        });
+      <div class="tim-card card-green reveal d-300">
+        <div class="tim-avatar-wrap">
+          <img src="/uploads/halim.jpeg" alt="Maulana Halim" class="tim-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="tim-avatar-ring"></div>
+        </div>
+        <div class="tim-name">Maulana Halim</div>
+        <div class="tim-nim" style="color:#6ee7b7;background:rgba(16,185,129,0.12);border-color:rgba(52,211,153,0.25);">25051204386</div>
+      </div>
 
-        /// 3. LOGIKA SCROLL SPY (ACTIVE MENU) 🚀
-        const sections = document.querySelectorAll('section');
-        const navLinks = document.querySelectorAll('.nav-link');
+      <div class="tim-card card-pink reveal d-400">
+        <div class="tim-avatar-wrap">
+          <img src="/uploads/yaya.jpeg" alt="Dea Apriani Agustin" class="tim-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="tim-avatar-ring"></div>
+        </div>
+        <div class="tim-name">Dea Apriani Agustin</div>
+        <div class="tim-nim" style="color:#f9a8d4;background:rgba(236,72,153,0.12);border-color:rgba(244,114,182,0.25);">25051204387</div>
+      </div>
 
-        window.addEventListener('scroll', () => {
-            let current = '';
+      <div class="tim-card card-yellow reveal d-500">
+        <div class="tim-avatar-wrap">
+          <img src="/uploads/syifa.jpeg" alt="Indasyifa Debian Wirajati" class="tim-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="tim-avatar-ring"></div>
+        </div>
+        <div class="tim-name">Indasyifa Debian Wirajati</div>
+        <div class="tim-nim" style="color:#fde68a;background:rgba(234,179,8,0.12);border-color:rgba(251,191,36,0.25);">25051204395</div>
+      </div>
 
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - 200;
-                const sectionHeight = section.offsetHeight;
+      <div class="tim-card card-orange reveal d-600">
+        <div class="tim-avatar-wrap">
+          <img src="/uploads/akhdan.jpeg" alt="Akhdan Farrel Bernadine" class="tim-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="tim-avatar-ring"></div>
+        </div>
+        <div class="tim-name">Akhdan Farrel Bernadine</div>
+        <div class="tim-nim" style="color:#fed7aa;background:rgba(249,115,22,0.12);border-color:rgba(251,146,60,0.25);">25051204398</div>
+      </div>
 
-                if (
-                    window.scrollY >= sectionTop &&
-                    window.scrollY < sectionTop + sectionHeight
-                ) {
-                    current = section.getAttribute('id');
-                }
-            });
+      <div class="tim-card card-teal reveal d-100">
+        <div class="tim-avatar-wrap">
+          <div class="tim-avatar-fallback" style="background:rgba(20,184,166,0.15);border-color:rgba(45,212,191,0.3);color:#5eead4;">
+            <i class="ti ti-user" style="font-size:28px;"></i>
+          </div>
+          <div class="tim-avatar-ring"></div>
+        </div>
+        <div class="tim-name">Widya Pramudyaning Tyas</div>
+        <div class="tim-nim" style="color:#99f6e4;background:rgba(20,184,166,0.12);border-color:rgba(45,212,191,0.25);">25051204405</div>
+      </div>
 
-            navLinks.forEach(link => {
-                link.classList.remove(
-                    'text-majesti-purple',
-                    'dark:text-purple-400',
-                    'font-bold'
-                );
+    </div>
+  </div>
+</section>
 
-                if (link.getAttribute('href') === `#${current}`) {
-                    link.classList.add(
-                        'text-majesti-purple',
-                        'dark:text-purple-400',
-                        'font-bold'
-                    );
-                }
-            });
-        });
-    </script>
+<!-- ── FAQ ── -->
+<section id="faq">
+  <div class="container">
+    <div class="reveal" style="text-align:center;">
+      <div class="section-tag">FAQ</div>
+      <h2 class="section-title">Pertanyaan yang <span class="hl">Sering Diajukan</span></h2>
+      <p class="section-sub" style="margin:0 auto;">Temukan jawaban cepat untuk pertanyaan seputar pembelian properti di sini.</p>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item reveal d-100">
+        <div class="faq-header">
+          <div class="faq-question">Apakah sertifikat rumah sudah SHM?</div>
+          <div class="faq-icon"><i class="ti ti-plus"></i></div>
+        </div>
+        <div class="faq-answer">Ya, seluruh properti yang kami tawarkan dipastikan sudah memiliki Sertifikat Hak Milik (SHM) yang sah dan siap balik nama atas nama pembeli.</div>
+      </div>
+      <div class="faq-item reveal d-200">
+        <div class="faq-header">
+          <div class="faq-question">Bagaimana sistem pembayaran yang tersedia?</div>
+          <div class="faq-icon"><i class="ti ti-plus"></i></div>
+        </div>
+        <div class="faq-answer">Kami menerima pembayaran secara Cash Keras, Cash Bertahap (installment developer), dan KPR (Kredit Pemilikan Rumah) melalui berbagai bank rekanan kami yang terpercaya.</div>
+      </div>
+      <div class="faq-item reveal d-300">
+        <div class="faq-header">
+          <div class="faq-question">Apakah harga sudah termasuk biaya notaris?</div>
+          <div class="faq-icon"><i class="ti ti-plus"></i></div>
+        </div>
+        <div class="faq-answer">Harga yang tertera biasanya belum termasuk Biaya BPHTB, Biaya KPR, dan Notaris. Namun, kami sering mengadakan promo bebas biaya. Silakan hubungi agen kami untuk info promo terbaru.</div>
+      </div>
+      <div class="faq-item reveal d-400">
+        <div class="faq-header">
+          <div class="faq-question">Berapa lama proses serah terima kunci?</div>
+          <div class="faq-icon"><i class="ti ti-plus"></i></div>
+        </div>
+        <div class="faq-answer">Proses serah terima kunci umumnya berlangsung antara 14–30 hari kerja setelah pelunasan dan kelengkapan dokumen. Tim kami akan mendampingi Anda di setiap tahap proses tersebut.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── */-->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand-name">Admaja<span>Majesti</span></div>
+        <div class="footer-brand-sub">PT. Admaja Properti Graha Majesti</div>
+        <p class="footer-desc">Mitra tepercaya Anda dalam mewujudkan hunian impian dengan legalitas terjamin dan kualitas terbaik.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Navigasi</div>
+        <ul class="footer-links">
+          <li><a href="#beranda">Beranda</a></li>
+          <li><a href="#layanan">Layanan</a></li>
+          <li><a href="#keunggulan">Keunggulan</a></li>
+          <li><a href="#tentang">Tentang Kami</a></li>
+          <li><a href="#tim">Tim Kami</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Akses</div>
+        <ul class="footer-links">
+          <li><a href="login.html">Login Akun</a></li>
+          <li><a href="login.html">Daftar Akun</a></li>
+          <li><a href="dashboard.html">Admin Panel <i class="ti ti-lock" style="font-size:10px;"></i></a></li>
+          <li><a href="katalog.html">Katalog Properti</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 PT. Admaja Properti Graha Majesti<span class="gold-dot"> ✦</span> All rights reserved.</span>
+      <span>Dibuat dengan <span class="gold-dot">♥</span> oleh Tim AdmajaMajesti</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/index.js"></script>
+
 </body>
-
 </html>
