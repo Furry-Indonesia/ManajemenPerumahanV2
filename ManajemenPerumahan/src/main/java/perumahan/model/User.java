@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users") // Menyesuaikan persis dengan nama tabelmu
+@Table(name = "users")
 public class User {
 
     @Id
@@ -18,9 +18,9 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String role; // Berisi "ADMIN" atau "PEGAWAI"
+    private String role;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "nama_lengkap")
@@ -31,6 +31,12 @@ public class User {
 
     @Column(name = "no_wa")
     private String noWa;
+
+    // ✅ Otomatis diisi saat pertama kali disimpan
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     // --- GETTER & SETTER ---
     public Integer getId() { return id; }
