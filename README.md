@@ -97,8 +97,6 @@ Setelah terminal menampilkan status **"Started"**, buka browser dan kunjungi:
 
 ---
 
-#ECHO
-
 <p align="center">
   Made with ❤️ by <b>Furry-Indonesia</b> &nbsp;·&nbsp; Solid! Solid! Solid! 🐾
 </p>
