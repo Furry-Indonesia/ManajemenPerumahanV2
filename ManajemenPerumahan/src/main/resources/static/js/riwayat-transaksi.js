@@ -78,29 +78,39 @@
   const ITEMS_PER_PAGE = 7;
 
   // ── Fetch ──
-  async function fetchTransaksi() {
+  async function fetchTransaksi(keyword = '') {
     try {
-      const res = await fetch('http://localhost:8080/api/properti/transaksi/semua');
+      // 1. Suruh Java mencari teksnya
+      const url = `http://localhost:8080/api/properti/transaksi/semua?keyword=${encodeURIComponent(keyword)}`;
+      const res = await fetch(url);
       const data = await res.json();
+      
       globalDataTransaksi = data.reverse();
-      filteredData = [...globalDataTransaksi];
 
-      // KPI
-      let cash=0, transfer=0, kpr=0;
-      globalDataTransaksi.forEach(t => {
-        const m = (t.metodePembayaran||'').toUpperCase();
-        if (m.includes('CASH')) cash++;
-        else if (m.includes('TRANSFER')) transfer++;
-        else if (m.includes('KPR')||m.includes('KPA')) kpr++;
+      // 2. JS cukup bertugas memfilter Dropdown Metode Pembayaran
+      const m = document.getElementById('filterMetode') ? document.getElementById('filterMetode').value.toLowerCase() : '';
+      filteredData = globalDataTransaksi.filter(trx => {
+        return m === '' || (trx.metodePembayaran || '').toLowerCase().includes(m);
       });
-      animateCount('kpiTotal', globalDataTransaksi.length);
+
+      // 3. Update KPI secara dinamis berdasarkan hasil filter!
+      let cash = 0, transfer = 0, kpr = 0;
+      filteredData.forEach(t => {
+        const met = (t.metodePembayaran || '').toUpperCase();
+        if (met.includes('CASH')) cash++;
+        else if (met.includes('TRANSFER')) transfer++;
+        else if (met.includes('KPR') || met.includes('KPA')) kpr++;
+      });
+      
+      animateCount('kpiTotal', filteredData.length);
       animateCount('kpiTransfer', transfer);
       animateCount('kpiCash', cash);
       animateCount('kpiKpr', kpr);
 
+      currentPage = 1;
       renderTabel();
     } catch (err) {
-      document.getElementById('tabel-transaksi').innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="ti ti-wifi-off"></i><p>Gagal memuat data. Periksa koneksi server.</p></div></td></tr>';
+      document.getElementById('tabel-transaksi').innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="ti ti-wifi-off"></i><p>Gagal memuat data dari server.</p></div></td></tr>';
     }
   }
 
@@ -200,17 +210,9 @@
 
   // ── Filters ──
   function applyFilters() {
-    const q = document.getElementById('inputCari').value.toLowerCase();
-    const m = document.getElementById('filterMetode').value.toLowerCase();
-    filteredData = globalDataTransaksi.filter(trx => {
-      const prop = trx.properti || {};
-      const teks = ((trx.namaPembeli||'') + ' ' + (prop.nama||'') + ' ' + (prop.kode||'') + ' ' + (trx.metodePembayaran||'')).toLowerCase();
-      const cocokQ = teks.includes(q);
-      const cocokM = m === '' || (trx.metodePembayaran||'').toLowerCase().includes(m);
-      return cocokQ && cocokM;
-    });
-    currentPage = 1;
-    renderTabel();
+    const q = document.getElementById('inputCari').value;
+    // Lempar kata kunci ke Java! (Metode pembayaran otomatis ter-filter di dalam fetchTransaksi)
+    fetchTransaksi(q);
   }
 
   // ── Refresh ──

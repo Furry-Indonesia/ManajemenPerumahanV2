@@ -107,21 +107,28 @@
 
   // ── Fetch & render ──
   let allUsers = [];
-  async function fetchAkun() {
+  
+  // Fungsi ini sekarang menerima parameter keyword dari kolom pencarian
+  async function fetchAkun(keyword = '') {
     try {
-      const res = await fetch(API_USER_URL);
+      // Panggil API Java dengan membawa keyword
+      const url = keyword ? `${API_USER_URL}?keyword=${encodeURIComponent(keyword)}` : API_USER_URL;
+      const res = await fetch(url);
       allUsers = await res.json();
+      
       renderTabel(allUsers);
-      // KPI
+      
+      // Update KPI
       const admins = allUsers.filter(u => u.role === 'ADMIN').length;
       const users  = allUsers.filter(u => u.role === 'USER').length;
       animateCount('statTotal', allUsers.length);
       animateCount('statAdmin', admins);
       animateCount('statUser',  users);
-      animateCount('statBaru',  Math.min(allUsers.length, 3)); // placeholder
+      animateCount('statBaru',  Math.min(allUsers.length, 3)); 
+      
     } catch(e) {
       ['adminTableBody','userTableBody'].forEach(id => {
-        document.getElementById(id).innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="ti ti-wifi-off"></i><p>Gagal memuat data. Periksa koneksi server.</p></div></td></tr>`;
+        document.getElementById(id).innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="ti ti-wifi-off"></i><p>Gagal memuat data dari server.</p></div></td></tr>`;
       });
     }
   }
@@ -141,13 +148,11 @@
   }
 
   function saringTabel() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = allUsers.filter(u => {
-      return (u.username||'').toLowerCase().includes(q)
-          || (u.namaLengkap||'').toLowerCase().includes(q)
-          || (u.noWa||'').toLowerCase().includes(q);
-    });
-    renderTabel(filtered);
+    // Ambil teks yang diketik mase
+    const q = document.getElementById('searchInput').value;
+    
+    // Suruh Java yang mencari datanya!
+    fetchAkun(q);
   }
 
   // ── CRUD ──
