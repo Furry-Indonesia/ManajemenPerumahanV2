@@ -55,24 +55,47 @@
   muatAvatarNavbar();
 
   // ── Fetch Properti ──
-  async function fetchProperti() {
+  async function fetchProperti(keyword = '', sortBy = '') {
     try {
-      const res = await fetch(API_URL);
+      // 1. JavaScript sebagai "Tukang Pos" mengirim kata kunci ke Java
+      const url = `http://localhost:8080/api/properti?keyword=${encodeURIComponent(keyword)}&sort=${encodeURIComponent(sortBy)}`;
+      const res = await fetch(url);
       const data = await res.json();
+      
       globalDataProperti = data;
-      filteredData = data;
+
+      // 2. Ambil nilai filter Status & Kategori dari dropdown HTML
+      const st = document.getElementById('filterStatus') ? document.getElementById('filterStatus').value : '';
+      const cat = document.getElementById('filterKategori') ? document.getElementById('filterKategori').value : '';
+
+      // 3. Filter ringan di sisi Client untuk Status & Kategori
+      filteredData = globalDataProperti.filter(p => {
+        let mS = true;
+        if (st === 'Lunas') mS = p.terjual === true;
+        if (st === 'Tersedia') mS = p.terjual === false;
+        const mC = cat === '' || p.jenisProperti === cat;
+        return mS && mC;
+      });
+
+      // 4. Hitung ulang statistik berdasarkan data yang sudah difilter
       let total = 0, tersedia = 0, terjual = 0, omset = 0;
-      data.forEach(item => {
+      filteredData.forEach(item => {
         total++;
         if (item.terjual) { terjual++; omset += item.harga; } else { tersedia++; }
       });
+      
       animateCount('statTotal', total);
       animateCount('statTersedia', tersedia);
       animateCount('statTerjual', terjual);
       document.getElementById('statOmset').innerText = formatRupiah(omset);
-      document.getElementById('tabelSubInfo').innerText = `${total} properti terdaftar · ${terjual} lunas · ${tersedia} tersedia`;
+      document.getElementById('tabelSubInfo').innerText = `${total} properti ditemukan`;
+      
+      // 5. Kembalikan ke halaman 1 dan render tabel
+      currentPage = 1;
       renderTabel();
-    } catch(e) { document.getElementById('tabelSubInfo').innerText = 'Gagal memuat data.'; }
+    } catch(e) { 
+      document.getElementById('tabelSubInfo').innerText = 'Gagal memuat data dari server.'; 
+    }
   }
 
   function animateCount(id, target) {
@@ -149,20 +172,15 @@
 
   // ── Filters ──
   function applyFilters() {
-    const q = document.getElementById('searchProp').value.toLowerCase();
-    const st = document.getElementById('filterStatus').value;
-    const cat = document.getElementById('filterKategori').value;
-    filteredData = globalDataProperti.filter(p => {
-      const nb = p.namaPembeli ? p.namaPembeli.toLowerCase() : '';
-      const mQ = p.nama.toLowerCase().includes(q) || p.kode.toLowerCase().includes(q) || nb.includes(q);
-      let mS = true;
-      if (st === 'Lunas') mS = p.terjual === true;
-      if (st === 'Tersedia') mS = p.terjual === false;
-      const mC = cat === '' || p.jenisProperti === cat;
-      return mQ && mS && mC;
-    });
-    currentPage = 1;
-    renderTabel();
+    // Ambil kata kunci dari kolom pencarian
+    const q = document.getElementById('searchProp').value;
+    
+    // Jika mase nanti menambahkan dropdown untuk urutkan harga, ambil ID-nya di sini
+    // Sementara kita isi kosong (tidak diurutkan)
+    const sortBy = document.getElementById('dropdownSort') ? document.getElementById('dropdownSort').value : '';
+    
+    // Suruh Java yang mencari datanya!
+    fetchProperti(q, sortBy);
   }
 
   // ── Modal ──

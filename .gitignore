@@ -12,6 +12,7 @@
 target/
 ManajemenPerumahan/target/
 src/main/resources/static/uploads/
+uploads/
 
 # Package Files #
 *.jar

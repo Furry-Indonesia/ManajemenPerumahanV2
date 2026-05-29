@@ -55,17 +55,36 @@
   muatAvatar();
 
   // ── Data Loader ──
-  async function muatKatalog() {
+  async function muatKatalog(keyword = '') {
     try {
+      // 1. Ambil data dari Java beserta titipan kata kunci pencarian
       const [resP, resU] = await Promise.all([
-        fetch('http://localhost:8080/api/properti'),
+        fetch(`http://localhost:8080/api/properti?keyword=${encodeURIComponent(keyword)}`),
         fetch('http://localhost:8080/api/users')
       ]);
       const rawProp = await resP.json();
       globalUsers = await resU.json();
 
+      // 2. Filter Wajib: Pelanggan HANYA boleh melihat properti yang belum terjual
       globalProperti = rawProp.filter(p => !p.terjual);
-      filteredProperti = globalProperti;
+
+      // 3. Ambil nilai dropdown Filter Kota dan Harga di HTML
+      const kota = document.getElementById('filterKota') ? document.getElementById('filterKota').value.toLowerCase() : '';
+      const hargaBand = document.getElementById('filterHarga') ? document.getElementById('filterHarga').value : '';
+
+      // 4. Saring properti berdasarkan Kota dan Rentang Harga (Client-Side)
+      filteredProperti = globalProperti.filter(p => {
+        const matchKota = !kota || (p.lokasi || '').toLowerCase().includes(kota);
+        let matchHarga = true;
+        if (hargaBand) {
+          const [mn, mx] = hargaBand.split('-').map(Number);
+          const jt = p.harga / 1e6; // Ubah harga ke format Juta
+          matchHarga = jt >= mn && jt <= mx;
+        }
+        return matchKota && matchHarga;
+      });
+
+      // 5. Tampilkan ke layar
       renderKartu(true);
     } catch(e) {
       document.getElementById('propGrid').innerHTML = `
@@ -173,31 +192,21 @@
 
   // ── Filters ──
   function applyFilters() {
-    const q = document.getElementById('searchNama').value.toLowerCase().trim();
-    const kota = document.getElementById('filterKota').value.toLowerCase();
-    const hargaBand = document.getElementById('filterHarga').value;
-
-    filteredProperti = globalProperti.filter(p => {
-      const matchNama = !q || p.nama.toLowerCase().includes(q);
-      const matchKota = !kota || (p.lokasi||'').toLowerCase().includes(kota);
-      let matchHarga = true;
-      if (hargaBand) {
-        const [mn, mx] = hargaBand.split('-').map(Number);
-        const jt = p.harga / 1e6;
-        matchHarga = jt >= mn && jt <= mx;
-      }
-      return matchNama && matchKota && matchHarga;
-    });
-
-    renderKartu(false);
+    // Ambil kata kunci dari kolom pencarian
+    const q = document.getElementById('searchNama') ? document.getElementById('searchNama').value.trim() : '';
+    
+    // Panggil ulang fungsi muatKatalog, Java akan mencari namanya, JS akan memfilter harga/kotanya!
+    muatKatalog(q);
   }
 
   function resetFilter() {
-    document.getElementById('searchNama').value = '';
-    document.getElementById('filterKota').value = '';
-    document.getElementById('filterHarga').value = '';
-    filteredProperti = globalProperti;
-    renderKartu(true);
+    // Kosongkan semua inputan
+    if (document.getElementById('searchNama')) document.getElementById('searchNama').value = '';
+    if (document.getElementById('filterKota')) document.getElementById('filterKota').value = '';
+    if (document.getElementById('filterHarga')) document.getElementById('filterHarga').value = '';
+    
+    // Panggil ulang data dari awal
+    muatKatalog('');
   }
 
   // ── Modal ──

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Sort;
 
 import perumahan.model.*;
 import perumahan.repository.PropertiRepository;
@@ -29,9 +30,27 @@ public class PropertiController {
     private TransaksiRepository transaksiRepository;
 
     // FITUR AMBIL SEMUA DATA PROPERTI
+    // FITUR AMBIL SEMUA DATA PROPERTI (DENGAN SEARCH & SORT)
     @GetMapping("/api/properti")
-    public List<Properti> getAllProperti() {
-        return propertiRepository.findAll();
+    public List<Properti> getAllProperti(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String sort) {
+
+        // 1. Logika Pengurutan (Sorting)
+        Sort sortOrder = Sort.unsorted();
+        if ("termurah".equalsIgnoreCase(sort)) {
+            sortOrder = Sort.by(Sort.Direction.ASC, "harga");
+        } else if ("termahal".equalsIgnoreCase(sort)) {
+            sortOrder = Sort.by(Sort.Direction.DESC, "harga");
+        }
+
+        // 2. Logika Pencarian (Searching)
+        if (keyword != null && !keyword.isEmpty()) {
+        return propertiRepository.cariGlobalSemuaKolom(keyword, sortOrder);
+    }
+
+        // 3. Jika kolom pencarian kosong, tampilkan semua dengan urutan yang dipilih
+        return propertiRepository.findAll(sortOrder);
     }
 
     // FITUR TAMBAH PROPERTI
@@ -153,7 +172,7 @@ public class PropertiController {
             p.setLantai(null); 
         } else {
             p.setLantai(lantai);
-            p.setTipeRumah(null); 
+            p.setTipeRumah(null);
             p.setLuasTanah(null);
         }
 

@@ -25,8 +25,11 @@ public class UserController {
 
     // 1. Fungsi untuk Mengambil Semua Data Agen/Admin
     @GetMapping
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<User> getAllUsers(@RequestParam(required = false) String keyword) {
+        if (keyword != null && !keyword.isEmpty()) {
+            return userRepository.cariAkunGlobal(keyword); // Panggil senjata pencarian
+        }
+        return userRepository.findAll(); // Tampilkan semua jika tidak ada kata kunci
     }
 
     // 2. 🚀 INI YANG HILANG! Fungsi untuk Menambah Agen Baru
@@ -75,11 +78,11 @@ public class UserController {
 
             // Simpan ke database
             userRepository.save(newUser);
-            return ResponseEntity.ok("Sukses: Agen baru berhasil didaftarkan!");
+            return ResponseEntity.ok("Sukses: Akun baru berhasil didaftarkan!");
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Gagal menambah agen: " + e.getMessage());
+            return ResponseEntity.status(500).body("Gagal menambah akun: " + e.getMessage());
         }
     }
 
@@ -97,7 +100,7 @@ public class UserController {
             // Cari agen berdasarkan username
             Optional<User> optionalUser = userRepository.findByUsername(username);
             if (!optionalUser.isPresent()) {
-                return ResponseEntity.badRequest().body("Gagal: Agen tidak ditemukan!");
+                return ResponseEntity.badRequest().body("Gagal: Akun tidak ditemukan!");
             }
 
             User userUpdate = optionalUser.get();
@@ -128,10 +131,10 @@ public class UserController {
 
             // Simpan perubahan ke database
             userRepository.save(userUpdate);
-            return ResponseEntity.ok("Sukses: Data agen berhasil diperbarui!");
+            return ResponseEntity.ok("Sukses: Data akun berhasil diperbarui!");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Gagal mengupdate agen: " + e.getMessage());
+            return ResponseEntity.status(500).body("Gagal mengupdate akun: " + e.getMessage());
         }
     }
 
@@ -143,16 +146,16 @@ public class UserController {
             Optional<User> optionalUser = userRepository.findByUsername(username);
             
             if (!optionalUser.isPresent()) {
-                return ResponseEntity.badRequest().body("Gagal: Agen tidak ditemukan!");
+                return ResponseEntity.badRequest().body("Gagal: akun tidak ditemukan!");
             }
 
             // Jika ketemu, langsung hapus dari database
             userRepository.delete(optionalUser.get());
             
-            return ResponseEntity.ok("Sukses: Data agen berhasil dihapus permanen!");
+            return ResponseEntity.ok("Sukses: Data akun berhasil dihapus permanen!");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Gagal menghapus agen (Mungkin agen ini masih terikat dengan data properti/transaksi).");
+            return ResponseEntity.status(500).body("Gagal menghapus akun (Mungkin akun ini masih terikat dengan data properti/transaksi).");
         }
     }
 }

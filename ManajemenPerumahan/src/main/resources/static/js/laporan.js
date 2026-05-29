@@ -59,27 +59,48 @@
     const PER_PAGE = 4;
 
     // ── Main data loader ──
-    async function muatDataLaporan() {
+    // ── Main data loader (Hybrid Server-Side & Client-Side) ──
+    async function muatDataLaporan(keyword = '') {
       try {
+        // 1. Fetch dari Java (Server-Side Search)
+        // Kita titipkan keyword pencarian ke Properti dan Transaksi
         const [resP, resU, resT] = await Promise.all([
-          fetch('http://localhost:8080/api/properti'),
+          fetch(`http://localhost:8080/api/properti?keyword=${encodeURIComponent(keyword)}`),
           fetch('http://localhost:8080/api/users'),
-          fetch('http://localhost:8080/api/properti/transaksi/semua') // ← tambah ini
+          fetch(`http://localhost:8080/api/properti/transaksi/semua?keyword=${encodeURIComponent(keyword)}`)
         ]);
+
         const raw = await resP.json();
         const users = await resU.json();
-        const semuaTransaksi = await resT.json(); // ← dan ini
+        const semuaTransaksi = await resT.json();
 
-        const properti = raw.map(p => ({
+        // 2. Ambil nilai Dropdown (Client-Side)
+        const st = document.getElementById('filterStatus') ? document.getElementById('filterStatus').value : '';
+        const ct = document.getElementById('filterKategori') ? document.getElementById('filterKategori').value : '';
+
+        // 3. Saring Properti berdasarkan Status & Kategori
+        let propertiFilter = raw.filter(p => {
+          const matchS = st === '' ? true : st === 'Lunas' ? p.terjual === true : p.terjual === false;
+          const matchC = ct === '' ? true : p.jenisProperti === ct;
+          return matchS && matchC;
+        });
+
+        // 4. Petakan data untuk tampilan Kartu
+        const properti = propertiFilter.map(p => ({
           ...p,
           inisialAgen: p.usernameAgen ? p.usernameAgen.substring(0, 2).toUpperCase() : '?',
           hargaShort: fmtShort(p.harga),
           spek: { lantai: p.lantai || 1, kt: p.kt || '3+1', km: p.km || '2+1' }
         }));
 
-        globalProperti = properti; filteredProperti = properti;
+        globalProperti = properti; 
+        filteredProperti = properti;
 
-        // KPI
+        // =========================================================
+        // 🔥 UPDATE CHART OTOMATIS BERDASARKAN HASIL PENCARIAN 🔥
+        // =========================================================
+
+        // --- A. KPI (Statistik Atas) ---
         let lunas = 0, tersedia = 0, omset = 0, jmlRumah = 0, jmlApt = 0;
         properti.forEach(p => {
           if (p.terjual) { lunas++; omset += p.harga; } else tersedia++;
@@ -92,7 +113,7 @@
         animateCount('lapTersedia', tersedia);
         document.getElementById('lapOmset').innerText = fmtRupiah(omset);
 
-        // Donut
+        // --- B. Donut Chart ---
         const circ = 364.4;
         const pR = total === 0 ? 0 : jmlRumah / total;
         const pA = total === 0 ? 0 : jmlApt / total;
@@ -107,16 +128,16 @@
           document.getElementById('donutApt').setAttribute('stroke-dashoffset', `-${pR * circ}`);
         }, 400);
 
-        // Avg & Conversion
+        // --- C. Rata-Rata & Konversi ---
         const rata = total === 0 ? 0 : properti.reduce((s, p) => s + p.harga, 0) / total;
         document.getElementById('lapRataHarga').innerText = fmtRupiah(rata);
-        document.getElementById('lapRataSub').innerText = `Dari ${total} properti terdaftar`;
+        document.getElementById('lapRataSub').innerText = `Dari ${total} properti tersaring`;
         const konv = total === 0 ? 0 : lunas / total * 100;
         document.getElementById('lapKonversiText').innerText = konv.toFixed(1) + '%';
         document.getElementById('lapKonversiSub').innerText = `${lunas} dari ${total} properti terjual lunas`;
         setTimeout(() => { document.getElementById('lapKonversiBar').style.width = konv + '%'; }, 400);
 
-        // Bar chart (VERSI PIXEL ANTI-BADAI)
+        // --- D. Bar chart (Perkembangan Transaksi) ---
         const bar = document.getElementById('barChartContainer'); 
         bar.innerHTML = ''; 
         
@@ -124,7 +145,6 @@
         let penjBulan = {}; 
         let enamBulan = [];
         
-        // Amankan kalender
         let d = new Date();
         d.setDate(1); 
         
@@ -136,10 +156,15 @@
         }
         
         semuaTransaksi.forEach(t => {
-          let tglStr = t.tanggalTransaksi || t.tanggal_transaksi; 
-          if (tglStr) {
-            let k = String(tglStr).substring(0, 7); 
-            if (penjBulan[k] !== undefined) penjBulan[k]++;
+          const prop = t.properti || {};
+          const matchC = ct === '' ? true : prop.jenisProperti === ct;
+          
+          if (matchC) {
+              let tglStr = t.tanggalTransaksi || t.tanggal_transaksi; 
+              if (tglStr) {
+                let k = String(tglStr).substring(0, 7); 
+                if (penjBulan[k] !== undefined) penjBulan[k]++;
+              }
           }
         });
         
@@ -148,14 +173,11 @@
         
         enamBulan.forEach(b => {
           let u = penjBulan[b.key]; 
-          
-          // PERUBAHAN UTAMA: Kita gunakan satuan PIXEL (Max tinggi 100px)
           let pxHeight = (u / maxU) * 100; 
-          if (u === 0) pxHeight = 6; // Minimal tinggi 6px agar tidak hilang
+          if (u === 0) pxHeight = 6; 
           
           const col = document.createElement('div'); 
           col.className = 'bar-col';
-          // Paksa elemen ke bawah agar naiknya dari bawah ke atas
           col.style.justifyContent = 'flex-end'; 
           
           col.innerHTML = `
@@ -166,14 +188,13 @@
           bar.appendChild(col);
         });
         
-        // Picu animasi naiknya
         setTimeout(() => {
           document.querySelectorAll('.bar-inner').forEach(b => { 
             b.style.height = b.getAttribute('data-h'); 
           });
         }, 100);
 
-        // Agen table
+        // --- E. Tabel Performa Agen ---
         let agenStats = {};
         users.forEach(u => {
           if (u.role === 'ADMIN') {
@@ -183,7 +204,7 @@
               unit: 0, 
               omset: 0, 
               inisial: (u.namaLengkap || u.username).substring(0, 2).toUpperCase(),
-              fotoProfil: u.fotoProfil // <-- Kita tangkap foto profilnya di sini
+              fotoProfil: u.fotoProfil
             };
           }
         });
@@ -199,19 +220,18 @@
         const tb = document.getElementById('agenTableBody'); 
         tb.innerHTML = '';
 
-        if (!arr.length) {
-          tb.innerHTML = '<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--text-label)">Belum ada data performa agen.</td></tr>';
+        const agenAktif = arr.filter(a => a.unit > 0);
+
+        if (!agenAktif.length) {
+          tb.innerHTML = '<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--text-label)">Belum ada penjualan agen pada data ini.</td></tr>';
         } else {
-          arr.forEach((ag, i) => {
+          agenAktif.forEach((ag, i) => {
             const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-n';
-            
-            // LOGIKA FOTO PROFIL
-            let avatarHtml = ag.inisial; // Default pakai inisial huruf
+            let avatarHtml = ag.inisial; 
             if (ag.fotoProfil && ag.fotoProfil !== 'default_profil.png' && ag.fotoProfil !== 'null') {
               const imgUrl = `http://localhost:8080/uploads/profil/${encodeURIComponent(ag.fotoProfil)}`;
               avatarHtml = `<img src="${imgUrl}" alt="Profil" style="width:100%;height:100%;object-fit:cover;">`;
             }
-
             tb.innerHTML += `
             <tr>
               <td style="text-align:center"><span class="rank-badge ${rankClass}">${i + 1}</span></td>
@@ -228,27 +248,16 @@
           });
         }
 
-        applyFilters();
+        // Render kartunya
+        currentPage = 1;
+        renderPropertiCards();
       } catch (err) {
         console.error(err);
-        document.getElementById('propCardContainer').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><i class="ti ti-wifi-off"></i><p>Gagal memuat data. Periksa koneksi server.</p></div>';
+        document.getElementById('propCardContainer').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><i class="ti ti-wifi-off"></i><p>Gagal memuat data dari server.</p></div>';
       }
     }
 
-    // ── Count animation ──
-    function animateCount(id, target) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      let start = 0; const dur = 900; const step = 16;
-      const inc = target / (dur / step);
-      const timer = setInterval(() => {
-        start = Math.min(start + inc, target);
-        el.innerText = Math.floor(start);
-        if (start >= target) clearInterval(timer);
-      }, step);
-    }
-
-    // ── Property cards ──
+    // ── Property cards (Tidak banyak berubah) ──
     function renderPropertiCards() {
       const container = document.getElementById('propCardContainer'); container.innerHTML = '';
       const data = filteredProperti; const total = data.length;
@@ -314,19 +323,25 @@
       document.getElementById('propCardContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // ── Filters (Sekarang Memicu Pencarian Server-Side) ──
     function applyFilters() {
-      const q = document.getElementById('searchProp').value.toLowerCase();
-      const st = document.getElementById('filterStatus').value;
-      const ct = document.getElementById('filterKategori').value;
-      filteredProperti = globalProperti.filter(p => {
-        const nb = p.namaPembeli ? p.namaPembeli.toLowerCase() : '';
-        const matchQ = p.nama.toLowerCase().includes(q) || p.kode.toLowerCase().includes(q) || nb.includes(q);
-        const matchS = st === '' ? true : st === 'Lunas' ? p.terjual === true : p.terjual === false;
-        const matchC = ct === '' ? true : p.jenisProperti === ct;
-        return matchQ && matchS && matchC;
-      });
-      currentPage = 1;
-      renderPropertiCards();
+      // Ambil nilai dari kolom pencarian, lalu lemparkan ke Java!
+      const q = document.getElementById('searchProp') ? document.getElementById('searchProp').value : '';
+      muatDataLaporan(q);
     }
 
+    // Panggil saat halaman pertama kali dibuka
     muatDataLaporan();
+
+    // ── Count animation (Fungsi yang hilang) ──
+    function animateCount(id, target) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      let start = 0; const dur = 900; const step = 16;
+      const inc = target / (dur / step);
+      const timer = setInterval(() => {
+        start = Math.min(start + inc, target);
+        el.innerText = Math.floor(start);
+        if (start >= target) clearInterval(timer);
+      }, step);
+    }
