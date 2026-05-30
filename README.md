@@ -22,24 +22,34 @@
 
 ---
 
+## 📋 Daftar Isi
+
+- [⚡ Quick Start](#-quick-start)
+- [📂 Fitur Utama](#-fitur-utama)
+- [🗂️ Struktur Folder](#️-struktur-folder)
+- [🛠️ Teknologi](#️-teknologi-yang-digunakan)
+- [🎓 Tim Pengembang](#-tim-pengembang--kelompok-3)
+
+---
+
 ## ⚡ Quick Start
 
 > **⚠️ Perhatian Keamanan**
 > File `src/main/resources/application.properties` **sengaja tidak di-upload** demi melindungi kredensial database cloud.
 > Minta file konfigurasi di grup WhatsApp kelompok sebelum melanjutkan.
 
-### Langkah 1 — Clone Repositori
+**Langkah 1 — Clone Repositori**
 
 ```bash
 git clone https://github.com/Furry-Indonesia/ManajemenPerumahanV2.git
 cd ManajemenPerumahanV2
 ```
 
-### Langkah 2 — Pasang Kunci Database
+**Langkah 2 — Pasang Kunci Database**
 
 Buat file baru di `src/main/resources/application.properties`, lalu *paste* konfigurasi Aiven yang didapat dari grup WA ke dalam file tersebut.
 
-### Langkah 3 — Jalankan Aplikasi
+**Langkah 3 — Jalankan Aplikasi**
 
 Pastikan laptop terhubung ke internet, lalu buka terminal dan jalankan:
 
@@ -51,7 +61,7 @@ cmd /c mvnw spring-boot:run
 ./mvnw spring-boot:run
 ```
 
-### Langkah 4 — Buka Browser
+**Langkah 4 — Buka Browser**
 
 Setelah terminal menampilkan status **"Started"**, buka browser dan kunjungi:
 
@@ -69,6 +79,65 @@ Setelah terminal menampilkan status **"Started"**, buka browser dan kunjungi:
 | 👥 **Manajemen Agen** | Pendaftaran dan pengelolaan data profil agen/admin perumahan. |
 | 📄 **Riwayat Transaksi** | Pencatatan detail riwayat pembelian properti oleh pembeli. |
 | 📸 **Upload Foto** | Penyimpanan lokal untuk foto profil dan foto rumah (maks. 10 MB per file). |
+
+---
+
+## 🗂️ Struktur Folder
+
+```
+ManajemenPerumahanV2/
+│
+├── 📄 README.md
+├── 📄 .gitignore
+│
+└── ManajemenPerumahan/
+    ├── 📄 pom.xml                          # Konfigurasi Maven & dependensi
+    │
+    └── src/
+        └── main/
+            ├── java/
+            │   └── perumahan/
+            │       ├── 🚀 ManajemenPerumahanApplication.java   # Entry point aplikasi
+            │       │
+            │       ├── config/
+            │       │   └── WebConfig.java                     # Konfigurasi web & CORS
+            │       │
+            │       ├── controller/
+            │       │   ├── AuthController.java                # Autentikasi (login/logout)
+            │       │   ├── PropertiController.java            # CRUD data properti
+            │       │   └── UserController.java                # Manajemen pengguna/agen
+            │       │
+            │       ├── model/
+            │       │   ├── Properti.java                      # Entity properti
+            │       │   ├── Transaksi.java                     # Entity transaksi
+            │       │   ├── User.java                          # Entity pengguna
+            │       │   ├── LoginDTO.java                      # DTO form login
+            │       │   ├── PembeliDTO.java                    # DTO data pembeli
+            │       │   └── PropertiBaruDTO.java               # DTO tambah properti
+            │       │
+            │       └── repository/
+            │           ├── PropertiRepository.java            # Query database properti
+            │           ├── TransaksiRepository.java           # Query database transaksi
+            │           └── UserRepository.java                # Query database pengguna
+            │
+            └── resources/
+                ├── ⚙️ application.properties                  # ⚠️ TIDAK di-upload (rahasia)
+                │
+                └── static/                                    # File frontend (HTML)
+                    ├── index.html                             # Halaman utama / landing
+                    ├── login.html                             # Halaman login
+                    ├── dashboard.html                         # Dashboard admin
+                    ├── katalog.html                           # Katalog properti
+                    ├── manajemen-agen.html                    # Kelola data agen
+                    ├── riwayat-transaksi.html                 # Riwayat transaksi
+                    ├── laporan.html                           # Halaman laporan
+                    ├── setting.html                           # Pengaturan sistem
+                    ├── setting-user.html                      # Pengaturan profil
+                    │
+                    └── uploads/                               # Penyimpanan file upload
+                        ├── profil/                            # Foto profil agen
+                        └── properti/                          # Foto properti
+```
 
 ---
 
