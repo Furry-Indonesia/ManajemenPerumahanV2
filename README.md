@@ -53,9 +53,49 @@ cd ManajemenPerumahanV2
 
 **Langkah 2 — Pasang Kunci Database**
 
-Buat file baru di `src/main/resources/application.properties`, lalu *paste* konfigurasi Aiven yang didapat dari grup WA ke dalam file tersebut.
+Buat file baru di `src/main/resources/application.properties`, lalu *paste* konfigurasi berikut ke dalam file tersebut:
 
-**Langkah 3 — Jalankan Aplikasi**
+```properties
+# ===============================
+# KONFIGURASI DATABASE MYSQL
+# ===============================
+# Ganti dengan port MySQL-mu jika bukan 3306
+spring.datasource.url=jdbc:mysql://localhost:3306/db_perumahan_v2?useSSL=false&serverTimezone=UTC
+spring.datasource.username=root
+# Kosongkan password di bawah ini jika kamu pakai XAMPP default tanpa password
+spring.datasource.password=
+
+# ===============================
+# KONFIGURASI JPA & HIBERNATE
+# ===============================
+# 'update' berarti Spring Boot tidak akan menghapus tabel yang sudah kita buat
+spring.jpa.hibernate.ddl-auto=update
+# Untuk melihat proses SQL di terminal (membantu saat debugging)
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+# Memperbesar batas maksimal file upload menjadi 10 MB
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
+```
+
+**Langkah 3 — Import Database**
+
+Buka **phpMyAdmin** (atau MySQL client lainnya), lalu:
+
+1. Buat database baru bernama `db_perumahan_v2`
+2. Pilih database tersebut, lalu klik tab **Import**
+3. Upload file `db_perumahan_v2.sql` yang tersedia di repositori ini
+4. Klik **Go / Eksekusi**
+
+Atau gunakan perintah berikut via terminal:
+
+```bash
+mysql -u root -p db_perumahan_v2 < db_perumahan_v2.sql
+```
+
+> Database berisi 4 tabel: `users`, `properti`, `transaksi`, dan `perusahaan` — lengkap dengan data percobaan.
+
+**Langkah 4 — Jalankan Aplikasi**
 
 Pastikan laptop terhubung ke internet, lalu buka terminal dan jalankan:
 
@@ -67,7 +107,7 @@ cmd /c mvnw spring-boot:run
 ./mvnw spring-boot:run
 ```
 
-**Langkah 4 — Buka Browser**
+**Langkah 5 — Buka Browser**
 
 Setelah terminal menampilkan status **"Started"**, buka browser dan kunjungi:
 
@@ -189,5 +229,5 @@ ManajemenPerumahanV2/
 ---
 
 <p align="center">
-  Dibuat Oleh <b>Furry-Indonesia</b> &nbsp;·&nbsp; Solid! Solid! Solid! 🐾
+  Dibuat Oleh <b>Furry-Indonesia(KEL-3)</b> &nbsp;·&nbsp; Solid! Solid! Solid! 🐾
 </p>
