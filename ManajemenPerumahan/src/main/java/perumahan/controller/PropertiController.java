@@ -29,28 +29,40 @@ public class PropertiController {
     @Autowired
     private TransaksiRepository transaksiRepository;
 
-    // FITUR AMBIL SEMUA DATA PROPERTI
-    // FITUR AMBIL SEMUA DATA PROPERTI (DENGAN SEARCH & SORT)
+    // FITUR AMBIL SEMUA DATA PROPERTI (SEARCH & PURE JAVA OOP SORTING)
     @GetMapping("/api/properti")
     public List<Properti> getAllProperti(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String sort) {
 
-        // 1. Logika Pengurutan (Sorting)
-        Sort sortOrder = Sort.unsorted();
-        if ("termurah".equalsIgnoreCase(sort)) {
-            sortOrder = Sort.by(Sort.Direction.ASC, "harga");
-        } else if ("termahal".equalsIgnoreCase(sort)) {
-            sortOrder = Sort.by(Sort.Direction.DESC, "harga");
+        List<Properti> listProperti;
+
+        // 1. Logika Pencarian (Murni mengambil data mentah dari DB)
+        if (keyword != null && !keyword.isEmpty()) {
+            // Kita kirim Sort.unsorted() agar database tidak usah capek-capek mengurutkan
+            listProperti = propertiRepository.cariGlobalSemuaKolom(keyword, Sort.unsorted());
+        } else {
+            listProperti = propertiRepository.findAll();
         }
 
-        // 2. Logika Pencarian (Searching)
-        if (keyword != null && !keyword.isEmpty()) {
-        return propertiRepository.cariGlobalSemuaKolom(keyword, sortOrder);
-    }
+        // 2. Logika Pengurutan (PURE JAVA COLLECTIONS & COMPARATOR - UNTUK DOSEN)
+        if (sort != null && !sort.isEmpty()) {
+            java.util.Collections.sort(listProperti, new java.util.Comparator<Properti>() {
+                @Override
+                public int compare(Properti p1, Properti p2) {
+                    if ("termurah".equalsIgnoreCase(sort)) {
+                        // Ascending: Murah ke Mahal
+                        return Double.compare(p1.getHarga(), p2.getHarga());
+                    } else if ("termahal".equalsIgnoreCase(sort)) {
+                        // Descending: Mahal ke Murah (Tinggal dibalik posisinya)
+                        return Double.compare(p2.getHarga(), p1.getHarga());
+                    }
+                    return 0;
+                }
+            });
+        }
 
-        // 3. Jika kolom pencarian kosong, tampilkan semua dengan urutan yang dipilih
-        return propertiRepository.findAll(sortOrder);
+        return listProperti;
     }
 
     // FITUR TAMBAH PROPERTI

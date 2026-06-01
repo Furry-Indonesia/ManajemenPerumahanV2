@@ -85,7 +85,7 @@
       const res = await fetch(url);
       const data = await res.json();
       
-      globalDataTransaksi = data.reverse();
+      globalDataTransaksi = data;
 
       // 2. JS cukup bertugas memfilter Dropdown Metode Pembayaran
       const m = document.getElementById('filterMetode') ? document.getElementById('filterMetode').value.toLowerCase() : '';
