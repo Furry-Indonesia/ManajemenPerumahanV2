@@ -2,6 +2,7 @@ package perumahan.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,5 +44,13 @@ public class TransaksiController {
         });
 
         return listTransaksi;
+    }
+
+    // FITUR RESET SEMUA TRANSAKSI (FACTORY RESET)
+    @DeleteMapping("/api/transaksi/reset-semua")
+    public org.springframework.http.ResponseEntity<String> resetSemuaTransaksi() {
+        // Perintah sakti untuk menghapus seluruh riwayat di tabel transaksi
+        transaksiRepository.deleteAll();
+        return org.springframework.http.ResponseEntity.ok("Semua riwayat transaksi berhasil dikosongkan!");
     }
 }

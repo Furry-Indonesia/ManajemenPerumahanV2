@@ -30,7 +30,7 @@ public class UserController {
         
         // --- 1. PROSES SEARCHING ---
         if (keyword != null && !keyword.isEmpty()) {
-            hasilPencarian = userRepository.cariAkunGlobal(keyword);
+            hasilPencarian = userRepository.cariGlobalSemuaKolom(keyword);
         } else {
             hasilPencarian = userRepository.findAll();
         }
@@ -51,6 +51,42 @@ public class UserController {
 
         return hasilPencarian; // Kembalikan data yang sudah tersaring dan terurut!
     }
+
+    // FITUR STATISTIK AKUN (AGREGASI SERVER-SIDE)
+    @GetMapping("/statistik") // <-- CUKUP BEGINI SAJA
+    public java.util.Map<String, Integer> getStatistikAkun(@RequestParam(required = false) String keyword) {
+        
+        // 1. Ambil data users (Gunakan logika yang sama dengan fungsi GET ALL users mase)
+        List<User> listUsers;
+        if (keyword != null && !keyword.isEmpty()) {
+            // Asumsi mase punya method pencarian di UserRepository
+            listUsers = userRepository.cariGlobalSemuaKolom(keyword); 
+        } else {
+            listUsers = userRepository.findAll();
+        }
+
+        // 2. Siapkan variabel hitungan
+        int total = 0, admin = 0, user = 0;
+
+        // 3. Java yang melakukan looping dan berhitung!
+        for (User u : listUsers) {
+            total++;
+            if ("ADMIN".equals(u.getRole())) {
+                admin++;
+            } else {
+                user++;
+            }
+        }
+
+        // 4. Bungkus rapi jadi format JSON (Map)
+        java.util.Map<String, Integer> statistik = new java.util.HashMap<>();
+        statistik.put("total", total);
+        statistik.put("admin", admin);
+        statistik.put("user", user);
+
+        return statistik;
+    }
+
     // 2. 🚀 INI YANG HILANG! Fungsi untuk Menambah Agen Baru
     @PostMapping(value = "/tambah", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> tambahAgen(

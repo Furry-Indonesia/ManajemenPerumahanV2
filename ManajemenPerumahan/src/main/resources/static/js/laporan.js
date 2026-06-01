@@ -195,55 +195,42 @@
         }, 100);
 
         // --- E. Tabel Performa Agen ---
-        let agenStats = {};
-        users.forEach(u => {
-          if (u.role === 'ADMIN') {
-            agenStats[u.username] = { 
-              nama: u.namaLengkap || u.username, 
-              username: u.username, 
-              unit: 0, 
-              omset: 0, 
-              inisial: (u.namaLengkap || u.username).substring(0, 2).toUpperCase(),
-              fotoProfil: u.fotoProfil
-            };
-          }
-        });
+        const resOmset = await fetch('http://localhost:8080/api/laporan/omset-agen');
+        const dataOmsetAgen = await resOmset.json();
 
-        properti.forEach(p => {
-          if (p.terjual && p.usernameAgen && agenStats[p.usernameAgen]) { 
-            agenStats[p.usernameAgen].unit++; 
-            agenStats[p.usernameAgen].omset += p.harga; 
-          }
-        });
-
-        let arr = Object.values(agenStats).sort((a, b) => b.omset - a.omset);
         const tb = document.getElementById('agenTableBody'); 
         tb.innerHTML = '';
 
-        const agenAktif = arr.filter(a => a.unit > 0);
-
-        if (!agenAktif.length) {
+        if (!dataOmsetAgen.length) {
           tb.innerHTML = '<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--text-label)">Belum ada penjualan agen pada data ini.</td></tr>';
         } else {
-          agenAktif.forEach((ag, i) => {
+          // 2. JS hanya bertugas melooping data matang ke HTML
+          dataOmsetAgen.forEach((ag, i) => {
             const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-n';
-            let avatarHtml = ag.inisial; 
-            if (ag.fotoProfil && ag.fotoProfil !== 'default_profil.png' && ag.fotoProfil !== 'null') {
-              const imgUrl = `http://localhost:8080/uploads/profil/${encodeURIComponent(ag.fotoProfil)}`;
+            
+            // Gabungkan dengan data users agar foto profil dan nama asli tetap muncul
+            const dataLengkap = users.find(u => u.username === ag.usernameAgen) || {};
+            const namaAsli = dataLengkap.namaLengkap || ag.usernameAgen || 'Tanpa Agen';
+            const inisial = String(namaAsli).substring(0, 2).toUpperCase();
+            
+            let avatarHtml = inisial; 
+            if (dataLengkap.fotoProfil && dataLengkap.fotoProfil !== 'default_profil.png' && dataLengkap.fotoProfil !== 'null') {
+              const imgUrl = `http://localhost:8080/uploads/profil/${encodeURIComponent(dataLengkap.fotoProfil)}`;
               avatarHtml = `<img src="${imgUrl}" alt="Profil" style="width:100%;height:100%;object-fit:cover;">`;
             }
+            
             tb.innerHTML += `
             <tr>
               <td style="text-align:center"><span class="rank-badge ${rankClass}">${i + 1}</span></td>
               <td>
                 <div style="display:flex;align-items:center;gap:12px;">
                   <div class="agen-avatar">${avatarHtml}</div>
-                  <div><div class="agen-name">${ag.nama}</div><div class="agen-role">Marketing Advisor</div></div>
+                  <div><div class="agen-name">${namaAsli}</div><div class="agen-role">Marketing Advisor</div></div>
                 </div>
               </td>
-              <td><span class="mono">${ag.username}</span></td>
-              <td style="text-align:center;font-weight:700;color:var(--text-sub)">${ag.unit} Unit</td>
-              <td style="text-align:right"><span class="omset-val">${fmtRupiah(ag.omset)}</span></td>
+              <td><span class="mono">${ag.usernameAgen}</span></td>
+              <td style="text-align:center;font-weight:700;color:var(--text-sub)">Top Sales</td>
+              <td style="text-align:right"><span class="omset-val">${fmtRupiah(ag.totalOmset)}</span></td>
             </tr>`;
           });
         }

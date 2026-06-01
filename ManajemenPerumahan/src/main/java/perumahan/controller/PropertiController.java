@@ -29,32 +29,50 @@ public class PropertiController {
     @Autowired
     private TransaksiRepository transaksiRepository;
 
-    // FITUR AMBIL SEMUA DATA PROPERTI (SEARCH & PURE JAVA OOP SORTING)
+    // FITUR AMBIL DATA PROPERTI (SEARCH, FILTER & SORT MURNI JAVA)
     @GetMapping("/api/properti")
     public List<Properti> getAllProperti(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String sort) {
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String kategori,
+            @RequestParam(required = false) String status) {
 
+        // A. Ambil semua data / berdasarkan keyword dari Database
         List<Properti> listProperti;
-
-        // 1. Logika Pencarian (Murni mengambil data mentah dari DB)
         if (keyword != null && !keyword.isEmpty()) {
-            // Kita kirim Sort.unsorted() agar database tidak usah capek-capek mengurutkan
-            listProperti = propertiRepository.cariGlobalSemuaKolom(keyword, Sort.unsorted());
+            listProperti = propertiRepository.cariGlobalSemuaKolom(keyword, org.springframework.data.domain.Sort.unsorted());
         } else {
             listProperti = propertiRepository.findAll();
         }
 
-        // 2. Logika Pengurutan (PURE JAVA COLLECTIONS & COMPARATOR - UNTUK DOSEN)
+        // B. FILTERING MURNI MENGGUNAKAN JAVA COLLECTIONS
+        List<Properti> listFiltered = new java.util.ArrayList<>();
+        for (Properti p : listProperti) {
+            // Cek Kategori
+            boolean matchKategori = (kategori == null || kategori.isEmpty() || p.getJenisProperti().equals(kategori));
+            
+            // Cek Status
+            boolean matchStatus = true;
+            if ("Lunas".equalsIgnoreCase(status)) {
+                matchStatus = p.isTerjual();
+            } else if ("Tersedia".equalsIgnoreCase(status)) {
+                matchStatus = !p.isTerjual();
+            }
+
+            // Jika lolos seleksi, masukkan ke wadah baru
+            if (matchKategori && matchStatus) {
+                listFiltered.add(p);
+            }
+        }
+
+        // C. SORTING MURNI DI JAVA
         if (sort != null && !sort.isEmpty()) {
-            java.util.Collections.sort(listProperti, new java.util.Comparator<Properti>() {
+            java.util.Collections.sort(listFiltered, new java.util.Comparator<Properti>() {
                 @Override
                 public int compare(Properti p1, Properti p2) {
                     if ("termurah".equalsIgnoreCase(sort)) {
-                        // Ascending: Murah ke Mahal
                         return Double.compare(p1.getHarga(), p2.getHarga());
                     } else if ("termahal".equalsIgnoreCase(sort)) {
-                        // Descending: Mahal ke Murah (Tinggal dibalik posisinya)
                         return Double.compare(p2.getHarga(), p1.getHarga());
                     }
                     return 0;
@@ -62,7 +80,48 @@ public class PropertiController {
             });
         }
 
-        return listProperti;
+        return listFiltered; // Kembalikan data yang sudah BERSIH
+    }
+
+    // 2. FITUR STATISTIK DASHBOARD (AGREGASI MURNI JAVA)
+    @GetMapping("/api/properti/statistik")
+    public java.util.Map<String, Object> getStatistikDashboard(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String kategori,
+            @RequestParam(required = false) String status) {
+
+        // A. Re-use fungsi filter di atas (Konsep DRY - Don't Repeat Yourself)
+        List<Properti> listFiltered = getAllProperti(keyword, null, kategori, status);
+
+        // B. Siapkan variabel hitungan
+        int total = 0, tersedia = 0, terjual = 0;
+        double omset = 0.0;
+
+        // C. Hitung menggunakan perulangan (For-Each) Object
+        for (Properti p : listFiltered) {
+            total++;
+            if (p.isTerjual()) {
+                terjual++;
+                omset += p.getHarga();
+            } else {
+                tersedia++;
+            }
+        }
+
+        // D. Bungkus hasil hitungan ke dalam tipe data HashMap (Key-Value)
+        java.util.Map<String, Object> statistik = new java.util.HashMap<>();
+        statistik.put("total", total);
+        statistik.put("tersedia", tersedia);
+        statistik.put("terjual", terjual);
+        statistik.put("omset", omset);
+
+        return statistik;
+    }
+
+    // FITUR LAPORAN: MENGAMBIL DATA OMSET AGEN
+    @GetMapping("/api/laporan/omset-agen")
+    public List<AgenOmsetDTO> getLaporanOmsetAgen() {
+        return propertiRepository.hitungOmsetSemuaAgen();
     }
 
     // FITUR TAMBAH PROPERTI

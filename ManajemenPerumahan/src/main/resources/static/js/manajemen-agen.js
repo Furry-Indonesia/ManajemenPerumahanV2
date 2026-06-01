@@ -107,24 +107,28 @@
 
   // ── Fetch & render ──
   let allUsers = [];
-  
-  // Fungsi ini sekarang menerima parameter keyword dari kolom pencarian
   async function fetchAkun(keyword = '') {
     try {
-      // Panggil API Java dengan membawa keyword
-      const url = keyword ? `${API_USER_URL}?keyword=${encodeURIComponent(keyword)}` : API_USER_URL;
-      const res = await fetch(url);
-      allUsers = await res.json();
+    
+      const urlData = keyword ? `${API_USER_URL}?keyword=${encodeURIComponent(keyword)}` : API_USER_URL;
+      const urlStat = keyword ? `${API_USER_URL}/statistik?keyword=${encodeURIComponent(keyword)}` : `${API_USER_URL}/statistik`;
+
+      const [resData, resStat] = await Promise.all([
+        fetch(urlData),
+        fetch(urlStat)
+      ]);
       
-      renderTabel(allUsers);
+      allUsers = await resData.json();
+      const dataStatistik = await resStat.json(); 
       
-      // Update KPI
-      const admins = allUsers.filter(u => u.role === 'ADMIN').length;
-      const users  = allUsers.filter(u => u.role === 'USER').length;
-      animateCount('statTotal', allUsers.length);
-      animateCount('statAdmin', admins);
-      animateCount('statUser',  users);
-      animateCount('statBaru',  Math.min(allUsers.length, 3)); 
+      const userTanpaMase = allUsers.filter(u => u.username !== currentUsername);
+      renderTabel(userTanpaMase);
+      
+  
+      animateCount('statTotal', dataStatistik.total);
+      animateCount('statAdmin', dataStatistik.admin);
+      animateCount('statUser',  dataStatistik.user);
+      animateCount('statBaru',  Math.min(dataStatistik.total, 3)); 
       
     } catch(e) {
       ['adminTableBody','userTableBody'].forEach(id => {

@@ -57,42 +57,38 @@
   // ── Fetch Properti ──
   async function fetchProperti(keyword = '', sortBy = '') {
     try {
-      // 1. JavaScript sebagai "Tukang Pos" mengirim kata kunci ke Java
-      const url = `http://localhost:8080/api/properti?keyword=${encodeURIComponent(keyword)}&sort=${encodeURIComponent(sortBy)}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      
-      globalDataProperti = data;
-
-      // 2. Ambil nilai filter Status & Kategori dari dropdown HTML
+      // 1. Ambil nilai filter dari dropdown HTML
       const st = document.getElementById('filterStatus') ? document.getElementById('filterStatus').value : '';
       const cat = document.getElementById('filterKategori') ? document.getElementById('filterKategori').value : '';
 
-      // 3. Filter ringan di sisi Client untuk Status & Kategori
-      filteredData = globalDataProperti.filter(p => {
-        let mS = true;
-        if (st === 'Lunas') mS = p.terjual === true;
-        if (st === 'Tersedia') mS = p.terjual === false;
-        const mC = cat === '' || p.jenisProperti === cat;
-        return mS && mC;
-      });
+      // 2. Kirim SEMUA tugas (Keyword, Sort, Kategori, Status) ke Koki Java!
+      const urlData = `http://localhost:8080/api/properti?keyword=${encodeURIComponent(keyword)}&sort=${encodeURIComponent(sortBy)}&kategori=${encodeURIComponent(cat)}&status=${encodeURIComponent(st)}`;
+      const urlStatistik = `http://localhost:8080/api/properti/statistik?keyword=${encodeURIComponent(keyword)}&kategori=${encodeURIComponent(cat)}&status=${encodeURIComponent(st)}`;
 
-      // 4. Hitung ulang statistik berdasarkan data yang sudah difilter
-      let total = 0, tersedia = 0, terjual = 0, omset = 0;
-      filteredData.forEach(item => {
-        total++;
-        if (item.terjual) { terjual++; omset += item.harga; } else { tersedia++; }
-      });
+      // 3. Ambil Makanan (Data) yang sudah jadi secara bersamaan
+      const [resData, resStat] = await Promise.all([
+        fetch(urlData),
+        fetch(urlStatistik)
+      ]);
+
+      // JS sekarang HANYA menerima data bersih! Tidak ada lagi filter.filter atau forEach hitung!
+      const dataBersih = await resData.json();
+      globalDataProperti = dataBersih; 
+      filteredData = dataBersih;
       
-      animateCount('statTotal', total);
-      animateCount('statTersedia', tersedia);
-      animateCount('statTerjual', terjual);
-      document.getElementById('statOmset').innerText = formatRupiah(omset);
-      document.getElementById('tabelSubInfo').innerText = `${total} properti ditemukan`;
+      const dataStatistik = await resStat.json(); 
+
+      // 4. Langsung tampilkan angka matang ke layar
+      animateCount('statTotal', dataStatistik.total);
+      animateCount('statTersedia', dataStatistik.tersedia);
+      animateCount('statTerjual', dataStatistik.terjual);
+      document.getElementById('statOmset').innerText = formatRupiah(dataStatistik.omset);
+      document.getElementById('tabelSubInfo').innerText = `${dataStatistik.total} properti ditemukan`;
       
       // 5. Kembalikan ke halaman 1 dan render tabel
       currentPage = 1;
       renderTabel();
+      
     } catch(e) { 
       document.getElementById('tabelSubInfo').innerText = 'Gagal memuat data dari server.'; 
     }

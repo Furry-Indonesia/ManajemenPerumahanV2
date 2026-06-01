@@ -10,14 +10,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String> {
+public interface UserRepository extends JpaRepository<User, Integer> {
     
+    // Jalur Khusus Login
     Optional<User> findByUsername(String username);
+    boolean existsByUsername(String username);
 
+    // MESIN PENCARI (Namanya sudah disamakan dengan UserController)
     @Query("SELECT u FROM User u WHERE " +
            "LOWER(u.username) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(u.namaLengkap) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(u.noWa) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    List<User> cariAkunGlobal(@Param("keyword") String keyword);
+    List<User> cariGlobalSemuaKolom(@Param("keyword") String keyword);
 
 }

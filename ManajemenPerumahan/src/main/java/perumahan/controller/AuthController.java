@@ -1,6 +1,7 @@
 package perumahan.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import perumahan.model.User;
 import perumahan.model.LoginDTO;
@@ -16,43 +17,51 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
-    // 1. FITUR LOGIN (Sudah ada)
+    // 1. FITUR LOGIN (JSON Response)
     @PostMapping("/login")
-    public String prosesLogin(@RequestBody LoginDTO loginRequest) {
-        Optional<User> userOpt = userRepository.findByUsername(loginRequest.getUsername());
+    public ResponseEntity<java.util.Map<String, String>> login(@RequestBody User loginData) {
+        java.util.Map<String, String> response = new java.util.HashMap<>();
         
-        if (userOpt.isEmpty()) {
-            return "Gagal: Username tidak terdaftar!";
+        Optional<User> userOpt = userRepository.findByUsername(loginData.getUsername());
+        
+        // Cek apakah user ada dan password cocok
+        if (userOpt.isPresent() && userOpt.get().getPassword().equals(loginData.getPassword())) {
+            // Berhasil: Kirim paket JSON rapi
+            response.put("status", "Sukses");
+            response.put("pesan", "Autentikasi berhasil!");
+            response.put("role", userOpt.get().getRole());
+            
+            return ResponseEntity.ok(response);
+        } else {
+            // Gagal: Kirim pesan error yang jelas
+            response.put("status", "Gagal");
+            response.put("pesan", "Username atau Kata Sandi salah!");
+            
+            return ResponseEntity.badRequest().body(response);
         }
-        
-        User user = userOpt.get();
-        
-        if (!user.getPassword().equals(loginRequest.getPassword())) {
-            return "Gagal: Password salah!";
-        }
-        
-        return "Sukses: " + user.getRole(); 
     }
 
-    // 2. FITUR DAFTAR SEKARANG (Tambahan Baru)
+    // 2. FITUR REGISTER (JSON Response)
     @PostMapping("/register")
-    public String prosesDaftar(@RequestBody User userBaru) {
-        try {
-            // Cek apakah username/email sudah digunakan
-            if (userRepository.findByUsername(userBaru.getUsername()).isPresent()) {
-                return "Gagal: Username atau Email sudah terdaftar!";
-            }
-
-            // Atur default untuk pendaftar baru dari halaman depan
-            userBaru.setRole("USER"); // Otomatis jadi Pembeli
-            userBaru.setFotoProfil("default_profil.png");
-
-            // Simpan ke database
-            userRepository.save(userBaru);
-            return "Sukses: Akun berhasil dibuat! Silakan masuk.";
-
-        } catch (Exception e) {
-            return "Gagal: Terjadi kesalahan pada server.";
+    public ResponseEntity<java.util.Map<String, String>> register(@RequestBody User regData) {
+        java.util.Map<String, String> response = new java.util.HashMap<>();
+        
+        if (userRepository.existsByUsername(regData.getUsername())) {
+            response.put("status", "Gagal");
+            response.put("pesan", "Username/Email sudah terdaftar!");
+            return ResponseEntity.badRequest().body(response);
         }
+
+        // Set default role jika kosong
+        if (regData.getRole() == null || regData.getRole().isEmpty()) {
+            regData.setRole("USER"); 
+        }
+
+        userRepository.save(regData);
+        
+        response.put("status", "Sukses");
+        response.put("pesan", "Pendaftaran berhasil, silakan login!");
+        
+        return ResponseEntity.ok(response);
     }
 }
