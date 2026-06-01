@@ -1407,6 +1407,26 @@
     select#eTipe option:disabled {
       cursor: default;
     }
+
+    select#dMetode {
+      cursor: pointer !important;
+      /* Memaksa kursor selalu jadi tangan menunjuk */
+    }
+
+    /* Opsional: Menghilangkan kursor dilarang saat mase hover di dalam daftarnya */
+    select#dMetode option:disabled {
+      cursor: default;
+    }
+
+    select#bMetode {
+      cursor: pointer !important;
+      /* Memaksa kursor selalu jadi tangan menunjuk */
+    }
+
+    /* Opsional: Menghilangkan kursor dilarang saat mase hover di dalam daftarnya */
+    select#bMetode option:disabled {
+      cursor: default;
+    }
   </style>
 </head>
 
@@ -1911,7 +1931,6 @@
               <select id="bMetode" class="form-input">
                 <option value="Cash">Cash Keras</option>
                 <option value="Transfer">Transfer Bank</option>
-                <option value="KPA/KPR">KPA / KPR</option>
               </select>
             </div>
           </div>

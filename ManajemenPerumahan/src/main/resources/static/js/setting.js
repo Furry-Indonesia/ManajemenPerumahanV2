@@ -140,20 +140,22 @@
   }
 
   // ── Perusahaan ──
-  function muatPerusahaan() {
-    const d = localStorage.getItem('dataPerusahaan');
-    if (d) {
-      const o = JSON.parse(d);
-      document.getElementById('cNama').value = o.nama || '';
-      document.getElementById('cBrand').value = o.brand || '';
-      document.getElementById('cNpwp').value = o.npwp || '';
-      document.getElementById('cEmail').value = o.email || '';
-      document.getElementById('cAlamat').value = o.alamat || '';
-    }
+  async function muatPerusahaan() {
+    try {
+      const res = await fetch('http://localhost:8080/api/perusahaan');
+      if (res.ok) {
+        const o = await res.json();
+        document.getElementById('cNama').value = o.nama || '';
+        document.getElementById('cBrand').value = o.brand || '';
+        document.getElementById('cNpwp').value = o.npwp || '';
+        document.getElementById('cEmail').value = o.email || '';
+        document.getElementById('cAlamat').value = o.alamat || '';
+      }
+    } catch(e) { console.error('Gagal memuat profil perusahaan'); }
   }
   muatPerusahaan();
 
-  function simpanPerusahaan() {
+  async function simpanPerusahaan() {
     const d = {
       nama: document.getElementById('cNama').value,
       brand: document.getElementById('cBrand').value,
@@ -161,13 +163,37 @@
       email: document.getElementById('cEmail').value,
       alamat: document.getElementById('cAlamat').value,
     };
-    localStorage.setItem('dataPerusahaan', JSON.stringify(d));
-    showToast('<i class="ti ti-building" style="margin-right:6px;"></i>Data perusahaan tersimpan!');
+    try {
+      const res = await fetch('http://localhost:8080/api/perusahaan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(d)
+      });
+      if (res.ok) {
+        showToast('<i class="ti ti-building" style="margin-right:6px;"></i>Data tersimpan di Database Global!');
+      } else { Swal.fire('Gagal', 'Terjadi kesalahan sistem', 'error'); }
+    } catch(e) { Swal.fire('Error', 'Gagal menyambung ke server', 'error'); }
   }
 
-  // ── Bahaya ──
+  // ── Bahaya (Factory Reset Aktif!) ──
   function resetTransaksi() {
-    Swal.fire({ title:'Hapus Riwayat Transaksi?', text:'Fitur ini belum dikonfigurasi di sisi Backend API.', icon:'info', background:'#12121f', color:'#f1f0ff', confirmButtonColor:'#6d28d9' });
+    Swal.fire({ 
+      title: 'Hapus Riwayat Transaksi?', 
+      text: 'PERINGATAN: Seluruh data riwayat transaksi akan dihapus PERMANEN dari Database. Tindakan ini tidak bisa dibatalkan!', 
+      icon:'warning', showCancelButton:true, confirmButtonColor:'#e11d48', cancelButtonColor:'#374151',
+      confirmButtonText:'Ya, Hapus!', cancelButtonText:'Batal', background:'#12121f', color:'#f1f0ff' 
+    }).then(async r => {
+      if (r.isConfirmed) {
+        try {
+          // Menembak API penghancur di Java
+          const res = await fetch('http://localhost:8080/api/transaksi/reset-semua', { method: 'DELETE' });
+          const pesan = await res.text();
+          if (res.ok) {
+            Swal.fire({ title: 'Dikosongkan!', text: pesan, icon: 'success', background: '#12121f', color: '#f1f0ff' });
+          } else { Swal.fire('Gagal', pesan, 'error'); }
+        } catch { Swal.fire('Error', 'Gagal memproses ke server.', 'error'); }
+      }
+    });
   }
 
   function resetPengaturanUI() {

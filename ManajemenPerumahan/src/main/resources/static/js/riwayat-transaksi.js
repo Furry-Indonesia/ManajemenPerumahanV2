@@ -94,18 +94,32 @@
       });
 
       // 3. Update KPI secara dinamis berdasarkan hasil filter!
-      let cash = 0, transfer = 0, kpr = 0;
+      let cash = 0, transfer = 0, transaksiBulanIni = 0;
+      
+      // Ambil patokan bulan dan tahun saat ini dari komputer/browser
+      const waktuSekarang = new Date();
+      const bulanSekarang = waktuSekarang.getMonth(); // 0 (Jan) s/d 11 (Des)
+      const tahunSekarang = waktuSekarang.getFullYear();
+
       filteredData.forEach(t => {
+        // A. Hitung Metode Pembayaran (Hanya Cash & Transfer)
         const met = (t.metodePembayaran || '').toUpperCase();
         if (met.includes('CASH')) cash++;
         else if (met.includes('TRANSFER')) transfer++;
-        else if (met.includes('KPR') || met.includes('KPA')) kpr++;
+        
+        // B. Hitung Transaksi Bulan Ini
+        const tglTrans = new Date(t.tanggalTransaksi || t.tanggal_transaksi);
+        if (!isNaN(tglTrans)) { // Pastikan tanggalnya valid
+            if (tglTrans.getMonth() === bulanSekarang && tglTrans.getFullYear() === tahunSekarang) {
+                transaksiBulanIni++;
+            }
+        }
       });
       
       animateCount('kpiTotal', filteredData.length);
       animateCount('kpiTransfer', transfer);
       animateCount('kpiCash', cash);
-      animateCount('kpiKpr', kpr);
+      animateCount('statBulanIni', transaksiBulanIni);
 
       currentPage = 1;
       renderTabel();

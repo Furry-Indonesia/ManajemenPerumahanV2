@@ -96,23 +96,23 @@
           body: JSON.stringify({ username: usernameVal, password: passVal })
         });
 
-        const resultText = await response.text();
+        const data = await response.json(); 
 
-        if (resultText.includes("Sukses")) {
-          const roleUser = resultText.split(": ")[1];
+        if (data.status === "Sukses") { 
           sessionStorage.setItem('isLoggedIn', 'true');
           sessionStorage.setItem('username', usernameVal);
-          sessionStorage.setItem('role', roleUser);
+          sessionStorage.setItem('role', data.role); 
+
           statusEl.className = 'status success';
           statusEl.textContent = '✓ Berhasil masuk! Mengalihkan...';
           setTimeout(() => {
-            if (roleUser === 'ADMIN')      window.location.href = 'dashboard.html';
-            else if (roleUser === 'USER')  window.location.href = 'katalog.html';
+            if (data.role === 'ADMIN')     window.location.href = 'dashboard.html';
+            else if (data.role === 'USER') window.location.href = 'katalog.html';
             else                           window.location.href = 'login.html';
           }, 1000);
         } else {
           statusEl.className = 'status error';
-          statusEl.textContent = resultText;
+          statusEl.textContent = data.pesan; 
         }
       } catch (error) {
         statusEl.className = 'status error';
@@ -144,18 +144,18 @@
           body: JSON.stringify({ namaLengkap: name, username: email, password: pass })
         });
 
-        const resultText = await response.text();
+        const data = await response.json();
 
-        if (resultText.includes("Sukses")) {
+        if (data.status === "Sukses") {
           statusEl.className = 'status success';
-          statusEl.textContent = resultText;
+          statusEl.textContent = data.pesan; 
           document.getElementById('reg-name').value = '';
           document.getElementById('reg-email').value = '';
           document.getElementById('reg-password').value = '';
           setTimeout(() => { linkToLogin.click(); }, 2000);
         } else {
           statusEl.className = 'status error';
-          statusEl.textContent = resultText;
+          statusEl.textContent = data.pesan;
         }
       } catch (error) {
         statusEl.className = 'status error';
