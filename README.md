@@ -9,10 +9,16 @@
 </p>
 
 <p align="center">
+  <!-- Badge Backend & DB -->
   <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" />
   <img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white" />
   <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" />
   <img src="https://img.shields.io/badge/Aiven_Cloud-00AFD7?style=for-the-badge&logo=aiven&logoColor=white" />
+  <br>
+  <!-- Badge Frontend -->
+  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" />
+  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" />
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" />
 </p>
 
 <p align="center">
@@ -78,6 +84,7 @@ Setelah terminal menampilkan status **"Started"**, buka browser dan kunjungi:
 | 🔍 **Katalog Properti** | Menampilkan daftar lengkap rumah/apartemen dengan foto, lokasi, harga, dan spesifikasi ruangan. |
 | 👥 **Manajemen Agen** | Pendaftaran dan pengelolaan data profil agen/admin perumahan. |
 | 📄 **Riwayat Transaksi** | Pencatatan detail riwayat pembelian properti oleh pembeli. |
+| 📊 **Server-Side Aggregation** | Perhitungan statistik metrik KPI langsung dari Backend untuk performa super ringan.
 | 📸 **Upload Foto** | Penyimpanan lokal untuk foto profil dan foto rumah (maks. 10 MB per file). |
 
 ---
@@ -143,12 +150,27 @@ ManajemenPerumahanV2/
 
 ## 🛠️ Teknologi yang Digunakan
 
+### 🖥️ Frontend (Client-Side)
+
 | Teknologi | Peran |
 | :--- | :--- |
-| **Java + Spring Boot** | Backend framework utama |
-| **MySQL** | Basis data relasional |
-| **Aiven Cloud** | Hosting database cloud |
-| **Maven Wrapper** | Build tool & dependency management |
+| **HTML5 & CSS3** | Struktur antarmuka dan styling (Custom Properties/Variables, Flexbox/Grid, Animasi CSS). |
+| **Vanilla JavaScript (ES6+)** | Logika sisi klien (Thin Client), manipulasi DOM dinamis, Event Handling. |
+| **Fetch API & Promise** | Komunikasi asinkronus (AJAX) dengan Backend REST API. |
+| **SessionStorage** | Manajemen sesi pengguna (Auth Guard, Self-Protection UI). |
+| **SweetAlert2** | Modul pop-up notifikasi (toast & modal) yang interaktif dan elegan. |
+| **Tabler Icons / FontAwesome** | Tipografi ikon vektor untuk visualisasi UI/UX. |
+
+### ⚙️ Backend (Server-Side) & Database
+
+| Teknologi | Peran |
+| :--- | :--- |
+| **Java 17+** | Bahasa pemrograman utama logika server. |
+| **Spring Boot 3** | Framework utama Backend dan RESTful API. |
+| **Spring Data JPA (Hibernate)** | ORM (Object-Relational Mapping) untuk query database dinamis. |
+| **MySQL** | Basis data relasional (Relational Database Management System). |
+| **Aiven Cloud** | Hosting database cloud (DBaaS). |
+| **Maven Wrapper** | Build tool & manajemen dependensi proyek. |
 
 ---
 
@@ -167,5 +189,5 @@ ManajemenPerumahanV2/
 ---
 
 <p align="center">
-  Made with ❤️ by <b>Furry-Indonesia</b> &nbsp;·&nbsp; Solid! Solid! Solid! 🐾
+  Dibuat Oleh <b>Furry-Indonesia</b> &nbsp;·&nbsp; Solid! Solid! Solid! 🐾
 </p>
