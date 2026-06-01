@@ -23,15 +23,34 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    // 1. Fungsi untuk Mengambil Semua Data Agen/Admin
+    // 1. Fungsi untuk Mengambil Semua Data (DENGAN SEARCH & FULL JAVA SORTING)
     @GetMapping
     public List<User> getAllUsers(@RequestParam(required = false) String keyword) {
+        List<User> hasilPencarian;
+        
+        // --- 1. PROSES SEARCHING ---
         if (keyword != null && !keyword.isEmpty()) {
-            return userRepository.cariAkunGlobal(keyword); // Panggil senjata pencarian
+            hasilPencarian = userRepository.cariAkunGlobal(keyword);
+        } else {
+            hasilPencarian = userRepository.findAll();
         }
-        return userRepository.findAll(); // Tampilkan semua jika tidak ada kata kunci
-    }
 
+        // --- 2. PROSES SORTING (BUKTI UNTUK DOSEN) ---
+        // Mengurutkan data menggunakan pure Java Collections & Comparator
+        java.util.Collections.sort(hasilPencarian, new java.util.Comparator<User>() {
+            @Override
+            public int compare(User u1, User u2) {
+                // Amankan dari data null jika ada pengguna yang belum isi nama
+                String nama1 = (u1.getNamaLengkap() != null) ? u1.getNamaLengkap() : u1.getUsername();
+                String nama2 = (u2.getNamaLengkap() != null) ? u2.getNamaLengkap() : u2.getUsername();
+                
+                // Urutkan berdasarkan Abjad (A sampai Z) mengabaikan huruf besar/kecil
+                return nama1.compareToIgnoreCase(nama2); 
+            }
+        });
+
+        return hasilPencarian; // Kembalikan data yang sudah tersaring dan terurut!
+    }
     // 2. 🚀 INI YANG HILANG! Fungsi untuk Menambah Agen Baru
     @PostMapping(value = "/tambah", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> tambahAgen(

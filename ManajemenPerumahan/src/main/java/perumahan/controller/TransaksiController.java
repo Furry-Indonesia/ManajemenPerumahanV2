@@ -17,13 +17,31 @@ public class TransaksiController {
     @Autowired
     private TransaksiRepository transaksiRepository;
 
-    // Memindahkan fitur ini dari PropertiController
-    // URL tetap dipertahankan agar kodingan JavaScript (fetch) mase tidak error
+    // MENGAMBIL SEMUA TRANSAKSI (SEARCH & FULL JAVA SORTING)
     @GetMapping("/api/properti/transaksi/semua")
     public List<Transaksi> getAllTransaksi(@RequestParam(required = false) String keyword) {
+        List<Transaksi> listTransaksi;
+        
+        // 1. Proses Search
         if (keyword != null && !keyword.isEmpty()) {
-            return transaksiRepository.cariRiwayatGlobal(keyword); // Panggil senjata tadi
+            listTransaksi = transaksiRepository.cariRiwayatGlobal(keyword);
+        } else {
+            listTransaksi = transaksiRepository.findAll();
         }
-        return transaksiRepository.findAll();
+
+        // 2. PROSES SORTING TANGGAL (Bukti ke-3 untuk dosen)
+        // Mengurutkan Transaksi dari yang PALING BARU ke PALING LAMA (Descending)
+        java.util.Collections.sort(listTransaksi, new java.util.Comparator<Transaksi>() {
+            @Override
+            public int compare(Transaksi t1, Transaksi t2) {
+                if (t1.getTanggalTransaksi() == null || t2.getTanggalTransaksi() == null) {
+                    return 0;
+                }
+                // Dibalik (t2 compare ke t1) agar urutannya Descending (Terbaru di atas)
+                return t2.getTanggalTransaksi().compareTo(t1.getTanggalTransaksi());
+            }
+        });
+
+        return listTransaksi;
     }
 }
